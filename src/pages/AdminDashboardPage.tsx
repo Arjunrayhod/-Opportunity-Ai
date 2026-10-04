@@ -35,10 +35,13 @@ import {
   Key,
   Unlock,
   Lock,
-  ExternalLink
+  ExternalLink,
+  Briefcase,
+  MapPin,
+  FileText
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { Course, CourseCategory, Lesson, OrderRecord, User, UserRole } from '../types';
+import { Course, CourseCategory, Lesson, OrderRecord, User, UserRole, Opportunity } from '../types';
 
 interface AdminDashboardPageProps {
   onNavigate: (path: string) => void;
@@ -47,6 +50,10 @@ interface AdminDashboardPageProps {
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNavigate }) => {
   const {
     courses,
+    opportunities,
+    addOpportunity,
+    updateOpportunity,
+    deleteOpportunity,
     orders,
     notifications,
     addCourse,
@@ -73,7 +80,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<
-    'OVERVIEW' | 'COURSES' | 'USERS' | 'CHATS' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'
+    'OVERVIEW' | 'COURSES' | 'GIGS' | 'USERS' | 'CHATS' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'
   >('USERS');
 
   const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
@@ -81,6 +88,26 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [showEditCourseModal, setShowEditCourseModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [showNotifModal, setShowNotifModal] = useState(false);
+
+  // Student Gigs Management State
+  const [showAddGigModal, setShowAddGigModal] = useState(false);
+  const [showEditGigModal, setShowEditGigModal] = useState(false);
+  const [editingGig, setEditingGig] = useState<Opportunity | null>(null);
+  const [gigSearchQuery, setGigSearchQuery] = useState('');
+  
+  // Gig Form State
+  const [gigTitle, setGigTitle] = useState('');
+  const [gigCompany, setGigCompany] = useState('');
+  const [gigCategory, setGigCategory] = useState<'FREELANCING' | 'INTERNSHIPS' | 'HACKATHONS' | 'REMOTE_JOBS' | 'AI_GIGS' | 'CONTENT_CREATION'>('CONTENT_CREATION');
+  const [gigPayout, setGigPayout] = useState('₹1,500 – ₹4,000 / project');
+  const [gigDifficulty, setGigDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Beginner');
+  const [gigTimeRequired, setGigTimeRequired] = useState('Flexible (2-3 hrs daily)');
+  const [gigDeadline, setGigDeadline] = useState('Open for 5 Students');
+  const [gigTags, setGigTags] = useState('CapCut, Video Editing, Reels');
+  const [gigDescription, setGigDescription] = useState('Looking for student video editors to edit 3-5 Instagram Reels & YouTube Shorts weekly.');
+  const [gigRequirements, setGigRequirements] = useState('Basic CapCut or Premiere Pro\nFast 24-hr turnaround\nActive WhatsApp communication');
+  const [gigApplyUrl, setGigApplyUrl] = useState('https://wa.me/919876543210?text=Hi%20I%20am%20applying%20for%20the%20student%20gig');
+  const [gigSendBroadcast, setGigSendBroadcast] = useState(true);
 
   // User Management State
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -318,6 +345,95 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     setEditingUser(null);
   };
 
+  const handleCreateGig = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gigTitle.trim() || !gigCompany.trim()) return;
+
+    const tagsArray = gigTags.split(',').map(t => t.trim()).filter(Boolean);
+    const reqArray = gigRequirements.split('\n').map(r => r.trim()).filter(Boolean);
+
+    const categoryLabels: Record<string, string> = {
+      FREELANCING: 'Freelance Gig',
+      CONTENT_CREATION: 'Creator Role',
+      AI_GIGS: 'AI Micro-Gig',
+      INTERNSHIPS: 'Student Internship',
+      REMOTE_JOBS: 'Remote Job',
+      HACKATHONS: 'Hackathon'
+    };
+
+    addOpportunity({
+      title: gigTitle.trim(),
+      companyOrPlatform: gigCompany.trim(),
+      category: gigCategory,
+      categoryLabel: categoryLabels[gigCategory] || 'Student Gig',
+      payoutRange: gigPayout.trim() || '₹1,500 – ₹5,000',
+      difficulty: gigDifficulty,
+      timeRequired: gigTimeRequired.trim() || 'Flexible',
+      deadline: gigDeadline.trim() || 'Open until filled',
+      verified: true,
+      tags: tagsArray.length > 0 ? tagsArray : ['Remote', 'Student-Friendly'],
+      whyMatchesYou: `Direct match for students skilled in ${gigTags || 'creativity'}.`,
+      description: gigDescription.trim() || 'Exciting paid opportunity for students and creators.',
+      requirements: reqArray.length > 0 ? reqArray : ['Basic skill proficiency', 'Commitment to quality'],
+      applyUrl: gigApplyUrl.trim() || 'https://wa.me/919876543210'
+    });
+
+    if (gigSendBroadcast) {
+      sendAdminNotification({
+        title: `💼 New Student Gig: ${gigTitle.trim()}`,
+        message: `${gigCompany.trim()} is hiring! Payout: ${gigPayout.trim()}. Tap to apply!`,
+        category: 'OPPORTUNITY',
+        deepLink: '/gigs'
+      });
+    }
+
+    // Reset Form
+    setGigTitle('');
+    setGigCompany('');
+    setShowAddGigModal(false);
+  };
+
+  const openEditGigModal = (opp: Opportunity) => {
+    setEditingGig(opp);
+    setGigTitle(opp.title);
+    setGigCompany(opp.companyOrPlatform);
+    setGigCategory(opp.category);
+    setGigPayout(opp.payoutRange);
+    setGigDifficulty(opp.difficulty);
+    setGigTimeRequired(opp.timeRequired);
+    setGigDeadline(opp.deadline || '');
+    setGigTags(opp.tags.join(', '));
+    setGigDescription(opp.description);
+    setGigRequirements(opp.requirements.join('\n'));
+    setGigApplyUrl(opp.applyUrl);
+    setShowEditGigModal(true);
+  };
+
+  const handleSaveEditGig = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGig || !gigTitle.trim()) return;
+
+    const tagsArray = gigTags.split(',').map(t => t.trim()).filter(Boolean);
+    const reqArray = gigRequirements.split('\n').map(r => r.trim()).filter(Boolean);
+
+    updateOpportunity(editingGig.id, {
+      title: gigTitle.trim(),
+      companyOrPlatform: gigCompany.trim(),
+      category: gigCategory,
+      payoutRange: gigPayout.trim(),
+      difficulty: gigDifficulty,
+      timeRequired: gigTimeRequired.trim(),
+      deadline: gigDeadline.trim(),
+      tags: tagsArray,
+      description: gigDescription.trim(),
+      requirements: reqArray,
+      applyUrl: gigApplyUrl.trim()
+    });
+
+    setShowEditGigModal(false);
+    setEditingGig(null);
+  };
+
   const handleSendBroadcast = (e: React.FormEvent) => {
     e.preventDefault();
     if (!notifTitle.trim() || !notifMessage.trim()) return;
@@ -391,10 +507,22 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
           <button
             onClick={() => setShowAddCourseModal(true)}
-            className="px-4 py-2 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+            className="px-3.5 py-2 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
           >
             <Plus className="w-4 h-4 text-slate-950" />
             <span>Upload Course</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setGigTitle('');
+              setGigCompany('');
+              setShowAddGigModal(true);
+            }}
+            className="px-3.5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+          >
+            <Briefcase className="w-4 h-4 text-slate-950" />
+            <span>Post Gig</span>
           </button>
 
           <button
@@ -412,6 +540,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         {[
           { id: 'USERS', label: `👥 Student Control (${allUsers.length})` },
           { id: 'COURSES', label: `🎓 Courses CMS (${courses.length})` },
+          { id: 'GIGS', label: `💼 Student Gigs (${opportunities.length})` },
           { id: 'CHATS', label: `💬 Live Chats (${directChatMessages.length})` },
           { id: 'ORDERS', label: `💰 Orders (${pendingOrders.length} Pending)` },
           { id: 'SETTINGS', label: '💳 UPI & Bank Settings' },
@@ -680,6 +809,158 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* 2.5 Student Freelance Gigs & Job Radar CMS */}
+      {activeTab === 'GIGS' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div>
+              <h3 className="font-extrabold text-sm sm:text-base text-slate-900">Student Gigs & Freelance Job CMS</h3>
+              <p className="text-xs text-slate-500">
+                Post high-paying freelance gigs, video editing roles, internships, and direct WhatsApp application links for students.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setGigTitle('');
+                setGigCompany('');
+                setShowAddGigModal(true);
+              }}
+              className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95 shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Post New Student Gig</span>
+            </button>
+          </div>
+
+          {/* Search Gigs */}
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              value={gigSearchQuery}
+              onChange={(e) => setGigSearchQuery(e.target.value)}
+              placeholder="Search uploaded gigs by title, company, or required skill (e.g. CapCut, AI, SEO)..."
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 shadow-2xs"
+            />
+          </div>
+
+          {/* Gigs List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {opportunities
+              .filter(opp => 
+                opp.title.toLowerCase().includes(gigSearchQuery.toLowerCase()) ||
+                opp.companyOrPlatform.toLowerCase().includes(gigSearchQuery.toLowerCase()) ||
+                opp.tags.some(t => t.toLowerCase().includes(gigSearchQuery.toLowerCase()))
+              )
+              .map((opp) => (
+                <div
+                  key={opp.id}
+                  className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-3 flex flex-col justify-between hover:border-slate-300 transition"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-200 uppercase">
+                          {opp.categoryLabel}
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                          {opp.difficulty}
+                        </span>
+                        {opp.verified && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-700">
+                            <CheckCircle2 className="w-3 h-3" /> Verified
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <span className="font-extrabold text-xs text-emerald-700 block bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                          {opp.payoutRange}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-extrabold text-sm text-slate-900 leading-snug">{opp.title}</h4>
+                      <p className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                        <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        {opp.companyOrPlatform} • <Clock className="w-3 h-3 text-slate-400" /> {opp.timeRequired}
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{opp.description}</p>
+
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1">
+                      {opp.tags.map((t, idx) => (
+                        <span key={idx} className="px-2 py-0.5 bg-slate-50 border border-slate-200 text-[10px] font-medium text-slate-700 rounded-md">
+                          #{t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Requirements Preview */}
+                    {opp.requirements && opp.requirements.length > 0 && (
+                      <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
+                        <span className="font-bold text-slate-800 block text-[10px] uppercase">Requirements:</span>
+                        <ul className="list-disc list-inside space-y-0.5">
+                          {opp.requirements.slice(0, 2).map((req, rIdx) => (
+                            <li key={rIdx} className="truncate">{req}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 gap-2">
+                    <a
+                      href={opp.applyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1 truncate"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span className="truncate">Test Apply Link</span>
+                    </a>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => openEditGigModal(opp)}
+                        className="px-3 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (confirm(`Delete gig "${opp.title}"?`)) {
+                            deleteOpportunity(opp.id);
+                          }
+                        }}
+                        className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition"
+                        title="Delete Gig"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {opportunities.length === 0 && (
+            <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-2">
+              <Briefcase className="w-8 h-8 text-slate-400 mx-auto" />
+              <h4 className="font-bold text-sm text-slate-900">No Student Gigs Posted Yet</h4>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                Click "+ Post New Student Gig" to upload freelance projects, video editing jobs, and internships for your students.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -1509,6 +1790,343 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
               >
                 Broadcast to All Students
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Add New Student Gig */}
+      {showAddGigModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-800">
+                  <Briefcase className="w-4 h-4" />
+                </div>
+                <h3 className="font-extrabold text-base text-slate-900">Post New Student Gig</h3>
+              </div>
+              <button onClick={() => setShowAddGigModal(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateGig} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Gig Title / Job Role</label>
+                <input
+                  type="text"
+                  required
+                  value={gigTitle}
+                  onChange={(e) => setGigTitle(e.target.value)}
+                  placeholder="e.g. CapCut Video Editor for YouTube Shorts & Reels"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Client / Company Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={gigCompany}
+                    onChange={(e) => setGigCompany(e.target.value)}
+                    placeholder="e.g. TechBuzz Studio"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Gig Category</label>
+                  <select
+                    value={gigCategory}
+                    onChange={(e) => setGigCategory(e.target.value as any)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  >
+                    <option value="CONTENT_CREATION">🎬 Creator & Video Editing</option>
+                    <option value="FREELANCING">💼 Freelance Projects</option>
+                    <option value="AI_GIGS">🤖 AI Micro-Gigs & Prompting</option>
+                    <option value="INTERNSHIPS">🎓 Student Internships</option>
+                    <option value="REMOTE_JOBS">🌐 Remote Part-Time</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2.5">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Payout / Budget</label>
+                  <input
+                    type="text"
+                    required
+                    value={gigPayout}
+                    onChange={(e) => setGigPayout(e.target.value)}
+                    placeholder="₹1,500 – ₹5,000"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-bold text-emerald-700"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Difficulty</label>
+                  <select
+                    value={gigDifficulty}
+                    onChange={(e) => setGigDifficulty(e.target.value as any)}
+                    className="w-full px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Time Needed</label>
+                  <input
+                    type="text"
+                    value={gigTimeRequired}
+                    onChange={(e) => setGigTimeRequired(e.target.value)}
+                    placeholder="2 hrs / day"
+                    className="w-full px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Deadline / Openings</label>
+                <input
+                  type="text"
+                  value={gigDeadline}
+                  onChange={(e) => setGigDeadline(e.target.value)}
+                  placeholder="e.g. Open for 5 Students or Apply before 20 Oct"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Key Skills / Tags (Comma-separated)</label>
+                <input
+                  type="text"
+                  value={gigTags}
+                  onChange={(e) => setGigTags(e.target.value)}
+                  placeholder="e.g. CapCut, Reels, Color Grading, Sound Effects"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Description & Scope of Work</label>
+                <textarea
+                  rows={2}
+                  value={gigDescription}
+                  onChange={(e) => setGigDescription(e.target.value)}
+                  placeholder="Detailed explanation of the work students will do..."
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Requirements (One bullet per line)</label>
+                <textarea
+                  rows={2}
+                  value={gigRequirements}
+                  onChange={(e) => setGigRequirements(e.target.value)}
+                  placeholder="Basic CapCut knowledge&#10;Fast 24-hr turnaround&#10;Good communication"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Direct WhatsApp / Form Application Link
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={gigApplyUrl}
+                  onChange={(e) => setGigApplyUrl(e.target.value)}
+                  placeholder="https://wa.me/91... or Google Form link"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono"
+                />
+                <span className="text-[10px] text-slate-500 mt-1 block">
+                  Students clicking "Apply Now" will be redirected to this WhatsApp chat or form.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 p-3 bg-teal-50 rounded-xl border border-teal-200">
+                <input
+                  type="checkbox"
+                  id="gigBroadcastCheck"
+                  checked={gigSendBroadcast}
+                  onChange={(e) => setGigSendBroadcast(e.target.checked)}
+                  className="rounded text-teal-600 focus:ring-teal-500"
+                />
+                <label htmlFor="gigBroadcastCheck" className="text-xs text-teal-900 font-bold cursor-pointer">
+                  Send immediate push notification to all students about this new gig
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
+              >
+                Publish Gig for Students
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Student Gig */}
+      {showEditGigModal && editingGig && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-teal-100 border border-teal-300 flex items-center justify-center text-teal-800">
+                  <Edit className="w-4 h-4" />
+                </div>
+                <h3 className="font-extrabold text-base text-slate-900">Edit Student Gig</h3>
+              </div>
+              <button onClick={() => setShowEditGigModal(false)} className="text-slate-400 hover:text-slate-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditGig} className="space-y-3.5 text-xs">
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Gig Title / Job Role</label>
+                <input
+                  type="text"
+                  required
+                  value={gigTitle}
+                  onChange={(e) => setGigTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Client / Company Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={gigCompany}
+                    onChange={(e) => setGigCompany(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Gig Category</label>
+                  <select
+                    value={gigCategory}
+                    onChange={(e) => setGigCategory(e.target.value as any)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  >
+                    <option value="CONTENT_CREATION">🎬 Creator & Video Editing</option>
+                    <option value="FREELANCING">💼 Freelance Projects</option>
+                    <option value="AI_GIGS">🤖 AI Micro-Gigs & Prompting</option>
+                    <option value="INTERNSHIPS">🎓 Student Internships</option>
+                    <option value="REMOTE_JOBS">🌐 Remote Part-Time</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2.5">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Payout / Budget</label>
+                  <input
+                    type="text"
+                    required
+                    value={gigPayout}
+                    onChange={(e) => setGigPayout(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-bold text-emerald-700"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Difficulty</label>
+                  <select
+                    value={gigDifficulty}
+                    onChange={(e) => setGigDifficulty(e.target.value as any)}
+                    className="w-full px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Time Needed</label>
+                  <input
+                    type="text"
+                    value={gigTimeRequired}
+                    onChange={(e) => setGigTimeRequired(e.target.value)}
+                    className="w-full px-2.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Deadline / Openings</label>
+                <input
+                  type="text"
+                  value={gigDeadline}
+                  onChange={(e) => setGigDeadline(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Key Skills / Tags (Comma-separated)</label>
+                <input
+                  type="text"
+                  value={gigTags}
+                  onChange={(e) => setGigTags(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Description & Scope of Work</label>
+                <textarea
+                  rows={2}
+                  value={gigDescription}
+                  onChange={(e) => setGigDescription(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">Requirements (One bullet per line)</label>
+                <textarea
+                  rows={2}
+                  value={gigRequirements}
+                  onChange={(e) => setGigRequirements(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-700 block mb-1">
+                  Direct WhatsApp / Form Application Link
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={gigApplyUrl}
+                  onChange={(e) => setGigApplyUrl(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
+              >
+                Save Changes to Gig
               </button>
             </form>
           </div>

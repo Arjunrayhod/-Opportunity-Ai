@@ -96,6 +96,7 @@ interface AppContextType {
   deleteCourse: (id: string) => void;
   sendAdminNotification: (notif: { title: string; message: string; category: any; deepLink: string }) => void;
   addOpportunity: (opp: Partial<Opportunity>) => void;
+  updateOpportunity: (id: string, updatedData: Partial<Opportunity>) => void;
   deleteOpportunity: (id: string) => void;
   exportOrdersToCSV: () => void;
   exportFullDatabaseBackup: () => void;
@@ -810,6 +811,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setOpportunities(prev => [newOpp, ...prev]);
   };
 
+  const updateOpportunity = (id: string, updatedData: Partial<Opportunity>) => {
+    setOpportunities(prev => prev.map(o => o.id === id ? { ...o, ...updatedData } : o));
+  };
+
   const deleteOpportunity = (id: string) => {
     setOpportunities(prev => prev.filter(o => o.id !== id));
   };
@@ -948,6 +953,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteCourse,
         sendAdminNotification,
         addOpportunity,
+        updateOpportunity,
         deleteOpportunity,
         exportOrdersToCSV,
         exportFullDatabaseBackup,
