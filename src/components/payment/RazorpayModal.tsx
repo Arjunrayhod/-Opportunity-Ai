@@ -124,11 +124,13 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
                   <Smartphone className="w-3.5 h-3.5 text-cyan-400" /> WhatsApp / Mobile Number
                 </label>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full px-3.5 py-2.5 bg-dark-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 min-h-[48px] bg-dark-950 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
                 />
                 <span className="text-[10px] text-slate-400 mt-1 block">
                   Course receipt and updates will be sent to this number.

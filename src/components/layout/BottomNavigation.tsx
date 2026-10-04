@@ -30,7 +30,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentPath,
               <button
                 key={item.path}
                 onClick={() => onNavigate(item.path)}
-                className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all duration-200 relative ${
+                className={`flex flex-col items-center justify-center min-w-[48px] min-h-[48px] py-1 px-2 rounded-xl transition-all duration-200 relative ${
                   isActive
                     ? 'text-cyan-400 font-bold scale-105'
                     : 'text-slate-400 hover:text-slate-200 font-medium'
