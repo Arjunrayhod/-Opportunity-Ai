@@ -175,11 +175,12 @@ export const MarketPage: React.FC = () => {
                   <YAxis domain={['dataMin - 5', 'dataMax + 5']} stroke="#64748B" fontSize={10} tickLine={false} orientation="right" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0F172A',
-                      borderColor: '#334155',
+                      backgroundColor: '#FFFFFF',
+                      borderColor: '#CBD5E1',
                       borderRadius: '12px',
                       fontSize: '11px',
-                      color: '#F8FAFC'
+                      color: '#0F172A',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                     }}
                   />
                   <Area
