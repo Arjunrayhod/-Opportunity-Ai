@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Flame, BookOpen, Bookmark, Shield, Award, Settings, Bell, Phone, Mail, CheckCircle2, LogOut, ChevronRight, SunMedium, KeyRound, UserCheck } from 'lucide-react';
+import { User, Flame, BookOpen, Bookmark, Shield, Award, Settings, Bell, Phone, Mail, CheckCircle2, LogOut, ChevronRight, SunMedium, KeyRound, UserCheck, Wallet, Gift, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 interface ProfilePageProps {
@@ -7,7 +7,7 @@ interface ProfilePageProps {
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
-  const { user, courses, switchRole, setIsAuthModalOpen, logoutUser } = useApp();
+  const { user, courses, setIsAuthModalOpen, logoutUser, setIsReferModalOpen, addReferralReward } = useApp();
   const enrolledCourses = courses.filter((c) => user.enrolledCourseIds.includes(c.id));
 
   return (
@@ -66,6 +66,46 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             </div>
             <span className="text-[10px] text-slate-600 font-medium">Saved Gigs</span>
           </div>
+        </div>
+      </div>
+
+      {/* Referral Wallet Balance & Free Course Unlock Card */}
+      <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50/70 to-emerald-100/50 border border-emerald-200 shadow-sm space-y-3.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 shrink-0 shadow-2xs">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
+                  Referral Wallet
+                </span>
+                <span className="text-xs text-slate-500 font-medium">• {user.referralsCount} Friends Joined</span>
+              </div>
+              <div className="text-2xl font-black text-emerald-900 mt-0.5">
+                ₹{user.walletBalance || 0}
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsReferModalOpen(true)}
+            className="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md transition active:scale-95 shrink-0 flex items-center gap-1.5"
+          >
+            <Gift className="w-4 h-4 text-amber-200" />
+            <span>Refer & Earn (+₹50)</span>
+          </button>
+        </div>
+
+        <div className="p-3 bg-white/80 rounded-2xl border border-emerald-200/80 text-xs text-slate-600 space-y-1">
+          <p className="font-bold text-slate-900 flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            Apne wallet ke paise se 100% Free Course Buy karein!
+          </p>
+          <p className="text-[11px] text-slate-500">
+            Jaise hi aapke wallet me course price (₹99) ke barabar paise honge, aap <strong>1-Click me Course Unlock</strong> kar sakte hain.
+          </p>
         </div>
       </div>
 

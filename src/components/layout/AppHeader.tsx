@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Bell, Flame, Shield, KeyRound, LogIn } from 'lucide-react';
+import { Bell, Flame, Shield, KeyRound, LogIn, Wallet } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { NotificationDrawer } from '../notifications/NotificationDrawer';
 import { AIAssistantModal } from '../ai/AIAssistantModal';
 import { AuthModal } from '../auth/AuthModal';
+import { ReferAndEarnModal } from '../growth/ReferAndEarnModal';
 
 interface AppHeaderProps {
   onNavigate: (path: string) => void;
@@ -11,7 +12,7 @@ interface AppHeaderProps {
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
-  const { user, unreadNotifsCount, switchRole, setIsAuthModalOpen } = useApp();
+  const { user, unreadNotifsCount, setIsAuthModalOpen, isReferModalOpen, setIsReferModalOpen } = useApp();
   const [isNotifsOpen, setIsNotifsOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
 
@@ -51,12 +52,22 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          {/* Center / Right: Streak Badge, Auth Login/Switch & Bell */}
+          {/* Center / Right: Streak Badge, Wallet Badge, Auth Login & Bell */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Live Wallet Balance Badge (Click to Refer & Earn / View) */}
+            <button
+              onClick={() => setIsReferModalOpen(true)}
+              title="Your Referral Wallet - Click to Earn ₹50 / Friend & Buy Free Courses!"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black transition active:scale-95 shadow-2xs"
+            >
+              <Wallet className="w-3.5 h-3.5 text-emerald-600" />
+              <span>₹{user.walletBalance || 0}</span>
+            </button>
+
             {/* 7-Day Streak Badge */}
             <div 
               title="Learning & Opportunity Streak!" 
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-700 text-xs font-bold cursor-default"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-700 text-xs font-bold cursor-default hidden sm:flex"
             >
               <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 animate-pulse" />
               <span>{user.streakDays}d</span>
@@ -91,7 +102,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
             {/* Notification Bell with Badge */}
             <button
               onClick={() => setIsNotifsOpen(true)}
-              className="relative min-w-[40px] min-h-[40px] w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 hover:text-slate-900 transition"
+              className="relative min-w-[36px] min-h-[36px] w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 hover:text-slate-900 transition"
               aria-label="View notifications"
             >
               <Bell className="w-4 h-4" />
@@ -119,8 +130,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
         onNavigate={onNavigate}
       />
 
-      {/* Login & Profile Switcher Modal */}
+      {/* Login Modal */}
       <AuthModal />
+
+      {/* Refer & Earn Wallet Modal */}
+      <ReferAndEarnModal
+        isOpen={isReferModalOpen}
+        onClose={() => setIsReferModalOpen(false)}
+      />
     </>
   );
 };

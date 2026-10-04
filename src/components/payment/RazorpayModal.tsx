@@ -11,7 +11,8 @@ import {
   Clock,
   QrCode,
   ArrowRight,
-  ExternalLink,
+  Sparkles,
+  Wallet,
   MessageCircle,
   AlertCircle
 } from 'lucide-react';
@@ -27,26 +28,55 @@ interface RazorpayModalProps {
 }
 
 export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, onClose, onSuccess }) => {
-  const { user, paymentSettings, submitCoursePaymentWithUtr } = useApp();
+  const { user, paymentSettings, submitCoursePaymentWithUtr, payCourseWithWallet } = useApp();
   const [phoneNumber, setPhoneNumber] = useState(user.phone || '+91 98765 43210');
   const [utrNumber, setUtrNumber] = useState('');
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isWalletProcessing, setIsWalletProcessing] = useState(false);
+  const [isWalletSuccess, setIsWalletSuccess] = useState(false);
+  const [useWalletDiscount, setUseWalletDiscount] = useState(true);
   const [submittedOrderId, setSubmittedOrderId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   if (!isOpen || !course) return null;
 
+  const walletBalance = user.walletBalance || 0;
+  const canPayFullyWithWallet = walletBalance >= course.price;
+  const appliedDiscount = (useWalletDiscount && !canPayFullyWithWallet && walletBalance > 0)
+    ? Math.min(walletBalance, course.price - 1)
+    : 0;
+  const finalPrice = Math.max(1, course.price - appliedDiscount);
+
   const upiId = paymentSettings.upiId || 'satvikbhai@ybl';
   const payeeName = paymentSettings.payeeName || 'Opportunity AI';
-  const upiDeepLink = generateUpiPaymentLink(upiId, payeeName, course.price, course.title, course.id);
+  const upiDeepLink = generateUpiPaymentLink(upiId, payeeName, finalPrice, course.title, course.id);
   const qrCodeUrl = generateUpiQrCodeUrl(upiDeepLink);
 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(upiId);
     setCopiedUpi(true);
     setTimeout(() => setCopiedUpi(false), 2000);
+  };
+
+  const handleWalletPay = async () => {
+    setIsWalletProcessing(true);
+    setErrorMessage('');
+    try {
+      const res = await payCourseWithWallet(course);
+      if (res.success) {
+        setSubmittedOrderId(res.orderId);
+        setIsWalletSuccess(true);
+        setIsWalletProcessing(false);
+      } else {
+        setIsWalletProcessing(false);
+        setErrorMessage('Insufficient wallet balance. Please use UPI payment or refer more friends.');
+      }
+    } catch {
+      setIsWalletProcessing(false);
+      setErrorMessage('Failed to process wallet payment. Please try again.');
+    }
   };
 
   const handleSubmitUtr = async (e: React.FormEvent) => {
@@ -65,7 +95,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
 
     setIsSubmitting(true);
     try {
-      const res = await submitCoursePaymentWithUtr(course, phoneNumber, utrNumber);
+      const res = await submitCoursePaymentWithUtr(course, phoneNumber, utrNumber, appliedDiscount);
       if (res.success) {
         setSubmittedOrderId(res.orderId);
         setIsSubmitted(true);
@@ -79,7 +109,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
 
   const handleWhatsAppHelp = () => {
     const text = encodeURIComponent(
-      `Hello! I made a payment of ₹${course.price} for "${course.title}".\nMy Phone: ${phoneNumber}\nUTR / Ref No: ${utrNumber || 'Attached screenshot'}\nPlease verify and unlock my course.`
+      `Hello! I made a payment of ₹${finalPrice} for "${course.title}".\nMy Phone: ${phoneNumber}\nUTR / Ref No: ${utrNumber || 'Attached screenshot'}\nPlease verify and unlock my course.`
     );
     const waNumber = paymentSettings.upiId.includes('@') ? '919876543210' : paymentSettings.upiId;
     window.open(`https://wa.me/${waNumber}?text=${text}`, '_blank');
@@ -92,7 +122,7 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="w-full max-w-md bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl my-auto"
+          className="w-full max-w-md bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl my-auto text-slate-900"
         >
           {/* Header */}
           <div className="bg-[#003539] px-5 py-4 flex items-center justify-between text-white">
@@ -101,22 +131,68 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
                 ₹
               </div>
               <div>
-                <h3 className="font-bold text-sm tracking-wide">Direct UPI Payment</h3>
+                <h3 className="font-bold text-sm tracking-wide">Course Checkout & Payment</h3>
                 <p className="text-[10px] text-teal-100 flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-emerald-300" /> Direct Bank-to-Bank Transfer (0% Fee)
+                  <Lock className="w-3 h-3 text-emerald-300" /> 100% Secure & Verified Payment
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition"
+              aria-label="Close checkout modal"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {isSubmitted ? (
-            /* Pending Verification Screen */
+          {/* 1. Wallet Instant Success Screen */}
+          {isWalletSuccess ? (
+            <div className="p-6 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-400 flex items-center justify-center text-emerald-700 mx-auto shadow-sm">
+                <CheckCircle2 className="w-9 h-9" />
+              </div>
+
+              <div>
+                <span className="px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-black uppercase tracking-wider">
+                  🎉 Unlocked with Wallet Balance
+                </span>
+                <h3 className="text-lg font-black text-slate-900 mt-2">
+                  Course Unlocked Successfully!
+                </h3>
+                <p className="text-xs text-slate-600 mt-1 max-w-sm mx-auto leading-relaxed">
+                  Aapke referral wallet se <strong>₹{course.price}</strong> deduct ho gaye hain. Ab aapko is course ka <strong>Lifetime Access</strong> mil chuka hai!
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-left space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-600 font-medium">Course Title:</span>
+                  <span className="font-bold text-slate-900 truncate max-w-[180px]">{course.title}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 font-medium">Amount Paid:</span>
+                  <span className="font-black text-emerald-800">₹{course.price} (From Wallet)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-600 font-medium">Remaining Balance:</span>
+                  <span className="font-bold text-slate-900 font-mono">₹{user.walletBalance}</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  onSuccess(submittedOrderId);
+                  onClose();
+                }}
+                className="w-full py-3.5 rounded-2xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+              >
+                <span>Start Learning Now</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          ) : isSubmitted ? (
+            /* 2. Pending UPI Verification Screen */
             <div className="p-6 text-center space-y-4">
               <div className="w-14 h-14 rounded-full bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-amber-700 mx-auto animate-pulse">
                 <Clock className="w-7 h-7" />
@@ -141,8 +217,8 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
                   <span className="font-bold text-slate-900 truncate max-w-[180px]">{course.title}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Amount:</span>
-                  <span className="font-black text-teal-800">₹{course.price}</span>
+                  <span className="text-slate-500">Amount Paid:</span>
+                  <span className="font-black text-teal-800">₹{finalPrice} {appliedDiscount > 0 ? `(₹${appliedDiscount} Wallet Discount applied)` : ''}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Order ID:</span>
@@ -175,15 +251,15 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
               </div>
             </div>
           ) : (
-            /* Step-by-Step Payment Form */
+            /* 3. Step-by-Step Payment Form */
             <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto no-scrollbar">
-              {/* Course & Price Badge */}
+              {/* Course & Price Summary */}
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
                     src={course.thumbnail}
                     alt={course.title}
-                    className="w-12 h-12 rounded-xl object-cover border border-slate-200"
+                    className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
                   />
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{course.title}</h4>
@@ -196,131 +272,187 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
                 </div>
               </div>
 
-              {/* Step 1: Scan QR or 1-Click Pay */}
-              <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-3">
+              {/* Referral Wallet Balance Banner & 1-Click Wallet Pay */}
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black text-teal-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <QrCode className="w-3.5 h-3.5 text-teal-700" />
-                    Step 1: Scan UPI QR Code to Pay ₹{course.price}
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                    Direct Creator Account
-                  </span>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  {/* Dynamic QR Code */}
-                  <div className="p-2 bg-white rounded-2xl border border-teal-300 shadow-xs shrink-0 flex flex-col items-center">
-                    <img
-                      src={qrCodeUrl}
-                      alt="UPI QR Code"
-                      className="w-32 h-32 object-contain rounded-lg"
-                    />
-                    <span className="text-[9px] font-bold text-slate-500 mt-1">Scan with any UPI App</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-800">
+                      <Wallet className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 font-bold uppercase block">Your Referral Wallet</span>
+                      <span className="text-sm font-black text-emerald-800">₹{walletBalance} Available</span>
+                    </div>
                   </div>
 
-                  {/* UPI Details & 1-Click copy */}
-                  <div className="flex-1 space-y-2 text-xs w-full">
-                    <div className="p-2.5 bg-white rounded-xl border border-teal-200 space-y-1">
-                      <span className="text-[10px] text-slate-500 block">Creator UPI ID:</span>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-mono font-bold text-slate-900 truncate text-[11px]">{upiId}</span>
-                        <button
-                          type="button"
-                          onClick={handleCopyUpi}
-                          className="px-2 py-1 rounded-lg bg-teal-100 hover:bg-teal-200 text-teal-800 font-bold text-[10px] flex items-center gap-1 shrink-0 transition"
-                        >
-                          {copiedUpi ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                          <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
-                        </button>
-                      </div>
+                  {canPayFullyWithWallet ? (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-600 text-white shadow-2xs">
+                      100% FREE with Wallet
+                    </span>
+                  ) : walletBalance > 0 ? (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                      ₹{walletBalance} Discount Available
+                    </span>
+                  ) : null}
+                </div>
+
+                {/* If user has enough wallet balance: 1-Click 100% Wallet Purchase */}
+                {canPayFullyWithWallet ? (
+                  <button
+                    type="button"
+                    onClick={handleWalletPay}
+                    disabled={isWalletProcessing}
+                    className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-2"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-200" />
+                    <span>{isWalletProcessing ? 'Unlocking Course...' : `⚡ Pay ₹${course.price} with Wallet Balance (Instant 0-Sec Access)`}</span>
+                  </button>
+                ) : walletBalance > 0 ? (
+                  /* Partial Wallet Balance Discount Checkbox */
+                  <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-emerald-200 text-xs">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={useWalletDiscount}
+                        onChange={(e) => setUseWalletDiscount(e.target.checked)}
+                        className="rounded text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="text-slate-800 font-bold text-xs">Apply ₹{appliedDiscount} Wallet Balance</span>
+                    </label>
+                    <span className="font-extrabold text-emerald-700">-₹{appliedDiscount}</span>
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Direct UPI Section (Visible if not paying full with wallet) */}
+              {!canPayFullyWithWallet && (
+                <>
+                  <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-black text-teal-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <QrCode className="w-3.5 h-3.5 text-teal-700" />
+                        Step 1: Scan UPI QR Code (Pay ₹{finalPrice})
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                        0% Gateway Fee
+                      </span>
                     </div>
 
-                    {/* 1-Click Pay on Mobile */}
-                    <a
-                      href={upiDeepLink}
-                      className="w-full py-2.5 px-3 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                      {/* Dynamic QR Code */}
+                      <div className="p-2 bg-white rounded-2xl border border-teal-300 shadow-xs shrink-0 flex flex-col items-center">
+                        <img
+                          src={qrCodeUrl}
+                          alt="UPI QR Code"
+                          className="w-32 h-32 object-contain rounded-lg"
+                        />
+                        <span className="text-[9px] font-bold text-slate-500 mt-1">Scan with any UPI App</span>
+                      </div>
+
+                      {/* UPI Details & 1-Click copy */}
+                      <div className="flex-1 space-y-2 text-xs w-full">
+                        <div className="p-2.5 bg-white rounded-xl border border-teal-200 space-y-1">
+                          <span className="text-[10px] text-slate-500 block">Creator UPI ID:</span>
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="font-mono font-bold text-slate-900 truncate text-[11px]">{upiId}</span>
+                            <button
+                              type="button"
+                              onClick={handleCopyUpi}
+                              className="px-2 py-1 rounded-lg bg-teal-100 hover:bg-teal-200 text-teal-800 font-bold text-[10px] flex items-center gap-1 shrink-0 transition"
+                            >
+                              {copiedUpi ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                              <span>{copiedUpi ? 'Copied' : 'Copy'}</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 1-Click Pay on Mobile */}
+                        <a
+                          href={upiDeepLink}
+                          className="w-full py-2.5 px-3 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition"
+                        >
+                          <Smartphone className="w-3.5 h-3.5" />
+                          <span>Tap to Open UPI App (₹{finalPrice})</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 2: Form to submit 12-digit UTR */}
+                  <form onSubmit={handleSubmitUtr} className="space-y-3">
+                    <div className="border-t border-slate-200 pt-3">
+                      <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block mb-2">
+                        Step 2: Enter Payment Details for Verification
+                      </span>
+                    </div>
+
+                    {/* WhatsApp Phone */}
+                    <div>
+                      <label className="text-xs text-slate-700 font-bold block mb-1 flex items-center gap-1.5">
+                        <Smartphone className="w-3.5 h-3.5 text-teal-700" /> Your WhatsApp Number
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 font-medium"
+                      />
+                    </div>
+
+                    {/* 12-Digit UTR */}
+                    <div>
+                      <label className="text-xs text-slate-700 font-bold block mb-1 flex items-center justify-between">
+                        <span>12-Digit UTR / UPI Ref Number</span>
+                        <span className="text-[10px] text-teal-700 font-normal">Found in payment receipt</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        maxLength={16}
+                        value={utrNumber}
+                        onChange={(e) => setUtrNumber(e.target.value.replace(/[^0-9a-zA-Z]/g, ''))}
+                        placeholder="e.g. 427819283746"
+                        className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 font-mono font-bold tracking-wider"
+                      />
+                      <span className="text-[10px] text-slate-500 mt-1 block">
+                        GPay / PhonePe / Paytm transaction receipt me 12 digit UTR number hota hai.
+                      </span>
+                    </div>
+
+                    {errorMessage && (
+                      <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                        <span>{errorMessage}</span>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-3.5 rounded-2xl bg-[#003539] hover:bg-[#004f55] active:scale-98 disabled:opacity-50 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition mt-2"
                     >
-                      <Smartphone className="w-3.5 h-3.5" />
-                      <span>Tap to Open UPI App (₹{course.price})</span>
-                    </a>
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>{isSubmitting ? 'Submitting Verification...' : `Submit ₹${finalPrice} Payment for Verification`}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </form>
+
+                  <div className="flex items-center justify-between pt-1 text-[10px] text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" /> Direct Account Credit
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleWhatsAppHelp}
+                      className="text-teal-700 font-bold hover:underline flex items-center gap-1"
+                    >
+                      <MessageCircle className="w-3 h-3" /> Need Help? WhatsApp
+                    </button>
                   </div>
-                </div>
-              </div>
-
-              {/* Step 2: Form to submit 12-digit UTR */}
-              <form onSubmit={handleSubmitUtr} className="space-y-3">
-                <div className="border-t border-slate-200 pt-3">
-                  <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider block mb-2">
-                    Step 2: Enter Payment Details for Verification
-                  </span>
-                </div>
-
-                {/* WhatsApp Phone */}
-                <div>
-                  <label className="text-xs text-slate-700 font-bold block mb-1 flex items-center gap-1.5">
-                    <Smartphone className="w-3.5 h-3.5 text-teal-700" /> Your WhatsApp Number
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="+91 98765 43210"
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 font-medium"
-                  />
-                </div>
-
-                {/* 12-Digit UTR */}
-                <div>
-                  <label className="text-xs text-slate-700 font-bold block mb-1 flex items-center justify-between">
-                    <span>12-Digit UTR / UPI Ref Number</span>
-                    <span className="text-[10px] text-teal-700 font-normal">Found in payment receipt</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    maxLength={16}
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value.replace(/[^0-9a-zA-Z]/g, ''))}
-                    placeholder="e.g. 427819283746"
-                    className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 font-mono font-bold tracking-wider"
-                  />
-                  <span className="text-[10px] text-slate-500 mt-1 block">
-                    GPay / PhonePe / Paytm transaction receipt me 12 digit UTR number hota hai.
-                  </span>
-                </div>
-
-                {errorMessage && (
-                  <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-                    <span>{errorMessage}</span>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-2xl bg-[#003539] hover:bg-[#004f55] active:scale-98 disabled:opacity-50 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition mt-2"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Submitting Verification...' : 'Submit Payment for Verification'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
-
-              <div className="flex items-center justify-between pt-1 text-[10px] text-slate-500">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" /> Direct Account Credit
-                </span>
-                <button
-                  type="button"
-                  onClick={handleWhatsAppHelp}
-                  className="text-teal-700 font-bold hover:underline flex items-center gap-1"
-                >
-                  <MessageCircle className="w-3 h-3" /> Need Help? WhatsApp
-                </button>
-              </div>
+                </>
+              )}
             </div>
           )}
         </motion.div>

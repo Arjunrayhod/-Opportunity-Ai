@@ -53,7 +53,11 @@ interface AppContextType {
   runManualAiScan: () => Promise<AiAgentScanResult>;
   paymentSettings: PaymentSettings;
   updatePaymentSettings: (settings: PaymentSettings) => void;
-  submitCoursePaymentWithUtr: (course: Course, studentPhone: string, utrNumber: string) => Promise<{ success: boolean; orderId: string }>;
+  submitCoursePaymentWithUtr: (course: Course, studentPhone: string, utrNumber: string, appliedWalletDiscount?: number) => Promise<{ success: boolean; orderId: string }>;
+  payCourseWithWallet: (course: Course) => Promise<{ success: boolean; orderId: string }>;
+  addReferralReward: (amount?: number) => void;
+  isReferModalOpen: boolean;
+  setIsReferModalOpen: (open: boolean) => void;
   approveOrderAndUnlockCourse: (orderId: string) => void;
   rejectOrder: (orderId: string) => void;
   opportunities: Opportunity[];
@@ -357,6 +361,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [adminOnlineStatus]);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isReferModalOpen, setIsReferModalOpen] = useState(false);
 
   const loginAsUser = (targetUser: User) => {
     setUser(targetUser);
@@ -501,23 +506,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const submitCoursePaymentWithUtr = async (
     course: Course,
     studentPhone: string,
-    utrNumber: string
+    utrNumber: string,
+    appliedWalletDiscount: number = 0
   ): Promise<{ success: boolean; orderId: string }> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const orderId = `upi_${Date.now().toString().slice(-6)}_${Math.random().toString(36).substring(2, 6)}`;
+        const finalPayable = Math.max(0, course.price - appliedWalletDiscount);
         
+        // If wallet discount was used, deduct it from user balance
+        if (appliedWalletDiscount > 0 && user.walletBalance >= appliedWalletDiscount) {
+          const updatedBal = Math.max(0, user.walletBalance - appliedWalletDiscount);
+          const updatedUser = { ...user, walletBalance: updatedBal };
+          setUser(updatedUser);
+          setAllUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+        }
+
         const newOrder: OrderRecord = {
           id: `ord_${Date.now()}`,
           orderId,
           courseId: course.id,
           courseTitle: course.title,
-          amount: course.price,
+          amount: finalPayable,
           studentId: user.id,
           studentName: user.name,
           studentEmail: user.email,
           studentPhone: studentPhone || user.phone || '+91 98765 43210',
-          paymentMethod: 'UPI',
+          paymentMethod: appliedWalletDiscount > 0 ? 'Wallet' : 'UPI',
           paymentGateway: 'UPI_QR',
           utrNumber: utrNumber.trim(),
           status: 'PENDING_VERIFICATION',
@@ -530,7 +545,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         const studentNotif: NotificationItem = {
           id: `notif_${Date.now()}`,
           title: `⏳ Payment Submitted: ${course.title}`,
-          message: `Your payment (UTR: ${utrNumber}) is under verification. Course will unlock as soon as funds arrive in creator account.`,
+          message: `Your payment of ₹${finalPayable} (UTR: ${utrNumber}) is under verification. Course will unlock as soon as funds arrive in creator account.`,
           category: 'COURSE',
           categoryLabel: 'Payment Submitted',
           deepLink: `/courses/${course.id}`,
@@ -541,8 +556,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         // Notification for Admin
         const adminNotif: NotificationItem = {
           id: `notif_admin_${Date.now()}`,
-          title: `💰 New UPI Order: ₹${course.price} for ${course.title}`,
-          message: `Student: ${user.name} (${studentPhone}). UTR Number: ${utrNumber}. Verify bank credit and approve in Admin panel.`,
+          title: `💰 New UPI Order: ₹${finalPayable} for ${course.title}`,
+          message: `Student: ${user.name} (${studentPhone}). UTR: ${utrNumber}. Wallet Discount applied: ₹${appliedWalletDiscount}. Verify bank credit.`,
           category: 'ANNOUNCEMENT',
           categoryLabel: 'New Sale',
           deepLink: `/admin`,
@@ -555,6 +570,94 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         resolve({ success: true, orderId });
       }, 600);
     });
+  };
+
+  const payCourseWithWallet = async (course: Course): Promise<{ success: boolean; orderId: string }> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if ((user.walletBalance || 0) < course.price) {
+          resolve({ success: false, orderId: '' });
+          return;
+        }
+
+        const orderId = `wal_${Date.now().toString().slice(-6)}_${Math.random().toString(36).substring(2, 6)}`;
+        const updatedBalance = Math.max(0, (user.walletBalance || 0) - course.price);
+        const updatedEnrolled = user.enrolledCourseIds.includes(course.id)
+          ? user.enrolledCourseIds
+          : [...user.enrolledCourseIds, course.id];
+
+        const updatedUser: User = {
+          ...user,
+          walletBalance: updatedBalance,
+          enrolledCourseIds: updatedEnrolled
+        };
+
+        setUser(updatedUser);
+        setAllUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+
+        // Create completed order
+        const newOrder: OrderRecord = {
+          id: `ord_${Date.now()}`,
+          orderId,
+          courseId: course.id,
+          courseTitle: course.title,
+          amount: course.price,
+          studentId: user.id,
+          studentName: user.name,
+          studentEmail: user.email,
+          studentPhone: user.phone || '+91 98765 43210',
+          paymentMethod: 'Wallet',
+          paymentGateway: 'Direct',
+          status: 'SUCCESS',
+          purchasedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          verifiedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+        };
+
+        setOrders(prev => [newOrder, ...prev]);
+
+        // Success notification for student
+        const studentNotif: NotificationItem = {
+          id: `notif_${Date.now()}`,
+          title: `🎉 Course Unlocked via Referral Wallet!`,
+          message: `₹${course.price} paid from your wallet for "${course.title}". Full lifetime access unlocked!`,
+          category: 'COURSE',
+          categoryLabel: 'Course Unlocked',
+          deepLink: `/courses/${course.id}`,
+          timestamp: 'Just now',
+          read: false
+        };
+
+        setNotifications(prev => [studentNotif, ...prev]);
+        resolve({ success: true, orderId });
+      }, 400);
+    });
+  };
+
+  const addReferralReward = (amount: number = 50) => {
+    const updatedBalance = (user.walletBalance || 0) + amount;
+    const updatedReferrals = (user.referralsCount || 0) + 1;
+
+    const updatedUser: User = {
+      ...user,
+      walletBalance: updatedBalance,
+      referralsCount: updatedReferrals
+    };
+
+    setUser(updatedUser);
+    setAllUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+
+    const rewardNotif: NotificationItem = {
+      id: `notif_ref_${Date.now()}`,
+      title: `💰 ₹${amount} Referral Reward Added!`,
+      message: `A new friend downloaded & registered using your referral invite! Your wallet balance is now ₹${updatedBalance}.`,
+      category: 'ANNOUNCEMENT',
+      categoryLabel: 'Referral Bonus',
+      deepLink: '/profile',
+      timestamp: 'Just now',
+      read: false
+    };
+
+    setNotifications(prev => [rewardNotif, ...prev]);
   };
 
   const purchaseCourseWithRazorpay = async (
@@ -930,6 +1033,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setActiveChannel,
         isAuthModalOpen,
         setIsAuthModalOpen,
+        isReferModalOpen,
+        setIsReferModalOpen,
+        payCourseWithWallet,
+        addReferralReward,
         loginAsUser,
         loginWithCredentials,
         registerNewUser,
