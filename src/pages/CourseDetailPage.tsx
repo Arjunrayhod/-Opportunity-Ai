@@ -350,14 +350,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               <div className="flex items-center flex-wrap gap-2 shrink-0">
                 {activeLesson.videoUrl && (
                   <a
-                    href={activeLesson.videoUrl}
+                    href={embedUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
-                    title="Open in HD Popout Window"
+                    className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-black transition flex items-center gap-1.5 shadow-xs active:scale-95"
+                    title="100% Unblocked High Speed 1080p HD Player"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-teal-800" />
-                    <span>Popout</span>
+                    <Play className="w-3.5 h-3.5 fill-white !text-white" />
+                    <span className="!text-white">▶ Play in 1080p HD</span>
                   </a>
                 )}
                 <button
@@ -619,13 +619,26 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               </div>
             </div>
 
-            <button
-              onClick={() => setIsTheaterOpen(false)}
-              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0 shadow-2xs"
-            >
-              <X className="w-4 h-4" />
-              <span>Exit Fullscreen</span>
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={embedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-black transition flex items-center gap-1.5 shadow-xs active:scale-95"
+                title="Open 100% Unblocked 1080p HD Player"
+              >
+                <Play className="w-3.5 h-3.5 fill-white !text-white" />
+                <span className="!text-white">▶ 1080p Stream</span>
+              </a>
+
+              <button
+                onClick={() => setIsTheaterOpen(false)}
+                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0 shadow-2xs"
+              >
+                <X className="w-4 h-4" />
+                <span>Exit Fullscreen</span>
+              </button>
+            </div>
           </div>
 
           {/* YouTube-Style Video Player (Top-Anchored on Mobile, Centered on Desktop) */}
