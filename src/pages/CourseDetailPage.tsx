@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Play, Pause, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, Maximize2, Minimize2, Smartphone, Sparkles, X, ExternalLink, RotateCcw } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RazorpayModal } from '../components/payment/RazorpayModal';
@@ -52,7 +52,31 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
   const [isPlaying, setIsPlaying] = useState(true);
   const [gestureFeedback, setGestureFeedback] = useState<'play' | 'pause' | null>(null);
   const lastTapRef = useRef<number>(0);
-  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>(['lsn_01', 'lsn_02']);
+
+  // Permanent Storage Key for Completed Lessons per Course & User
+  const storageKey = `opportunity_completed_lessons_${user.id}_${course.id}`;
+
+  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // ignore
+    }
+    return ['lsn_01', 'lsn_02'];
+  });
+
+  // Save to permanent storage whenever lessons are marked
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(completedLessonIds));
+    } catch (e) {
+      console.error('Failed to save completed lessons', e);
+    }
+  }, [completedLessonIds, storageKey]);
+
   const [quizSelectedOption, setQuizSelectedOption] = useState<number | null>(null);
   const [showQuizResult, setShowQuizResult] = useState(false);
 
@@ -85,9 +109,13 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
   };
 
   const handleLessonComplete = (lessonId: string) => {
-    if (!completedLessonIds.includes(lessonId)) {
-      setCompletedLessonIds(prev => [...prev, lessonId]);
-    }
+    setCompletedLessonIds(prev => {
+      const updated = prev.includes(lessonId) ? prev : [...prev, lessonId];
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
   };
 
   return (
@@ -572,26 +600,26 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
         onClose={() => setIsCertModalOpen(false)}
       />
 
-      {/* 4. Fullscreen In-App Mobile Theater Studio Modal (YouTube Mobile App Style) */}
+      {/* 4. Fullscreen In-App Mobile Theater Studio Modal (Strict Light Theme) */}
       {isTheaterOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between select-none animate-in fade-in duration-200">
-          {/* Theater Header */}
-          <div className="flex items-center justify-between p-3 bg-slate-900 border-b border-slate-800 shrink-0">
-            <div className="flex items-center gap-2 overflow-hidden">
-              <div className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
-                <Play className="w-4 h-4 fill-teal-400" />
+        <div className="fixed inset-0 z-50 bg-slate-100 flex flex-col justify-between select-none animate-in fade-in duration-200">
+          {/* Theater Header (Light Theme) */}
+          <div className="flex items-center justify-between p-3 sm:p-3.5 bg-white border-b border-slate-200 shadow-2xs shrink-0">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center shrink-0 border border-teal-200">
+                <Play className="w-4 h-4 fill-teal-800 text-teal-800 ml-0.5" />
               </div>
               <div className="truncate">
-                <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block">
+                <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider block">
                   Module {activeLessonIndex + 1} of {course.lessons.length} • HD Studio
                 </span>
-                <h4 className="text-xs sm:text-sm font-bold text-white truncate">{activeLesson.title}</h4>
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate">{activeLesson.title}</h4>
               </div>
             </div>
 
             <button
               onClick={() => setIsTheaterOpen(false)}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0 shadow-2xs"
             >
               <X className="w-4 h-4" />
               <span>Exit Fullscreen</span>
@@ -599,7 +627,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
           </div>
 
           {/* YouTube-Style Video Player (Top-Anchored on Mobile, Centered on Desktop) */}
-          <div className="w-full bg-black shrink-0 relative aspect-video max-h-[60vh] sm:max-h-[70vh] flex items-center justify-center overflow-hidden">
+          <div className="w-full bg-black shrink-0 relative aspect-video max-h-[55vh] sm:max-h-[65vh] flex items-center justify-center overflow-hidden shadow-md">
             {/* DRM Anti-Piracy Watermark */}
             <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
@@ -639,25 +667,25 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             )}
           </div>
 
-          {/* Theater Bottom Bar Controls */}
-          <div className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-900 border-t border-slate-800 shrink-0">
+          {/* Theater Bottom Bar Controls (Light Theme) */}
+          <div className="flex items-center justify-between gap-2 p-2.5 sm:p-3 bg-white border-y border-slate-200 shadow-2xs shrink-0">
             <button
               disabled={activeLessonIndex === 0}
               onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
-              className="px-3 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="px-3 sm:px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed border border-slate-200 transition shadow-2xs"
             >
               Previous
             </button>
 
             <button
               onClick={() => handleLessonComplete(activeLesson.id)}
-              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs ${
                 completedLessonIds.includes(activeLesson.id)
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-teal-700 hover:bg-teal-600 text-white'
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
               }`}
             >
-              <CheckCircle2 className="w-3.5 h-3.5" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>{completedLessonIds.includes(activeLesson.id) ? 'Completed' : 'Mark Done'}</span>
             </button>
 
@@ -667,18 +695,21 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 handleLessonComplete(activeLesson.id);
                 setActiveLessonIndex(prev => Math.min(course.lessons.length - 1, prev + 1));
               }}
-              className="px-3 sm:px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+              className="px-3.5 sm:px-5 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-xs"
             >
-              <span>Next</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span className="!text-white">Next</span>
+              <ArrowRight className="w-3.5 h-3.5 !text-white" />
             </button>
           </div>
 
-          {/* YouTube-Style Scrollable Module Playlist Below Video in Theater */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 bg-slate-950 space-y-2">
+          {/* YouTube-Style Scrollable Module Playlist Below Video in Theater (Light Theme) */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 bg-[#F8F9FA] space-y-2.5">
             <div className="flex items-center justify-between pb-1">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
                 Up Next In This Course ({course.lessons.length} Modules)
+              </span>
+              <span className="text-[11px] font-bold text-slate-500">
+                {course.durationHours} hrs total
               </span>
             </div>
 
@@ -689,32 +720,34 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 <button
                   key={lesson.id}
                   onClick={() => setActiveLessonIndex(idx)}
-                  className={`w-full p-2.5 sm:p-3 rounded-2xl flex items-center justify-between gap-3 text-left transition border ${
+                  className={`w-full p-3 rounded-2xl flex items-center justify-between gap-3 text-left transition ${
                     isCurrent
-                      ? 'bg-teal-950/70 border-teal-500/60 text-white'
-                      : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:bg-slate-800'
+                      ? 'bg-teal-50 border-2 border-[#003539] text-teal-950 shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-800 hover:border-teal-300 hover:bg-teal-50/30 shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-black ${
                       isCurrent
-                        ? 'bg-teal-500 text-slate-950'
+                        ? 'bg-[#003539] text-white shadow-xs'
                         : isDone
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : 'bg-slate-100 text-slate-600 border border-slate-200'
                     }`}>
-                      {isDone ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
+                      {isDone ? <CheckCircle2 className="w-4 h-4 text-emerald-700" /> : idx + 1}
                     </div>
                     <div className="truncate">
-                      <p className={`text-xs font-bold truncate ${isCurrent ? 'text-teal-300' : 'text-slate-200'}`}>
+                      <p className={`text-xs font-bold truncate ${isCurrent ? 'text-teal-950 font-extrabold' : 'text-slate-800'}`}>
                         {lesson.title}
                       </p>
-                      <span className="text-[10px] text-slate-500">{lesson.durationMinutes} mins • {lesson.type.toUpperCase()}</span>
+                      <span className="text-[10px] text-slate-500 font-medium">
+                        {lesson.durationMinutes} mins • {lesson.type.toUpperCase()}
+                      </span>
                     </div>
                   </div>
 
                   {isCurrent && (
-                    <span className="px-2 py-0.5 rounded-md bg-teal-500/20 border border-teal-400/40 text-[9px] font-black text-teal-300 uppercase tracking-wider shrink-0">
+                    <span className="px-2.5 py-0.5 rounded-md bg-[#003539] text-white text-[9px] font-black uppercase tracking-wider shrink-0 shadow-2xs">
                       Now Playing
                     </span>
                   )}
