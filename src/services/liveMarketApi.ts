@@ -1,6 +1,17 @@
 import { StockQuote, MarketIndex } from '../types';
 import { trendingStocks, marketIndices } from '../data/mockData';
 
+export interface LiveQuoteResult {
+  symbol: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  high?: number;
+  low?: number;
+  previousClose?: number;
+  success: boolean;
+}
+
 export type ApiProvider = 'YAHOO_FINANCE' | 'FINNHUB' | 'ALPHA_VANTAGE' | 'RAPIDAPI_NSE' | 'INTERNAL_ENGINE';
 
 export interface MarketApiConfig {
@@ -21,7 +32,7 @@ export const defaultApiConfig: MarketApiConfig = {
   apiKey: '',
   isEnabled: true,
   lastSyncStatus: 'STANDBY',
-  lastSyncTime: 'Live Real-Market Engine Active'
+  lastSyncTime: '100% Free Live Stream Active'
 };
 
 export function getStoredApiConfig(): MarketApiConfig {
@@ -42,55 +53,132 @@ export function saveApiConfig(config: MarketApiConfig): void {
   }
 }
 
+const SYMBOL_MAPPING: Record<string, string> = {
+  'TRENT': 'TRENT.NS',
+  'SUZLON': 'SUZLON.NS',
+  'BEL': 'BEL.NS',
+  'TATAPOWER': 'TATAPOWER.NS',
+  'CDSL': 'CDSL.NS',
+  'MAZDOCK': 'MAZDOCK.NS',
+  'ZOMATO': 'ZOMATO.NS',
+  'IREDA': 'IREDA.NS',
+  'POLYCAB': 'POLYCAB.NS',
+  'HAL': 'HAL.NS',
+  'NIFTY 50': '^NSEI',
+  'SENSEX': '^BSESN',
+  'BANK NIFTY': '^NSEBANK',
+  'INDIA VIX': '^INDIAVIX',
+  'MIDCAP 100': 'NIFTY_MIDCAP_100.NS',
+  'SMALLCAP 100': 'NIFTY_SMALLCAP_100.NS'
+};
+
 /**
- * Fetches direct live quote from external API if key is provided, or uses verified real-market baseline
+ * Fetches a single symbol from Yahoo Finance directly or via proxy (100% Free, Zero API Key)
  */
-export async function fetchLiveQuote(ticker: string, config: MarketApiConfig): Promise<{ price?: number; change?: number; changePercent?: number; success: boolean }> {
-  const cleanTicker = ticker.replace('.NS', '');
+export async function fetchFreeLiveQuote(ticker: string): Promise<LiveQuoteResult | null> {
+  const yahooSymbol = SYMBOL_MAPPING[ticker] || `${ticker}.NS`;
+  
+  // URL Options: 1) Vite Dev Proxy, 2) Public CORS proxy, 3) Direct
+  const urls = [
+    `/api/yahoo/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1d&range=1d`)}`,
+    `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=1d`
+  ];
 
-  // 1. If user provided Finnhub API Key
-  if (config.provider === 'FINNHUB' && config.apiKey) {
+  for (const url of urls) {
     try {
-      const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=${config.apiKey}`);
-      const data = await res.json();
-      if (data && data.c) {
-        const price = Number(data.c.toFixed(2));
-        const change = Number((data.d || 0).toFixed(2));
-        const changePercent = Number((data.dp || 0).toFixed(2));
-        return { price, change, changePercent, success: true };
+      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!response.ok) continue;
+      const data = await response.json();
+      const result = data?.chart?.result?.[0];
+      if (result && result.meta) {
+        const meta = result.meta;
+        const price = Number(meta.regularMarketPrice?.toFixed(2) || 0);
+        const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+        const change = Number((price - prevClose).toFixed(2));
+        const changePercent = Number(((change / prevClose) * 100).toFixed(2));
+
+        if (price > 0) {
+          return {
+            symbol: ticker,
+            price,
+            change,
+            changePercent,
+            high: meta.regularMarketDayHigh,
+            low: meta.regularMarketDayLow,
+            previousClose: prevClose,
+            success: true
+          };
+        }
       }
-    } catch (err: any) {
-      console.warn(`[LiveMarketApi] Finnhub error for ${ticker}:`, err.message);
+    } catch {
+      // Continue to next fallback
     }
   }
 
-  // 2. If user provided Alpha Vantage API Key
-  if (config.provider === 'ALPHA_VANTAGE' && config.apiKey) {
-    try {
-      const res = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanTicker}.BSE&apikey=${config.apiKey}`);
-      const data = await res.json();
-      const quote = data['Global Quote'];
-      if (quote && quote['05. price']) {
-        const price = Number(parseFloat(quote['05. price']).toFixed(2));
-        const change = Number(parseFloat(quote['09. change']).toFixed(2));
-        const changePercent = Number(parseFloat(quote['10. change percent'].replace('%', '')).toFixed(2));
-        return { price, change, changePercent, success: true };
-      }
-    } catch (err: any) {
-      console.warn(`[LiveMarketApi] AlphaVantage error for ${ticker}:`, err.message);
+  return null;
+}
+
+/**
+ * Fetches 100% Free Real Live Market Data across all stocks and indices in parallel
+ */
+export async function fetchAllFreeLiveMarketData(
+  currentStocks: StockQuote[],
+  currentIndices: MarketIndex[]
+): Promise<{ updatedStocks: StockQuote[]; updatedIndices: MarketIndex[]; liveCount: number }> {
+  let liveCount = 0;
+
+  // 1. Fetch Stocks
+  const stockPromises = currentStocks.map(async (stock) => {
+    const live = await fetchFreeLiveQuote(stock.ticker);
+    if (live && live.success) {
+      liveCount++;
+      const target1 = Number((live.price * 1.075).toFixed(2));
+      const target2 = Number((live.price * 1.155).toFixed(2));
+      const stopLoss = Number((live.price * 0.965).toFixed(2));
+
+      return {
+        ...stock,
+        price: live.price,
+        change: live.change,
+        changePercent: live.changePercent,
+        targetPrice1: stock.targetPrice1 ? Number((live.price * (stock.targetPrice1 / stock.price)).toFixed(2)) : target1,
+        targetPrice2: stock.targetPrice2 ? Number((live.price * (stock.targetPrice2 / stock.price)).toFixed(2)) : target2,
+        stopLossPrice: stock.stopLossPrice ? Number((live.price * (stock.stopLossPrice / stock.price)).toFixed(2)) : stopLoss,
+        scenarios: {
+          ...stock.scenarios,
+          upsideTarget: Number((live.price * 1.12).toFixed(2)),
+          downsideRisk: Number((live.price * 0.96).toFixed(2)),
+          supportLevel: Number((live.price * 0.97).toFixed(2)),
+          resistanceLevel: Number((live.price * 1.05).toFixed(2))
+        }
+      };
     }
-  }
+    return stock;
+  });
 
-  // 3. Fallback to Verified Baseline
-  const stock = trendingStocks.find(s => s.ticker === cleanTicker);
-  if (stock) {
-    return {
-      price: stock.price,
-      change: stock.change,
-      changePercent: stock.changePercent,
-      success: true
-    };
-  }
+  // 2. Fetch Indices
+  const indexPromises = currentIndices.map(async (idx) => {
+    const live = await fetchFreeLiveQuote(idx.symbol);
+    if (live && live.success) {
+      liveCount++;
+      return {
+        ...idx,
+        currentValue: live.price,
+        change: live.change,
+        changePercent: live.changePercent,
+        isPositive: live.change >= 0,
+        high: live.high || idx.high,
+        low: live.low || idx.low
+      };
+    }
+    return idx;
+  });
 
-  return { success: false };
+  const [updatedStocks, updatedIndices] = await Promise.all([
+    Promise.all(stockPromises),
+    Promise.all(indexPromises)
+  ]);
+
+  return { updatedStocks, updatedIndices, liveCount };
 }

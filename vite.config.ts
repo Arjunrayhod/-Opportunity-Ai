@@ -8,4 +8,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      '/api/yahoo': {
+        target: 'https://query1.finance.yahoo.com/v8/finance/chart',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/yahoo/, ''),
+      },
+    },
+  },
 });

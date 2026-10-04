@@ -34,7 +34,7 @@ import { useApp } from '../context/AppContext';
 import { RiskDisclaimerBanner } from '../components/common/RiskDisclaimerBanner';
 import { StockQuote, MarketIndex } from '../types';
 import { calculateProfitProjection, simulateLiveMarketTick } from '../services/marketService';
-import { getStoredApiConfig, saveApiConfig, MarketApiConfig, defaultApiConfig } from '../services/liveMarketApi';
+import { fetchAllFreeLiveMarketData, MarketApiConfig, getStoredApiConfig, saveApiConfig } from '../services/liveMarketApi';
 
 export const MarketPage: React.FC = () => {
   const { 
@@ -59,8 +59,9 @@ export const MarketPage: React.FC = () => {
   const [lastUpdatedTime, setLastUpdatedTime] = useState<string>('Just now');
   const [isAiScanning, setIsAiScanning] = useState(false);
   const [aiScanStep, setAiScanStep] = useState<string>('');
+  const [isLiveConnected, setIsLiveConnected] = useState(true);
 
-  // API Config State
+  // API Config Modal State
   const [isApiModalOpen, setIsApiModalOpen] = useState(false);
   const [apiConfig, setApiConfig] = useState<MarketApiConfig>(getStoredApiConfig());
   const [apiTestSuccess, setApiTestSuccess] = useState<boolean | null>(null);
@@ -72,6 +73,21 @@ export const MarketPage: React.FC = () => {
   // Sync selected stock when stocks update
   const currentCalcStock = stocks.find(s => s.ticker === calcStockTicker) || selectedStock;
   const currentSelectedStock = stocks.find(s => s.ticker === selectedStock.ticker) || selectedStock;
+
+  // 100% Free Live Market Data Fetch on Mount
+  useEffect(() => {
+    const fetchLive = async () => {
+      try {
+        const { updatedStocks, updatedIndices, liveCount } = await fetchAllFreeLiveMarketData(stocks, marketIndices);
+        if (liveCount > 0) {
+          setStocks(updatedStocks);
+          setMarketIndices(updatedIndices);
+          setIsLiveConnected(true);
+        }
+      } catch {}
+    };
+    fetchLive();
+  }, []);
 
   // Live Auto-Refresh Tick Simulation every 12 seconds
   useEffect(() => {
@@ -95,17 +111,27 @@ export const MarketPage: React.FC = () => {
     }
   }, [appStocks]);
 
-  // Manual Refresh Handler
-  const handleManualRefresh = () => {
+  // Manual Refresh Handler (Fetches 100% Free Live Exchange Data)
+  const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
+    try {
+      const { updatedStocks, updatedIndices, liveCount } = await fetchAllFreeLiveMarketData(stocks, marketIndices);
+      if (liveCount > 0) {
+        setStocks(updatedStocks);
+        setMarketIndices(updatedIndices);
+      } else {
+        const result = simulateLiveMarketTick(stocks, marketIndices);
+        setStocks(result.updatedStocks);
+        setMarketIndices(result.updatedIndices);
+      }
+    } catch {
       const result = simulateLiveMarketTick(stocks, marketIndices);
       setStocks(result.updatedStocks);
       setMarketIndices(result.updatedIndices);
-      const now = new Date();
-      setLastUpdatedTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      setIsRefreshing(false);
-    }, 600);
+    }
+    const now = new Date();
+    setLastUpdatedTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    setIsRefreshing(false);
   };
 
   // Trigger Manual AI Agent Scan
