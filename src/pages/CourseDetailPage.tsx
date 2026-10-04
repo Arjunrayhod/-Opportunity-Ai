@@ -20,6 +20,24 @@ const getDriveFolderId = (url?: string) => {
   return url;
 };
 
+const getVideoEmbedUrl = (lesson: Lesson, course: { category: string; title: string }) => {
+  if (lesson.videoUrl && lesson.videoUrl.includes('youtube') && !lesson.videoUrl.includes('dQw4w9WgXcQ')) {
+    return lesson.videoUrl;
+  }
+  
+  const categoryVideoMap: Record<string, string> = {
+    'MARKETING_BIZ': 'https://www.youtube-nocookie.com/embed/nU-IIXBWlS4?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'YOUTUBE_GROWTH': 'https://www.youtube-nocookie.com/embed/1_0b4m5558g?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'AI_EARNING': 'https://www.youtube-nocookie.com/embed/0ukjZ_7n2oQ?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'VIDEO_EDITING': 'https://www.youtube-nocookie.com/embed/3O2fA7Qy7pE?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'TRADING_FINANCE': 'https://www.youtube-nocookie.com/embed/aircAruvnKk?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'CYBERSECURITY': 'https://www.youtube-nocookie.com/embed/inWWhr5tnEA?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+    'FITNESS_HEALTH': 'https://www.youtube-nocookie.com/embed/gC_L9qAHVJ8?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
+  };
+
+  return categoryVideoMap[course.category] || 'https://www.youtube-nocookie.com/embed/nU-IIXBWlS4?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3';
+};
+
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, onNavigate }) => {
   const { courses, user } = useApp();
   const course = courses.find((c) => c.id === courseId) || courses[0];
@@ -86,18 +104,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             {/* Video Player */}
             {activeLesson.type === 'video' ? (
               <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
-                <video
-                  id="inAppVideoPlayer"
-                  key={activeLesson.id}
-                  controls
-                  playsInline
-                  autoPlay
-                  poster={course.thumbnail}
-                  className="w-full h-full object-contain bg-black"
-                  src={activeLesson.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'}
-                >
-                  Your browser does not support HTML5 video streaming.
-                </video>
+                <iframe
+                  key={`${course.id}_${activeLesson.id}`}
+                  src={getVideoEmbedUrl(activeLesson, course)}
+                  title={activeLesson.title}
+                  className="w-full h-full border-0 relative z-10"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
             ) : activeLesson.type === 'pdf' ? (
               <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
@@ -208,25 +222,22 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             {isLessonUnlocked ? (
               <div className="flex items-center gap-2 shrink-0">
                 <button
-                  onClick={() => {
-                    handleLessonComplete(activeLesson.id);
-                    const videoEl = document.getElementById('inAppVideoPlayer') as HTMLVideoElement;
-                    if (videoEl) {
-                      if (videoEl.paused) videoEl.play();
-                      else videoEl.pause();
-                    }
-                  }}
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold flex items-center gap-1.5 transition shadow-2xs active:scale-95"
-                >
-                  <Play className="w-3.5 h-3.5 fill-white !text-white" />
-                  <span className="!text-white">Play / Pause</span>
-                </button>
-                <button
                   disabled={activeLessonIndex === 0}
                   onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition shadow-2xs"
                 >
                   Previous
+                </button>
+                <button
+                  onClick={() => handleLessonComplete(activeLesson.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-2xs flex items-center gap-1.5 ${
+                    completedLessonIds.includes(activeLesson.id)
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{completedLessonIds.includes(activeLesson.id) ? 'Completed' : 'Mark Done'}</span>
                 </button>
                 <button
                   disabled={activeLessonIndex === course.lessons.length - 1}
@@ -236,7 +247,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                   }}
                   className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-2xs"
                 >
-                  <span className="!text-white">Next</span>
+                  <span className="!text-white">Next Module</span>
                   <ArrowRight className="w-3.5 h-3.5 !text-white" />
                 </button>
               </div>
