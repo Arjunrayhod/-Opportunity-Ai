@@ -111,7 +111,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                   src={getVideoEmbedUrl(activeLesson, course)}
                   title={activeLesson.title}
                   className="w-full h-full border-0 relative z-10"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope"
                   allowFullScreen
                 />
               </div>
