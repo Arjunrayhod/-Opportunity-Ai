@@ -72,16 +72,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
               <span className="text-[10px] hidden sm:inline">Log In</span>
             </button>
 
-            {/* Quick Super Admin CMS Button */}
+            {/* Admin CMS Button */}
             <button
-              onClick={() => {
-                if (user.role === 'SUPER_ADMIN') {
-                  onNavigate('/admin');
-                } else {
-                  switchRole('SUPER_ADMIN');
-                  onNavigate('/admin');
-                }
-              }}
+              onClick={() => onNavigate('/admin')}
               title="Open Super Admin CMS"
               className={`px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1 transition active:scale-95 ${
                 user.role === 'SUPER_ADMIN'

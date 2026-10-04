@@ -38,10 +38,16 @@ import {
   ExternalLink,
   Briefcase,
   MapPin,
-  FileText
+  FileText,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  ShieldAlert,
+  KeyRound
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Course, CourseCategory, Lesson, OrderRecord, User, UserRole, Opportunity } from '../types';
+import { adminUser } from '../data/mockData';
 
 interface AdminDashboardPageProps {
   onNavigate: (path: string) => void;
@@ -76,8 +82,18 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     grantCourseToStudent,
     revokeCourseFromStudent,
     deleteStudent,
+    loginAsUser,
     user
   } = useApp();
+
+  // Master Admin Security Gate State (Restricted by specific ID & Password)
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    return user.role === 'SUPER_ADMIN' && (user.email === 'satvikbhai@opportunity.ai' || user.email === 'satvikbhai@ybl');
+  });
+  const [adminIdInput, setAdminIdInput] = useState('');
+  const [adminPassInput, setAdminPassInput] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const [activeTab, setActiveTab] = useState<
     'OVERVIEW' | 'COURSES' | 'GIGS' | 'USERS' | 'CHATS' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'
@@ -466,6 +482,144 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     reader.readAsText(file);
   };
 
+  const handleAdminAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+
+    const cleanId = adminIdInput.trim().toLowerCase();
+    const cleanPass = adminPassInput.trim();
+
+    // Valid admin identifiers
+    const validIds = [
+      'satvikbhai@opportunity.ai',
+      'satvikbhai@ybl',
+      'satvikbhai',
+      'satvik',
+      'admin',
+      '9876543210'
+    ];
+
+    // Valid admin master passwords
+    const validPasswords = [
+      'satvik@123',
+      'admin123',
+      'satvik2026',
+      'admin@123',
+      'opportunity@admin',
+      'satvikbhai'
+    ];
+
+    const isIdValid = validIds.includes(cleanId) || cleanId === adminUser.email.toLowerCase() || (adminUser.phone && cleanId === adminUser.phone.replace(/[^0-9]/g, ''));
+    const isPassValid = validPasswords.includes(cleanPass);
+
+    if (isIdValid && isPassValid) {
+      loginAsUser(adminUser);
+      setIsAdminUnlocked(true);
+      setAuthError('');
+    } else if (!isIdValid) {
+      setAuthError('❌ Invalid Admin ID or Email. Only the owner (Satvik Bhai) can log in.');
+    } else {
+      setAuthError('❌ Incorrect Admin Master Password. Access denied.');
+    }
+  };
+
+  const handleLockAdminPortal = () => {
+    setIsAdminUnlocked(false);
+    setAdminIdInput('');
+    setAdminPassInput('');
+    onNavigate('/');
+  };
+
+  // If Admin is not unlocked or not SUPER_ADMIN, challenge with Security Lock Screen
+  if (!isAdminUnlocked || user.role !== 'SUPER_ADMIN') {
+    return (
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 text-slate-900 text-center">
+          {/* Top Shield Icon */}
+          <div className="w-16 h-16 rounded-3xl bg-[#003539] border-2 border-teal-400/40 text-teal-300 mx-auto flex items-center justify-center shadow-lg shadow-teal-900/10">
+            <LockKeyhole className="w-8 h-8 text-teal-300" />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-black uppercase tracking-wider">
+              <ShieldAlert className="w-3 h-3 text-purple-600" />
+              Restricted Admin Portal
+            </div>
+            <h2 className="text-xl font-black text-slate-900">Admin Security Verification</h2>
+            <p className="text-xs text-slate-500 max-w-xs mx-auto">
+              This master control CMS is protected. Enter your authorized Admin ID and Master Password to unlock.
+            </p>
+          </div>
+
+          <form onSubmit={handleAdminAuthSubmit} className="space-y-4 text-left text-xs">
+            <div>
+              <label className="font-bold text-slate-700 block mb-1.5">
+                Admin Username or Registered Email
+              </label>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-3 focus-within:border-teal-600 focus-within:bg-white transition">
+                <KeyRound className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  required
+                  value={adminIdInput}
+                  onChange={(e) => setAdminIdInput(e.target.value)}
+                  placeholder="e.g. satvikbhai@opportunity.ai or satvik"
+                  className="bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none w-full font-medium"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1.5">
+                Master Security Password
+              </label>
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-2xl px-3.5 py-3 focus-within:border-teal-600 focus-within:bg-white transition">
+                <Lock className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={adminPassInput}
+                  onChange={(e) => setAdminPassInput(e.target.value)}
+                  placeholder="••••••••"
+                  className="bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none w-full font-mono"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-slate-400 hover:text-slate-600 transition shrink-0"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {authError && (
+              <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium">
+                {authError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-2xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition flex items-center justify-center gap-2"
+            >
+              <Unlock className="w-4 h-4" />
+              <span>Verify & Unlock Admin CMS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onNavigate('/')}
+              className="w-full py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition text-center"
+            >
+              ← Back to Student Dashboard
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-24 max-w-6xl mx-auto text-slate-900">
       {/* Admin Top Header (Light Theme High Contrast) */}
@@ -487,11 +641,21 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             Platform Master Control & CMS Portal
           </h1>
           <p className="text-xs text-teal-100/90 mt-0.5 max-w-xl">
-            Upload & edit courses, update thumbnails/names, manage students, verify UPI payments, and reply to chats.
+            Upload & edit courses, post student gigs, manage students, verify UPI payments, and reply to chats.
           </p>
         </div>
 
         <div className="flex items-center flex-wrap gap-2">
+          {/* Lock CMS Button */}
+          <button
+            onClick={handleLockAdminPortal}
+            title="Lock Admin Portal & Return"
+            className="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-100 font-bold text-xs flex items-center gap-1.5 transition active:scale-95"
+          >
+            <Lock className="w-3.5 h-3.5 text-rose-300" />
+            <span>Lock CMS</span>
+          </button>
+
           {/* Online/Offline Status Toggle for Admin */}
           <button
             onClick={() => setAdminOnlineStatus(!adminOnlineStatus)}
@@ -555,8 +719,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
                 isActive
-                  ? 'bg-[#003539] text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  ? 'bg-[#003539] text-white shadow-md font-black'
+                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-slate-950 border border-slate-200/80 shadow-2xs'
               }`}
             >
               <span>{tab.label}</span>

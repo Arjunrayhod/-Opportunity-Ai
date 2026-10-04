@@ -81,10 +81,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
           </div>
         </div>
         <button
-          onClick={() => {
-            switchRole('SUPER_ADMIN');
-            onNavigate('/admin');
-          }}
+          onClick={() => onNavigate('/admin')}
           className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition shrink-0"
         >
           Open CMS
