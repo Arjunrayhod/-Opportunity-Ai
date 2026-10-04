@@ -58,16 +58,43 @@ nav.fixed {
   border-top: 1px solid var(--border-color) !important;
 }
 
-/* =========================================================
-   LIGHT THEME PRECISION TYPOGRAPHY & CARD RULES
-   ========================================================= */
+@layer base {
+  h1, h2, h3, h4, h5, h6, .heading-contrast {
+    color: #0F172A;
+  }
 
-h1, h2, h3, h4, h5, h6, .heading-contrast {
-  color: #0F172A;
+  p {
+    color: #475569;
+  }
 }
 
-p {
-  color: #475569;
+.text-white {
+  color: #FFFFFF !important;
+}
+
+.text-white p,
+.text-white h1,
+.text-white h2,
+.text-white h3,
+.text-white h4,
+.text-white span {
+  color: inherit;
+}
+
+.text-teal-100 {
+  color: #CCFBF1 !important;
+}
+
+.text-teal-200 {
+  color: #99F6E4 !important;
+}
+
+.text-teal-300 {
+  color: #5EEAD4 !important;
+}
+
+.text-teal-400 {
+  color: #2DD4BF !important;
 }
 
 .text-slate-400 {

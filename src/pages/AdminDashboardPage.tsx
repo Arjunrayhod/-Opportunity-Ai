@@ -613,34 +613,35 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   return (
     <div className="space-y-6 pb-24 max-w-6xl mx-auto text-slate-900">
       {/* Admin Top Header (Light Theme High Contrast) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[#003539] text-white shadow-lg">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[#003539] border border-teal-800/50 shadow-xl">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
             <button
               onClick={() => onNavigate('/')}
-              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition"
+              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition active:scale-95"
               title="Back to App"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 text-white" />
             </button>
-            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black bg-teal-400 text-slate-950 uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black bg-teal-400 text-slate-950 uppercase tracking-wider shadow-xs">
               SUPER ADMIN MASTER CONTROL
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white mt-1.5 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black !text-white tracking-tight mt-1" style={{ color: '#FFFFFF' }}>
             Platform Master Control & CMS Portal
           </h1>
-          <p className="text-xs text-teal-100/90 mt-0.5 max-w-xl">
+          <p className="text-xs !text-teal-100 max-w-xl font-medium" style={{ color: '#CCFBF1' }}>
             Upload & edit courses, post student gigs, manage students, verify UPI payments, and reply to chats.
           </p>
         </div>
 
-        <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center flex-wrap gap-2 pt-1 sm:pt-0">
           {/* Lock CMS Button */}
           <button
             onClick={handleLockAdminPortal}
             title="Lock Admin Portal & Return"
             className="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-100 font-bold text-xs flex items-center gap-1.5 transition active:scale-95"
+            style={{ color: '#FFE4E6' }}
           >
             <Lock className="w-3.5 h-3.5 text-rose-300" />
             <span>Lock CMS</span>
@@ -651,9 +652,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             onClick={() => setAdminOnlineStatus(!adminOnlineStatus)}
             className={`px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition active:scale-95 border ${
               adminOnlineStatus
-                ? 'bg-emerald-500 text-white border-emerald-400 shadow-xs'
+                ? 'bg-emerald-500 text-white border-emerald-400 shadow-sm'
                 : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
             }`}
+            style={{ color: '#FFFFFF' }}
           >
             <span className={`w-2 h-2 rounded-full ${adminOnlineStatus ? 'bg-white animate-pulse' : 'bg-slate-300'}`} />
             <span>{adminOnlineStatus ? 'Status: ONLINE' : 'Status: OFFLINE'}</span>
@@ -681,9 +683,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
           <button
             onClick={() => setShowNotifModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
+            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition active:scale-95"
+            style={{ color: '#FFFFFF' }}
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4 text-white" />
             <span>Broadcast</span>
           </button>
         </div>
@@ -710,8 +713,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
                 isActive
                   ? 'bg-[#003539] text-white shadow-md font-black'
-                  : 'bg-white/80 hover:bg-white text-slate-700 hover:text-slate-950 border border-slate-200/80 shadow-2xs'
+                  : 'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-950 border border-slate-200 shadow-2xs'
               }`}
+              style={isActive ? { color: '#FFFFFF', backgroundColor: '#003539' } : { color: '#334155' }}
             >
               <span>{tab.label}</span>
             </button>
