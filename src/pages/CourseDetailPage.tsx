@@ -73,32 +73,95 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* Flash Sale Banner */}
       {!isEnrolled && <FlashSaleTimer />}
 
-      {/* 1. Main In-App Live Video Studio Player Screen */}
+      {/* 1. Main In-App Video Studio Player Screen */}
       <div className="rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
         {isLessonUnlocked ? (
-          <div className="relative w-full aspect-video min-h-[360px] sm:min-h-[480px] bg-slate-950 flex flex-col justify-between overflow-hidden group">
+          <div className="relative aspect-video w-full bg-black flex flex-col justify-between overflow-hidden group">
             {/* DRM Anti-Piracy Floating Watermark */}
             <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            {/* In-App Live Cloud Streaming Frame */}
-            {course.driveUrl ? (
-              <iframe
-                key={course.id}
-                src={`https://drive.google.com/embeddedfolderview?id=${getDriveFolderId(course.driveUrl)}#list`}
-                title={course.title}
-                className="w-full h-full border-0 relative z-10 bg-slate-900"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <div className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950 p-6 text-center space-y-3">
-                <Play className="w-12 h-12 text-teal-400 fill-teal-400/20" />
-                <h3 className="text-white font-bold text-base">{activeLesson.title}</h3>
-                <p className="text-xs text-slate-400">{activeLesson.textContent || course.subtitle}</p>
+            {/* Video Player */}
+            {activeLesson.type === 'video' ? (
+              <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
+                <video
+                  id="inAppVideoPlayer"
+                  key={activeLesson.id}
+                  controls
+                  playsInline
+                  autoPlay
+                  poster={course.thumbnail}
+                  className="w-full h-full object-contain bg-black"
+                  src={activeLesson.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'}
+                >
+                  Your browser does not support HTML5 video streaming.
+                </video>
               </div>
+            ) : activeLesson.type === 'pdf' ? (
+              <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
+                <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
+                  <Download className="w-7 h-7" />
+                </div>
+                <h3 className="font-bold text-slate-900 text-base">{activeLesson.title}</h3>
+                <p className="text-xs text-slate-600 max-w-sm">{activeLesson.textContent}</p>
+                <button
+                  onClick={() => handleLessonComplete(activeLesson.id)}
+                  className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition shadow-xs"
+                >
+                  <Download className="w-4 h-4 !text-white" />
+                  <span className="!text-white">Download Practice Worksheet</span>
+                </button>
+              </div>
+            ) : activeLesson.type === 'quiz' && activeLesson.quiz ? (
+              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white z-10 my-auto rounded-2xl">
+                <div className="flex items-center gap-2 text-teal-800 text-xs font-bold uppercase">
+                  <HelpCircle className="w-4 h-4 text-teal-700" />
+                  <span>Module Knowledge Check</span>
+                </div>
+                <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                  {activeLesson.quiz.question}
+                </h3>
+                <div className="space-y-2">
+                  {activeLesson.quiz.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setQuizSelectedOption(idx);
+                        setShowQuizResult(true);
+                        if (idx === activeLesson.quiz?.correctIndex) {
+                          handleLessonComplete(activeLesson.id);
+                        }
+                      }}
+                      className={`w-full p-3 rounded-xl text-left text-xs font-semibold border transition ${
+                        quizSelectedOption === idx
+                          ? idx === activeLesson.quiz?.correctIndex
+                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800'
+                            : 'bg-rose-50 border-rose-500 text-rose-800'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'
+                      }`}
+                    >
+                      <span>{String.fromCharCode(65 + idx)}. {opt}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {showQuizResult && (
+                  <div className={`p-3 rounded-xl text-xs ${
+                    quizSelectedOption === activeLesson.quiz?.correctIndex
+                      ? 'bg-emerald-50 border border-emerald-300 text-emerald-900'
+                      : 'bg-rose-50 border border-rose-300 text-rose-900'
+                  }`}>
+                    <p className="font-bold">
+                      {quizSelectedOption === activeLesson.quiz?.correctIndex ? '✅ Correct Answer!' : '❌ Incorrect'}
+                    </p>
+                    <p className="mt-1 text-[11px] opacity-90">{activeLesson.quiz?.explanation}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-6 text-slate-900 text-xs bg-white z-10 m-auto rounded-2xl">{activeLesson.textContent}</div>
             )}
           </div>
         ) : (
@@ -144,16 +207,20 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
 
             {isLessonUnlocked ? (
               <div className="flex items-center gap-2 shrink-0">
-                <a
-                  href={course.driveUrl || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => handleLessonComplete(activeLesson.id)}
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
+                <button
+                  onClick={() => {
+                    handleLessonComplete(activeLesson.id);
+                    const videoEl = document.getElementById('inAppVideoPlayer') as HTMLVideoElement;
+                    if (videoEl) {
+                      if (videoEl.paused) videoEl.play();
+                      else videoEl.pause();
+                    }
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold flex items-center gap-1.5 transition shadow-2xs active:scale-95"
                 >
                   <Play className="w-3.5 h-3.5 fill-white !text-white" />
-                  <span className="!text-white">Play Video</span>
-                </a>
+                  <span className="!text-white">Play / Pause</span>
+                </button>
                 <button
                   disabled={activeLessonIndex === 0}
                   onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
