@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Flame, BookOpen, Bookmark, Shield, Award, Settings, Bell, Phone, Mail, CheckCircle2, LogOut, ChevronRight, SunMedium } from 'lucide-react';
+import { User, Flame, BookOpen, Bookmark, Shield, Award, Settings, Bell, Phone, Mail, CheckCircle2, LogOut, ChevronRight, SunMedium, KeyRound, UserCheck } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 interface ProfilePageProps {
@@ -7,7 +7,7 @@ interface ProfilePageProps {
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
-  const { user, courses, switchRole } = useApp();
+  const { user, courses, switchRole, setIsAuthModalOpen, logoutUser } = useApp();
   const enrolledCourses = courses.filter((c) => user.enrolledCourseIds.includes(c.id));
 
   return (
@@ -20,21 +20,25 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             alt={user.name}
             className="w-16 h-16 rounded-full object-cover border-2 border-teal-500/50 shadow-xs"
           />
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg sm:text-xl font-black text-slate-900">{user.name}</h1>
-              {user.role === 'SUPER_ADMIN' && (
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg sm:text-xl font-black text-slate-900 truncate">{user.name}</h1>
+              {user.role === 'SUPER_ADMIN' ? (
                 <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-100 text-purple-700 border border-purple-300">
                   SUPER ADMIN
                 </span>
+              ) : (
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                  {user.role}
+                </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
-              <Mail className="w-3.5 h-3.5 text-slate-400" /> {user.email}
+            <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5 truncate">
+              <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {user.email}
             </p>
             {user.phone && (
               <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
-                <Phone className="w-3.5 h-3.5 text-slate-400" /> {user.phone}
+                <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" /> {user.phone}
               </p>
             )}
           </div>
@@ -81,7 +85,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             switchRole('SUPER_ADMIN');
             onNavigate('/admin');
           }}
-          className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition"
+          className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition shrink-0"
         >
           Open CMS
         </button>
@@ -149,6 +153,35 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
               {interest}
             </span>
           ))}
+        </div>
+      </div>
+
+      {/* Account Authentication & Switcher Actions */}
+      <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
+        <h3 className="text-xs font-bold text-slate-900 flex items-center gap-2">
+          <UserCheck className="w-4 h-4 text-teal-600" />
+          Account & Authentication
+        </h3>
+        <p className="text-xs text-slate-500">
+          Switch between your Student account, VIP Learner, or Super Admin, or log in with WhatsApp / Email.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-bold text-xs transition active:scale-98"
+          >
+            <KeyRound className="w-4 h-4 text-teal-600" />
+            Switch Account / Log In
+          </button>
+
+          <button
+            onClick={() => logoutUser()}
+            className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs transition active:scale-98"
+          >
+            <LogOut className="w-4 h-4 text-rose-600" />
+            Log Out
+          </button>
         </div>
       </div>
     </div>

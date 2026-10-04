@@ -67,6 +67,13 @@ interface AppContextType {
   unreadNotifsCount: number;
   activeChannel: string;
   setActiveChannel: (channel: string) => void;
+  // Auth & Account Management
+  isAuthModalOpen: boolean;
+  setIsAuthModalOpen: (open: boolean) => void;
+  loginAsUser: (targetUser: User) => void;
+  loginWithCredentials: (emailOrPhone: string) => boolean;
+  registerNewUser: (userData: { name: string; email: string; phone: string }) => User;
+  logoutUser: () => void;
   // User Actions
   switchRole: (role: UserRole) => void;
   enrollInCourse: (courseId: string) => void;
@@ -346,6 +353,101 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.ADMIN_ONLINE, JSON.stringify(adminOnlineStatus));
   }, [adminOnlineStatus]);
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const loginAsUser = (targetUser: User) => {
+    setUser(targetUser);
+    setIsAuthModalOpen(false);
+    const notif: NotificationItem = {
+      id: `notif_login_${Date.now()}`,
+      title: `👋 Welcome back, ${targetUser.name.split(' ')[0]}!`,
+      message: `You are now logged in as ${targetUser.role === 'SUPER_ADMIN' ? 'Super Admin' : targetUser.name}.`,
+      category: 'ANNOUNCEMENT',
+      categoryLabel: 'Account Login',
+      deepLink: '/profile',
+      timestamp: 'Just now',
+      read: false
+    };
+    setNotifications(prev => [notif, ...prev]);
+  };
+
+  const loginWithCredentials = (emailOrPhone: string): boolean => {
+    const clean = emailOrPhone.trim().toLowerCase();
+    const matched = allUsers.find(
+      u => u.email.toLowerCase() === clean || (u.phone && u.phone.replace(/[^0-9]/g, '').includes(clean.replace(/[^0-9]/g, '')))
+    );
+
+    if (matched) {
+      loginAsUser(matched);
+      return true;
+    }
+    return false;
+  };
+
+  const registerNewUser = (userData: { name: string; email: string; phone: string }): User => {
+    const newUser: User = {
+      id: `usr_${Date.now()}`,
+      name: userData.name.trim(),
+      email: userData.email.trim(),
+      phone: userData.phone.trim() || '+91 98765 43210',
+      avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80`,
+      role: 'USER',
+      level: 1,
+      streakDays: 1,
+      streakCoins: 50,
+      referralCode: userData.name.slice(0, 4).toUpperCase() + '99',
+      referralsCount: 0,
+      walletBalance: 25,
+      interests: ['Video Editing', 'AI Tools', 'YouTube Growth'],
+      enrolledCourseIds: [],
+      savedOpportunityIds: [],
+      watchlistTickers: ['TATAPOWER'],
+      isPremium: false
+    };
+
+    setAllUsers(prev => [newUser, ...prev]);
+    setUser(newUser);
+    setIsAuthModalOpen(false);
+
+    const welcomeNotif: NotificationItem = {
+      id: `notif_welcome_${Date.now()}`,
+      title: `🎉 Welcome to Opportunity AI, ${newUser.name}!`,
+      message: `Your account has been created. 50 bonus coins have been added to your profile!`,
+      category: 'ANNOUNCEMENT',
+      categoryLabel: 'New Account',
+      deepLink: '/profile',
+      timestamp: 'Just now',
+      read: false
+    };
+    setNotifications(prev => [welcomeNotif, ...prev]);
+
+    return newUser;
+  };
+
+  const logoutUser = () => {
+    // Switch to default user / guest and prompt login modal
+    setUser({
+      id: 'usr_guest',
+      name: 'Guest Learner',
+      email: 'guest@opportunity.ai',
+      phone: '',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      role: 'USER',
+      level: 1,
+      streakDays: 0,
+      streakCoins: 0,
+      referralCode: 'GUEST',
+      referralsCount: 0,
+      walletBalance: 0,
+      interests: [],
+      enrolledCourseIds: [],
+      savedOpportunityIds: [],
+      watchlistTickers: [],
+      isPremium: false
+    });
+    setIsAuthModalOpen(true);
+  };
 
   const unreadNotifsCount = notifications.filter(n => !n.read).length;
 
@@ -796,6 +898,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         unreadNotifsCount,
         activeChannel,
         setActiveChannel,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        loginAsUser,
+        loginWithCredentials,
+        registerNewUser,
+        logoutUser,
         switchRole,
         enrollInCourse,
         purchaseCourseWithRazorpay,

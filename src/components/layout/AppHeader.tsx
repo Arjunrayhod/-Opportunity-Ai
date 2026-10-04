@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, Flame, Shield } from 'lucide-react';
+import { Bell, Flame, Shield, KeyRound, LogIn } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { NotificationDrawer } from '../notifications/NotificationDrawer';
 import { AIAssistantModal } from '../ai/AIAssistantModal';
+import { AuthModal } from '../auth/AuthModal';
 
 interface AppHeaderProps {
   onNavigate: (path: string) => void;
@@ -10,7 +11,7 @@ interface AppHeaderProps {
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
-  const { user, unreadNotifsCount, switchRole } = useApp();
+  const { user, unreadNotifsCount, switchRole, setIsAuthModalOpen } = useApp();
   const [isNotifsOpen, setIsNotifsOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
 
@@ -36,40 +37,53 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
                 <span className="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">
                   {user.name.split(' ')[0]}
                 </span>
-                {user.role === 'SUPER_ADMIN' && (
+                {user.role === 'SUPER_ADMIN' ? (
                   <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-purple-100 text-purple-700 border border-purple-300">
                     ADMIN
                   </span>
-                )}
+                ) : user.role === 'PREMIUM_USER' ? (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                    VIP
+                  </span>
+                ) : null}
               </div>
               <p className="text-[10px] text-slate-500">Opportunity Dashboard</p>
             </div>
           </div>
 
-          {/* Center / Right: Streak Badge, Admin Mode & Bell */}
+          {/* Center / Right: Streak Badge, Auth Login/Switch & Bell */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* 7-Day Streak Badge */}
             <div 
-              title="7-Day Learning & Opportunity Streak!" 
+              title="Learning & Opportunity Streak!" 
               className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-700 text-xs font-bold cursor-default"
             >
               <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 animate-pulse" />
               <span>{user.streakDays}d</span>
             </div>
 
-            {/* Quick Role Switcher Button (For Instant Admin Testing) */}
+            {/* Login / Switch Account Button */}
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              title="Log In / Switch Student or Admin Account"
+              className="px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition active:scale-95"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-teal-700" />
+              <span className="text-[10px] hidden sm:inline">Switch / Log In</span>
+            </button>
+
+            {/* Quick Super Admin CMS Button */}
             <button
               onClick={() => {
                 if (user.role === 'SUPER_ADMIN') {
-                  switchRole('USER');
-                  onNavigate('/');
+                  onNavigate('/admin');
                 } else {
                   switchRole('SUPER_ADMIN');
                   onNavigate('/admin');
                 }
               }}
-              title={user.role === 'SUPER_ADMIN' ? 'Switch to Student View' : 'Switch to Super Admin CMS'}
-              className={`px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1 transition ${
+              title="Open Super Admin CMS"
+              className={`px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1 transition active:scale-95 ${
                 user.role === 'SUPER_ADMIN'
                   ? 'bg-purple-100 border border-purple-300 text-purple-800'
                   : 'bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700'
@@ -77,7 +91,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
             >
               <Shield className="w-3 h-3 text-purple-600" />
               <span className="text-[10px] hidden sm:inline">
-                {user.role === 'SUPER_ADMIN' ? 'Admin Mode' : 'Admin CMS'}
+                {user.role === 'SUPER_ADMIN' ? 'Admin Portal' : 'Admin CMS'}
               </span>
             </button>
 
@@ -111,6 +125,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
         onClose={() => setIsAiOpen(false)}
         onNavigate={onNavigate}
       />
+
+      {/* Login & Profile Switcher Modal */}
+      <AuthModal />
     </>
   );
 };

@@ -20,7 +20,28 @@ export const initialUser: User = {
   isPremium: false,
 };
 
+export const adminUser: User = {
+  id: 'usr_admin_01',
+  name: 'Satvik Bhai',
+  email: 'satvikbhai@opportunity.ai',
+  phone: '+91 98765 43210',
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+  role: 'SUPER_ADMIN',
+  level: 10,
+  streakDays: 30,
+  streakCoins: 1000,
+  referralCode: 'SATVIK99',
+  referralsCount: 50,
+  walletBalance: 9999,
+  interests: ['Course Creator', 'AI Automation', 'Video Editing', 'Trading'],
+  enrolledCourseIds: ['crs_capcut_15', 'crs_dm_01', 'crs_yt_auto_06', 'crs_ai_master_30'],
+  savedOpportunityIds: [],
+  watchlistTickers: ['TATAPOWER', 'RELIANCE'],
+  isPremium: true
+};
+
 export const initialMockUsers: User[] = [
+  adminUser,
   initialUser,
   {
     id: 'usr_002',
