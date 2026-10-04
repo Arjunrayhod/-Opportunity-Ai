@@ -85,6 +85,7 @@ export interface Course {
     fileSize: string;
     downloadUrl: string;
   };
+  driveUrl?: string;
 }
 
 export interface ComboBundle {

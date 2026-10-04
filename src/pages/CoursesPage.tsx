@@ -12,13 +12,11 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
 
   const categories = [
-    { id: 'ALL', label: 'All Courses' },
-    { id: 'VIDEO_EDITING', label: '🎬 CapCut & Video Editing' },
-    { id: 'YOUTUBE_GROWTH', label: '🚀 YouTube Automation' },
-    { id: 'AI_EARNING', label: '🤖 Make Money with AI' },
-    { id: 'TRADING_FINANCE', label: '📈 Trading & Crypto' },
-    { id: 'CYBERSECURITY', label: '🛡️ Social Media Security' },
-    { id: 'FITNESS_HEALTH', label: '💪 Gym & Supplements' },
+    { id: 'ALL', label: `All (${courses.length})` },
+    { id: 'YOUTUBE_GROWTH', label: '🚀 YouTube Growth' },
+    { id: 'MARKETING_BIZ', label: '📈 Digital Marketing & Agency' },
+    { id: 'AI_EARNING', label: '🤖 AI Tools & Agents' },
+    { id: 'VIDEO_EDITING', label: '🎬 Video Editing' },
   ];
 
   const filteredCourses = courses.filter((c) => {

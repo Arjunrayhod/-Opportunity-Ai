@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText } from 'lucide-react';
+import { ArrowLeft, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, FolderGit2, ExternalLink } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RazorpayModal } from '../components/payment/RazorpayModal';
 import { CertificateModal } from '../components/growth/CertificateModal';
@@ -192,7 +192,42 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
         </div>
       </div>
 
-      {/* 2. Downloadable PDF Cheat Sheets Vault */}
+      {/* 2. Google Drive Direct Folder Access Banner */}
+      {course.driveUrl && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <FolderGit2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider bg-teal-100/80 px-2 py-0.5 rounded-md border border-teal-200">
+                  Google Drive Cloud Vault
+                </span>
+                <span className="text-[11px] font-bold text-emerald-700">✓ Full Access Ready</span>
+              </div>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">
+                Complete Course Drive Folder & Resources
+              </h4>
+              <p className="text-[11px] text-slate-600">
+                Direct access to high-definition video files, downloadable toolkits, project assets, and lifetime updates.
+              </p>
+            </div>
+          </div>
+
+          <a
+            href={course.driveUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="px-5 py-2.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-black text-xs flex items-center justify-center gap-2 transition shrink-0 active:scale-95 shadow-xs"
+          >
+            <ExternalLink className="w-4 h-4 !text-white" />
+            <span className="!text-white">Open in Google Drive</span>
+          </a>
+        </div>
+      )}
+
+      {/* 3. Downloadable PDF Cheat Sheets Vault */}
       {course.cheatSheetPdf && (
         <div className="p-4 rounded-3xl bg-teal-50/70 border border-teal-200 flex items-center justify-between gap-3 shadow-2xs">
           <div className="flex items-center gap-3">
