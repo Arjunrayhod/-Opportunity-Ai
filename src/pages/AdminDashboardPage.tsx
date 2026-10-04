@@ -20,10 +20,17 @@ import {
   Video,
   Layers,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  QrCode,
+  Check,
+  Clock,
+  XCircle,
+  MessageCircle,
+  Settings,
+  AlertCircle
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { Course, CourseCategory, Lesson } from '../types';
+import { Course, CourseCategory, Lesson, OrderRecord } from '../types';
 
 interface AdminDashboardPageProps {
   onNavigate: (path: string) => void;
@@ -41,12 +48,23 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     exportOrdersToCSV,
     exportFullDatabaseBackup,
     importDatabaseBackup,
+    paymentSettings,
+    updatePaymentSettings,
+    approveOrderAndUnlockCourse,
+    rejectOrder,
     user
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'COURSES' | 'ORDERS' | 'NOTIFICATIONS' | 'BACKUP'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'COURSES' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'>('OVERVIEW');
+  const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
+
+  // UPI / Payment Settings Form
+  const [upiIdInput, setUpiIdInput] = useState(paymentSettings.upiId);
+  const [payeeNameInput, setPayeeNameInput] = useState(paymentSettings.payeeName);
+  const [rzpKeyInput, setRzpKeyInput] = useState(paymentSettings.razorpayKeyId || '');
+  const [settingsSavedToast, setSettingsSavedToast] = useState(false);
 
   // New Course Form State
   const [newTitle, setNewTitle] = useState('');
@@ -65,8 +83,31 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [notifDeepLink, setNotifDeepLink] = useState('/courses');
 
   // Calculate Revenue
-  const totalRevenue = orders.reduce((sum, ord) => sum + ord.amount, 0);
-  const totalEnrollments = courses.reduce((sum, crs) => sum + crs.studentsEnrolled, 0) + orders.length;
+  const approvedOrders = orders.filter(o => o.status === 'SUCCESS');
+  const pendingOrders = orders.filter(o => o.status === 'PENDING_VERIFICATION' || o.status === 'PENDING');
+  const rejectedOrders = orders.filter(o => o.status === 'REJECTED');
+
+  const totalVerifiedRevenue = approvedOrders.reduce((sum, ord) => sum + ord.amount, 0);
+  const totalEnrollments = courses.reduce((sum, crs) => sum + crs.studentsEnrolled, 0) + approvedOrders.length;
+
+  const filteredOrders = orders.filter(ord => {
+    if (orderFilter === 'PENDING') return ord.status === 'PENDING_VERIFICATION' || ord.status === 'PENDING';
+    if (orderFilter === 'APPROVED') return ord.status === 'SUCCESS';
+    if (orderFilter === 'REJECTED') return ord.status === 'REJECTED';
+    return true;
+  });
+
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePaymentSettings({
+      ...paymentSettings,
+      upiId: upiIdInput.trim() || 'creator@okaxis',
+      payeeName: payeeNameInput.trim() || 'AI Opportunity Creator',
+      razorpayKeyId: rzpKeyInput.trim()
+    });
+    setSettingsSavedToast(true);
+    setTimeout(() => setSettingsSavedToast(false), 3000);
+  };
 
   const handleCreateCourse = (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,10 +204,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
-            Course CMS & Sales Control Center
+            Course CMS & Direct Payment Gateway Control
           </h1>
           <p className="text-xs text-slate-300">
-            Upload courses, manage student buyers, broadcast notifications, and safeguard platform data.
+            Verify student UPI bank payments, unlock courses, manage catalog, and configure your bank account.
           </p>
         </div>
 
@@ -192,11 +233,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       {/* Navigation Tabs */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar p-1 rounded-2xl bg-dark-900 border border-slate-800">
         {[
-          { id: 'OVERVIEW', label: '📊 Dashboard Overview', icon: TrendingUp },
-          { id: 'COURSES', label: `🎓 Course CMS (${courses.length})`, icon: BookOpen },
-          { id: 'ORDERS', label: `💰 Buyers & Sales (${orders.length})`, icon: DollarSign },
-          { id: 'NOTIFICATIONS', label: `🔔 Broadcasts (${notifications.length})`, icon: Bell },
-          { id: 'BACKUP', label: '💾 1-Click Database Backup', icon: Database },
+          { id: 'OVERVIEW', label: '📊 Overview' },
+          { id: 'ORDERS', label: `💰 Orders & Verification (${pendingOrders.length} Pending)` },
+          { id: 'SETTINGS', label: '💳 UPI & Bank Settings' },
+          { id: 'COURSES', label: `🎓 Course CMS (${courses.length})` },
+          { id: 'NOTIFICATIONS', label: `🔔 Broadcasts (${notifications.length})` },
+          { id: 'BACKUP', label: '💾 Database Backup' },
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -221,44 +263,299 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           {/* Key Metric Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Total Gross Revenue</span>
-              <div className="text-2xl font-black text-emerald-400">₹{totalRevenue.toLocaleString('en-IN')}</div>
-              <span className="text-[10px] text-emerald-300 font-semibold">+18% this week</span>
+              <span className="text-[11px] text-slate-400 font-medium">Verified Bank Revenue</span>
+              <div className="text-2xl font-black text-emerald-400">₹{totalVerifiedRevenue.toLocaleString('en-IN')}</div>
+              <span className="text-[10px] text-emerald-300 font-semibold">Direct in Bank</span>
             </div>
 
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Course Purchases</span>
-              <div className="text-2xl font-black text-cyan-400">{orders.length}</div>
-              <span className="text-[10px] text-slate-400">Razorpay Verified</span>
+              <span className="text-[11px] text-slate-400 font-medium">Pending UPI Verifications</span>
+              <div className="text-2xl font-black text-amber-400">{pendingOrders.length}</div>
+              <span className="text-[10px] text-amber-300 font-semibold">Awaiting Bank Match</span>
             </div>
 
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
               <span className="text-[11px] text-slate-400 font-medium">Active Courses Live</span>
               <div className="text-2xl font-black text-purple-400">{courses.length}</div>
-              <span className="text-[10px] text-slate-400">Instant Sync</span>
+              <span className="text-[10px] text-slate-400">Published in Store</span>
             </div>
 
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Total Students</span>
-              <div className="text-2xl font-black text-amber-400">{totalEnrollments.toLocaleString('en-IN')}</div>
-              <span className="text-[10px] text-slate-400">Across All Categories</span>
+              <span className="text-[11px] text-slate-400 font-medium">Total Students Enrolled</span>
+              <div className="text-2xl font-black text-cyan-400">{totalEnrollments.toLocaleString('en-IN')}</div>
+              <span className="text-[10px] text-slate-400">Lifetime Access</span>
             </div>
           </div>
 
-          {/* Quick Actions & 30GB Video Tip */}
-          <div className="p-5 rounded-3xl bg-gradient-to-br from-blue-950/40 via-dark-850 to-dark-850 border border-blue-500/30 space-y-2">
-            <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs">
-              <Video className="w-4 h-4" />
-              <span>₹0 Cost Video Hosting System Ready</span>
+          {/* Pending Verification Quick Alert */}
+          {pendingOrders.length > 0 && (
+            <div className="p-5 rounded-3xl bg-amber-950/40 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+                  <Clock className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-white">
+                    {pendingOrders.length} New Payment{pendingOrders.length > 1 ? 's' : ''} Awaiting Your Verification
+                  </h4>
+                  <p className="text-xs text-amber-200/80">
+                    Students have submitted their 12-digit UTR numbers. Check your bank app/SMS and click "Verify & Unlock".
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveTab('ORDERS');
+                  setOrderFilter('PENDING');
+                }}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition active:scale-95 shrink-0"
+              >
+                Review Pending ({pendingOrders.length})
+              </button>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              You can upload your <strong>30GB+ video files to YouTube as "Unlisted" or to Google Drive</strong> for free, and paste the link in the Course CMS. The mobile app will stream your videos cleanly without any ads or external brand watermarks!
-            </p>
+          )}
+
+          {/* Direct Bank Account Status Box */}
+          <div className="p-5 rounded-3xl bg-dark-850 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-4 h-4 text-cyan-400" />
+                <h3 className="font-bold text-sm text-white">Active Payment Account</h3>
+              </div>
+              <button
+                onClick={() => setActiveTab('SETTINGS')}
+                className="text-xs text-cyan-400 font-bold hover:underline"
+              >
+                Change Bank UPI ID →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-dark-900 rounded-2xl border border-slate-800">
+                <span className="text-[10px] text-slate-400 block">UPI ID for Student Payments:</span>
+                <span className="font-mono font-bold text-emerald-400 text-sm">{paymentSettings.upiId}</span>
+              </div>
+              <div className="p-3 bg-dark-900 rounded-2xl border border-slate-800">
+                <span className="text-[10px] text-slate-400 block">Payee / Account Name:</span>
+                <span className="font-bold text-white text-sm">{paymentSettings.payeeName}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* 2. Courses CMS Tab */}
+      {/* 2. Orders & Verification Queue Tab */}
+      {activeTab === 'ORDERS' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-bold text-sm text-white">Payment Orders & UTR Verification Queue</h3>
+              <p className="text-xs text-slate-400">
+                Courses are unlocked ONLY after you verify money in your bank account
+              </p>
+            </div>
+            <button
+              onClick={exportOrdersToCSV}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span>Export Buyers to Excel (.CSV)</span>
+            </button>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex gap-2">
+            {[
+              { id: 'ALL', label: `All (${orders.length})` },
+              { id: 'PENDING', label: `⏳ Pending (${pendingOrders.length})` },
+              { id: 'APPROVED', label: `✅ Approved (${approvedOrders.length})` },
+              { id: 'REJECTED', label: `❌ Rejected (${rejectedOrders.length})` },
+            ].map(f => (
+              <button
+                key={f.id}
+                onClick={() => setOrderFilter(f.id as any)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                  orderFilter === f.id
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-dark-900 text-slate-400 hover:text-white border border-slate-800'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Orders Table */}
+          <div className="rounded-3xl bg-dark-850 border border-slate-800 overflow-x-auto no-scrollbar">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-dark-950 text-slate-400 font-semibold border-b border-slate-800">
+                <tr>
+                  <th className="p-3.5">Student & WhatsApp</th>
+                  <th className="p-3.5">Course</th>
+                  <th className="p-3.5">Amount (₹)</th>
+                  <th className="p-3.5">12-Digit UTR / Ref No</th>
+                  <th className="p-3.5">Date</th>
+                  <th className="p-3.5">Status</th>
+                  <th className="p-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {filteredOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                      No orders found in this category.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredOrders.map((ord) => (
+                    <tr key={ord.id} className="hover:bg-dark-900/50 transition">
+                      <td className="p-3.5">
+                        <div className="font-bold text-white">{ord.studentName}</div>
+                        <div className="text-[11px] text-cyan-400">{ord.studentPhone}</div>
+                        <div className="text-[10px] text-slate-500">{ord.studentEmail}</div>
+                      </td>
+                      <td className="p-3.5 max-w-[180px] font-medium text-white truncate">
+                        {ord.courseTitle}
+                      </td>
+                      <td className="p-3.5 font-black text-emerald-400">
+                        ₹{ord.amount}
+                      </td>
+                      <td className="p-3.5">
+                        <span className="font-mono text-xs font-bold text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                          {ord.utrNumber || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-[11px] text-slate-400">
+                        {ord.purchasedAt}
+                      </td>
+                      <td className="p-3.5">
+                        {ord.status === 'SUCCESS' ? (
+                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            ✅ UNLOCKED
+                          </span>
+                        ) : ord.status === 'REJECTED' ? (
+                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                            ❌ REJECTED
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
+                            ⏳ VERIFICATION PENDING
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3.5 text-right">
+                        {ord.status === 'PENDING_VERIFICATION' || ord.status === 'PENDING' ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => approveOrderAndUnlockCourse(ord.orderId)}
+                              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 transition active:scale-95"
+                              title="Money Received in Bank: Unlock Course Now"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Verify & Unlock</span>
+                            </button>
+
+                            <button
+                              onClick={() => rejectOrder(ord.orderId)}
+                              className="px-2 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-[11px] transition"
+                              title="Reject Fake UTR"
+                            >
+                              <XCircle className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : ord.status === 'SUCCESS' ? (
+                          <span className="text-[11px] text-emerald-400 font-bold">Access Granted</span>
+                        ) : (
+                          <span className="text-[11px] text-slate-500">Rejected</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* 3. UPI & Bank Settings Tab */}
+      {activeTab === 'SETTINGS' && (
+        <div className="space-y-4 max-w-2xl">
+          <div className="p-6 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">
+            <div>
+              <h3 className="font-bold text-base text-white flex items-center gap-2">
+                <Settings className="w-4 h-4 text-purple-400" />
+                <span>Creator UPI & Bank Gateway Settings</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Enter your exact UPI ID so students can send course fee directly to your bank account.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveSettings} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-slate-200 block mb-1.5 flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                  Your Bank UPI ID (GPay / PhonePe / Paytm / BHIM)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={upiIdInput}
+                  onChange={(e) => setUpiIdInput(e.target.value)}
+                  placeholder="e.g. 9876543210@paytm or yourname@okaxis"
+                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white font-mono font-bold focus:outline-none focus:border-cyan-400"
+                />
+                <span className="text-[10px] text-slate-500 mt-1 block">
+                  Dynamic QR codes for all courses will automatically route payments directly to this UPI ID.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1.5">
+                  Creator / Business Payee Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={payeeNameInput}
+                  onChange={(e) => setPayeeNameInput(e.target.value)}
+                  placeholder="e.g. AI Opportunity Academy"
+                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-200 block mb-1.5">
+                  Optional Razorpay Merchant Key ID (If using automated card gateway)
+                </label>
+                <input
+                  type="text"
+                  value={rzpKeyInput}
+                  onChange={(e) => setRzpKeyInput(e.target.value)}
+                  placeholder="rzp_live_..."
+                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              {settingsSavedToast && (
+                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Payment Settings Saved! Students will now pay to <strong>{upiIdInput}</strong>.</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-extrabold text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition"
+              >
+                Save Payment Settings
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Courses CMS Tab */}
       {activeTab === 'COURSES' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -319,69 +616,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 3. Orders & Student Buyers CRM Tab (Addressing User's Request) */}
-      {activeTab === 'ORDERS' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h3 className="font-bold text-sm text-white">Student Buyers & Sales CRM</h3>
-              <p className="text-xs text-slate-400">All purchased customer contacts, payments, and WhatsApp details</p>
-            </div>
-            <button
-              onClick={exportOrdersToCSV}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95"
-            >
-              <FileSpreadsheet className="w-4 h-4" />
-              <span>Export Buyers to Excel (.CSV)</span>
-            </button>
-          </div>
-
-          <div className="rounded-3xl bg-dark-850 border border-slate-800 overflow-x-auto no-scrollbar">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-dark-950 text-slate-400 font-semibold border-b border-slate-800">
-                <tr>
-                  <th className="p-3.5">Student Name & Contact</th>
-                  <th className="p-3.5">Course Purchased</th>
-                  <th className="p-3.5">Amount (₹)</th>
-                  <th className="p-3.5">Order ID</th>
-                  <th className="p-3.5">Purchase Date</th>
-                  <th className="p-3.5">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {orders.map((ord) => (
-                  <tr key={ord.id} className="hover:bg-dark-900/50 transition">
-                    <td className="p-3.5">
-                      <div className="font-bold text-white">{ord.studentName}</div>
-                      <div className="text-[11px] text-cyan-400">{ord.studentPhone}</div>
-                      <div className="text-[10px] text-slate-500">{ord.studentEmail}</div>
-                    </td>
-                    <td className="p-3.5 max-w-xs font-medium text-white truncate">
-                      {ord.courseTitle}
-                    </td>
-                    <td className="p-3.5 font-bold text-emerald-400">
-                      ₹{ord.amount}
-                    </td>
-                    <td className="p-3.5 font-mono text-[10px] text-slate-400">
-                      {ord.orderId}
-                    </td>
-                    <td className="p-3.5 text-[11px] text-slate-400">
-                      {ord.purchasedAt}
-                    </td>
-                    <td className="p-3.5">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        {ord.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 4. Broadcast Notifications Tab */}
+      {/* 5. Broadcast Notifications Tab */}
       {activeTab === 'NOTIFICATIONS' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -415,7 +650,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 5. 1-Click Database Backup & Restore Tab */}
+      {/* 6. 1-Click Database Backup & Restore Tab */}
       {activeTab === 'BACKUP' && (
         <div className="space-y-4">
           <div className="p-5 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">

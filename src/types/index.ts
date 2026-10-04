@@ -110,9 +110,19 @@ export interface OrderRecord {
   studentEmail: string;
   studentPhone: string;
   paymentMethod: 'UPI' | 'Card' | 'NetBanking' | 'Wallet';
-  paymentGateway: 'Razorpay' | 'Direct';
-  status: 'SUCCESS' | 'PENDING' | 'REFUNDED';
+  paymentGateway: 'Razorpay' | 'Direct' | 'UPI_QR';
+  utrNumber?: string;
+  status: 'SUCCESS' | 'PENDING' | 'PENDING_VERIFICATION' | 'REJECTED' | 'REFUNDED';
   purchasedAt: string;
+  verifiedAt?: string;
+}
+
+export interface PaymentSettings {
+  upiId: string;
+  payeeName: string;
+  razorpayKeyId?: string;
+  mode: 'DIRECT_UPI_UTR' | 'RAZORPAY_GATEWAY';
+  qrNote?: string;
 }
 
 export interface MarketIndex {

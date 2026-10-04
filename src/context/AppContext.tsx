@@ -32,6 +32,12 @@ import {
   AiAgentScanResult, 
   MarketNewsItem 
 } from '../services/aiMarketAgentService';
+import { 
+  PaymentSettings, 
+  getStoredPaymentSettings, 
+  savePaymentSettings, 
+  defaultPaymentSettings 
+} from '../services/paymentService';
 
 interface AppContextType {
   user: User;
@@ -42,6 +48,11 @@ interface AppContextType {
   aiAgentScanResult: AiAgentScanResult;
   marketNewsFeed: MarketNewsItem[];
   runManualAiScan: () => Promise<AiAgentScanResult>;
+  paymentSettings: PaymentSettings;
+  updatePaymentSettings: (settings: PaymentSettings) => void;
+  submitCoursePaymentWithUtr: (course: Course, studentPhone: string, utrNumber: string) => Promise<{ success: boolean; orderId: string }>;
+  approveOrderAndUnlockCourse: (orderId: string) => void;
+  rejectOrder: (orderId: string) => void;
   opportunities: Opportunity[];
   creatorAssets: CreatorAsset[];
   communityMessages: CommunityMessage[];
@@ -215,13 +226,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const purchaseCourseWithRazorpay = async (course: Course, studentPhone?: string): Promise<{ success: boolean; orderId: string }> => {
+  // Creator Payment & UPI Settings
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings>(() => getStoredPaymentSettings());
+
+  const updatePaymentSettings = (newSettings: PaymentSettings) => {
+    setPaymentSettings(newSettings);
+    savePaymentSettings(newSettings);
+  };
+
+  const submitCoursePaymentWithUtr = async (
+    course: Course,
+    studentPhone: string,
+    utrNumber: string
+  ): Promise<{ success: boolean; orderId: string }> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const orderId = `pay_rzp_${Math.random().toString(36).substring(2, 9)}`;
-        enrollInCourse(course.id);
+        const orderId = `upi_${Date.now().toString().slice(-6)}_${Math.random().toString(36).substring(2, 6)}`;
         
-        // Record buyer details permanently in Order CRM
         const newOrder: OrderRecord = {
           id: `ord_${Date.now()}`,
           orderId,
@@ -231,34 +252,114 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           studentId: user.id,
           studentName: user.name,
           studentEmail: user.email,
-          studentPhone: studentPhone || user.phone || '+91 98765 00000',
+          studentPhone: studentPhone || user.phone || '+91 98765 43210',
           paymentMethod: 'UPI',
-          paymentGateway: 'Razorpay',
-          status: 'SUCCESS',
+          paymentGateway: 'UPI_QR',
+          utrNumber: utrNumber.trim(),
+          status: 'PENDING_VERIFICATION',
           purchasedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
         };
 
         setOrders(prev => [newOrder, ...prev]);
 
-        // Increment course student count
-        setCourses(prev => prev.map(c => c.id === course.id ? { ...c, studentsEnrolled: c.studentsEnrolled + 1 } : c));
-
-        // Send confirmation notification
-        const newNotif: NotificationItem = {
+        // Notification for student
+        const studentNotif: NotificationItem = {
           id: `notif_${Date.now()}`,
-          title: `🎉 Payment Successful: ${course.title}`,
-          message: `Lifetime access unlocked! All video modules & downloadable PDFs are ready for you.`,
+          title: `⏳ Payment Submitted: ${course.title}`,
+          message: `Your payment (UTR: ${utrNumber}) is under verification. Course will unlock as soon as funds arrive in creator account.`,
           category: 'COURSE',
-          categoryLabel: 'Course Enrolled',
+          categoryLabel: 'Payment Submitted',
           deepLink: `/courses/${course.id}`,
           timestamp: 'Just now',
           read: false
         };
-        setNotifications(prev => [newNotif, ...prev]);
+
+        // Notification for Admin
+        const adminNotif: NotificationItem = {
+          id: `notif_admin_${Date.now()}`,
+          title: `💰 New UPI Order: ₹${course.price} for ${course.title}`,
+          message: `Student: ${user.name} (${studentPhone}). UTR Number: ${utrNumber}. Verify bank credit and approve in Admin panel.`,
+          category: 'ANNOUNCEMENT',
+          categoryLabel: 'New Sale',
+          deepLink: `/admin`,
+          timestamp: 'Just now',
+          read: false
+        };
+
+        setNotifications(prev => [studentNotif, adminNotif, ...prev]);
 
         resolve({ success: true, orderId });
-      }, 1000);
+      }, 600);
     });
+  };
+
+  const purchaseCourseWithRazorpay = async (
+    course: Course,
+    studentPhone?: string
+  ): Promise<{ success: boolean; orderId: string }> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const orderId = `rzp_${Date.now().toString().slice(-6)}_${Math.random().toString(36).substring(2, 6)}`;
+        
+        const newOrder: OrderRecord = {
+          id: `ord_${Date.now()}`,
+          orderId,
+          courseId: course.id,
+          courseTitle: course.title,
+          amount: course.price,
+          studentId: user.id,
+          studentName: user.name,
+          studentEmail: user.email,
+          studentPhone: studentPhone || user.phone || '+91 98765 43210',
+          paymentMethod: 'UPI',
+          paymentGateway: 'Razorpay',
+          status: 'PENDING_VERIFICATION',
+          purchasedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+        };
+
+        setOrders(prev => [newOrder, ...prev]);
+        resolve({ success: true, orderId });
+      }, 500);
+    });
+  };
+
+  const approveOrderAndUnlockCourse = (orderId: string) => {
+    const targetOrder = orders.find(o => o.orderId === orderId || o.id === orderId);
+    if (!targetOrder) return;
+
+    // Update order status
+    setOrders(prev => prev.map(o => (o.orderId === orderId || o.id === orderId) ? {
+      ...o,
+      status: 'SUCCESS',
+      verifiedAt: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    } : o));
+
+    // Unlock course for student
+    enrollInCourse(targetOrder.courseId);
+
+    // Increment course enrolled count
+    setCourses(prev => prev.map(c => c.id === targetOrder.courseId ? { ...c, studentsEnrolled: c.studentsEnrolled + 1 } : c));
+
+    // Send congratulatory notification
+    const successNotif: NotificationItem = {
+      id: `notif_approved_${Date.now()}`,
+      title: `🎉 Course Access Unlocked: ${targetOrder.courseTitle}`,
+      message: `Your payment has been verified! Full course video lessons, templates and certificates are now active.`,
+      category: 'COURSE',
+      categoryLabel: 'Access Granted',
+      deepLink: `/courses/${targetOrder.courseId}`,
+      timestamp: 'Just now',
+      read: false
+    };
+
+    setNotifications(prev => [successNotif, ...prev]);
+  };
+
+  const rejectOrder = (orderId: string) => {
+    setOrders(prev => prev.map(o => (o.orderId === orderId || o.id === orderId) ? {
+      ...o,
+      status: 'REJECTED'
+    } : o));
   };
 
   const toggleSaveOpportunity = (oppId: string) => {
@@ -507,6 +608,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         aiAgentScanResult,
         marketNewsFeed: liveMarketNewsFeed,
         runManualAiScan,
+        paymentSettings,
+        updatePaymentSettings,
+        submitCoursePaymentWithUtr,
+        approveOrderAndUnlockCourse,
+        rejectOrder,
         opportunities,
         creatorAssets: mockCreatorAssets,
         communityMessages,
