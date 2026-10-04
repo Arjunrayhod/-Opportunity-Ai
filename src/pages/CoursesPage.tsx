@@ -141,26 +141,29 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
                 <div
                   key={course.id}
                   onClick={() => onNavigate(`/courses/${course.id}`)}
-                  className="rounded-3xl bg-dark-850 border border-slate-800 overflow-hidden hover:border-slate-700 transition cursor-pointer flex flex-col justify-between group shadow-lg"
+                  className="rounded-3xl bg-dark-850 border border-slate-800/80 overflow-hidden hover:border-teal-500/40 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-lg"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden">
+                  <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
                     <img
                       src={course.thumbnail}
                       alt={course.title}
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80';
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     
-                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-600 text-white shadow">
+                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-teal-600 text-white shadow-md">
                       {course.categoryLabel}
                     </span>
 
                     {isEnrolled ? (
-                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/90 text-dark-950 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> ENROLLED
+                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-lg text-[10px] font-black bg-emerald-400 text-slate-950 flex items-center gap-1 shadow-md">
+                        <CheckCircle2 className="w-3 h-3 stroke-[2.5]" /> ENROLLED
                       </span>
                     ) : (
-                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md text-[10px] font-black bg-emerald-500 text-dark-950 uppercase">
+                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-lg text-[10px] font-black bg-amber-400 text-slate-950 uppercase shadow-md">
                         95% OFF
                       </span>
                     )}
@@ -168,8 +171,8 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
 
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-400 mb-1">
-                        <span className="flex items-center gap-0.5 text-amber-400 font-bold">
+                      <div className="flex items-center gap-2 text-[11px] text-slate-400 mb-1.5 font-medium">
+                        <span className="flex items-center gap-0.5 text-amber-500 font-bold">
                           <Star className="w-3.5 h-3.5 fill-amber-400" /> {course.rating}
                         </span>
                         <span>•</span>
@@ -177,30 +180,30 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
                         <span>•</span>
                         <span>{course.durationHours} hrs</span>
                       </div>
-                      <h3 className="font-bold text-sm text-white group-hover:text-cyan-300 transition line-clamp-2">
+                      <h3 className="font-extrabold text-sm text-white group-hover:text-cyan-400 transition line-clamp-2 leading-snug">
                         {course.title}
                       </h3>
-                      <p className="text-xs text-slate-400 mt-1 line-clamp-2">{course.subtitle}</p>
+                      <p className="text-xs text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">{course.subtitle}</p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
                       <div>
                         {isEnrolled ? (
-                          <span className="text-xs font-bold text-emerald-400">Unlocked Access</span>
+                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">Unlocked Lifetime Access</span>
                         ) : (
                           <div className="flex items-baseline gap-1.5">
-                            <span className="text-base font-black text-cyan-400">₹{course.price}</span>
-                            <span className="text-xs text-slate-500 line-through">₹{course.originalPrice}</span>
+                            <span className="text-base font-black text-cyan-500 dark:text-cyan-400">₹{course.price}</span>
+                            <span className="text-xs text-slate-400 line-through">₹{course.originalPrice}</span>
                           </div>
                         )}
                       </div>
-                      <span className={`px-3 py-1 rounded-xl text-xs font-bold transition ${
+                      <button className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm ${
                         isEnrolled
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : 'bg-blue-600/30 border border-blue-500/40 text-blue-300 group-hover:bg-blue-600 group-hover:text-white'
+                          ? 'bg-emerald-600 text-white hover:bg-emerald-500'
+                          : 'bg-[#003539] text-white hover:bg-[#004f55] group-hover:shadow-md'
                       }`}>
                         {isEnrolled ? 'Continue' : 'View Course'}
-                      </span>
+                      </button>
                     </div>
                   </div>
                 </div>

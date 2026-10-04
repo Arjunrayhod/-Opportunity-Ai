@@ -477,7 +477,7 @@ export const mockCourses: Course[] = [
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
       role: 'Top-Rated AI Freelancer & Consultant',
     },
-    thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80',
     price: 149,
     originalPrice: 3499,
     isFree: false,
