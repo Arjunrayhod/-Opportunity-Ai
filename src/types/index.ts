@@ -152,6 +152,21 @@ export interface StockQuote {
   whyTrending: string;
   keyFactors: string[];
   sentimentScore: number;
+  categoryTag?: 'TOP_GAINER' | 'BREAKOUT' | 'MULTIBAGGER_SWING' | 'GREEN_EV' | 'DEFENCE_RAILWAY' | 'VALUE_BUY';
+  categoryLabel?: string;
+  signal?: 'STRONG BUY' | 'BREAKOUT ALERT' | 'ACCUMULATE' | 'SWING BUY';
+  winRatePercent?: number;
+  holdingTime?: string;
+  targetPrice1?: number;
+  targetPrice2?: number;
+  stopLossPrice?: number;
+  riskRewardRatio?: string;
+  technicalIndicators?: {
+    rsi: number;
+    macd: string;
+    emaStatus: string;
+    volumeSurge: string;
+  };
   scenarios: ScenarioBreakdown;
   chartData: {
     '1D': { time: string; price: number }[];
