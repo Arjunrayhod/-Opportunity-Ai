@@ -134,18 +134,41 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            {/* Video Player (100% Direct Touch-Interactive 16:9 Fit) */}
+            {/* Video Player & Center Play/Pause Controller */}
             {activeLesson.type === 'video' ? (
               <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
-                <iframe
-                  key={`${course.id}_${activeLesson.id}`}
-                  src={embedUrl}
-                  title={activeLesson.title}
-                  className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                  allowFullScreen
-                  loading="eager"
-                />
+                {isPlaying ? (
+                  <iframe
+                    key={`${course.id}_${activeLesson.id}`}
+                    src={embedUrl}
+                    title={activeLesson.title}
+                    className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                    allowFullScreen
+                    loading="eager"
+                  />
+                ) : (
+                  /* Big Center Play Button Overlay (YouTube/Netflix Style) */
+                  <div
+                    onClick={togglePlayPause}
+                    className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-slate-950/90 z-20 space-y-4 cursor-pointer select-none animate-in fade-in duration-200"
+                  >
+                    <div className="relative group">
+                      <div className="absolute -inset-2 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full blur-md opacity-70 group-hover:opacity-100 transition animate-pulse"></div>
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#003539] hover:bg-[#004f55] text-white border-2 border-teal-400 flex items-center justify-center shadow-2xl transition transform group-hover:scale-105 active:scale-95">
+                        <Play className="w-10 h-10 sm:w-12 sm:h-12 fill-white text-white ml-1.5" />
+                      </div>
+                    </div>
+                    <div className="text-center px-4">
+                      <p className="text-white font-black text-sm sm:text-base tracking-wide">
+                        ▶ Video Paused (वीडियो रुका हुआ है)
+                      </p>
+                      <p className="text-xs text-teal-300 font-bold mt-1">
+                        Center Play Button par click karein (चालू करें)
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : activeLesson.type === 'pdf' ? (
               <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
@@ -583,15 +606,37 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            <iframe
-              key={`theater_${course.id}_${activeLesson.id}`}
-              src={embedUrl}
-              title={activeLesson.title}
-              className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-              allowFullScreen
-              loading="eager"
-            />
+            {isPlaying ? (
+              <iframe
+                key={`theater_${course.id}_${activeLesson.id}`}
+                src={embedUrl}
+                title={activeLesson.title}
+                className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                allowFullScreen
+                loading="eager"
+              />
+            ) : (
+              <div
+                onClick={togglePlayPause}
+                className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-slate-950/90 z-20 space-y-4 cursor-pointer select-none animate-in fade-in duration-200"
+              >
+                <div className="relative group">
+                  <div className="absolute -inset-2 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full blur-md opacity-70 group-hover:opacity-100 transition animate-pulse"></div>
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#003539] hover:bg-[#004f55] text-white border-2 border-teal-400 flex items-center justify-center shadow-2xl transition transform group-hover:scale-105 active:scale-95">
+                    <Play className="w-10 h-10 sm:w-12 sm:h-12 fill-white text-white ml-1.5" />
+                  </div>
+                </div>
+                <div className="text-center px-4">
+                  <p className="text-white font-black text-sm sm:text-base">
+                    ▶ Video Paused (वीडियो रुका हुआ है)
+                  </p>
+                  <p className="text-xs text-teal-300 font-bold mt-1">
+                    Center Play Button par click karein (चालू करें)
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Theater Bottom Bar Controls */}
