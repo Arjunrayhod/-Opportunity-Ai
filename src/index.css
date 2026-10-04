@@ -20,7 +20,9 @@
   body {
     background-color: var(--bg-canvas);
     color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -38,7 +40,7 @@
 .bg-dark-850 {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
 }
 
 .bg-dark-800 {
@@ -61,27 +63,23 @@ nav.fixed {
    ========================================================= */
 
 h1, h2, h3, h4, h5, h6, .heading-contrast {
-  color: #0F172A !important;
+  color: #0F172A;
 }
 
 p {
   color: #475569;
 }
 
-.text-white {
-  color: #0F172A;
-}
-
 .text-slate-400 {
-  color: #475569 !important;
+  color: #64748B !important;
 }
 
 .text-slate-300 {
-  color: #334155 !important;
+  color: #475569 !important;
 }
 
 .text-slate-200 {
-  color: #1E293B !important;
+  color: #334155 !important;
 }
 
 .text-slate-500 {
@@ -108,19 +106,9 @@ button.bg-amber-600,
 button.bg-rose-600,
 a.bg-cyan-500,
 a.bg-blue-600,
+a.bg-emerald-600,
 .btn-solid-dark,
 .btn-primary-solid {
-  color: #FFFFFF !important;
-}
-
-button.bg-gradient-to-r *,
-button.bg-blue-600 *,
-button.bg-teal-600 *,
-button.bg-emerald-600 *,
-button.bg-purple-600 *,
-button.bg-cyan-600 *,
-a.bg-cyan-500 *,
-a.bg-blue-600 * {
   color: #FFFFFF !important;
 }
 

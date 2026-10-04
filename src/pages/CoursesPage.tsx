@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Star, Play, Clock, BookOpen, Filter, CheckCircle2, Flame, Award, ArrowRight } from 'lucide-react';
+import { Search, Star, Play, BookOpen, CheckCircle2, Flame, ArrowRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { CourseCategory } from '../types';
 
 interface CoursesPageProps {
   onNavigate: (path: string) => void;
@@ -37,15 +36,15 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
       {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-500/30 uppercase">
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800 border border-teal-300 uppercase">
             Affordable Academy
           </span>
-          <span className="text-xs text-slate-400">90% Below Market Price</span>
+          <span className="text-xs text-slate-500">90% Below Market Price</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
           Master In-Demand Creator & AI Skills
         </h1>
-        <p className="text-xs text-slate-300 mt-1">
+        <p className="text-xs text-slate-600 mt-1">
           Learn high-paying freelancing, video editing, and digital growth without expensive institute fees.
         </p>
       </div>
@@ -58,7 +57,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search CapCut, YouTube growth, AI freelancing, Trading..."
-          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-dark-850 border border-slate-700/80 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 shadow-inner"
+          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 shadow-2xs"
         />
       </div>
 
@@ -70,11 +69,11 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
             onClick={() => setSelectedCategory(cat.id)}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition ${
               selectedCategory === cat.id
-                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-dark-850 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-[#003539] !text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200'
             }`}
           >
-            {cat.label}
+            <span className={selectedCategory === cat.id ? '!text-white' : ''}>{cat.label}</span>
           </button>
         ))}
       </div>
@@ -82,8 +81,8 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
       {/* 1. Continue Learning Section (Enrolled Courses) */}
       {enrolledCourses.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <Flame className="w-4 h-4 text-amber-400" />
+          <h2 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+            <Flame className="w-4 h-4 text-amber-500" />
             <span>Continue Learning</span>
           </h2>
 
@@ -92,25 +91,25 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
               <div
                 key={c.id}
                 onClick={() => onNavigate(`/courses/${c.id}`)}
-                className="p-3.5 rounded-2xl bg-gradient-to-r from-dark-850 to-blue-950/40 border border-blue-500/30 hover:border-cyan-400 transition cursor-pointer flex items-center gap-3"
+                className="p-3.5 rounded-2xl bg-white border border-teal-200 hover:border-teal-500 transition cursor-pointer flex items-center gap-3 shadow-xs"
               >
                 <img
                   src={c.thumbnail}
                   alt={c.title}
-                  className="w-14 h-14 rounded-xl object-cover border border-slate-700 shrink-0"
+                  className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-bold text-cyan-400 uppercase">{c.categoryLabel}</span>
-                  <h3 className="font-bold text-xs text-white truncate">{c.title}</h3>
+                  <span className="text-[10px] font-bold text-teal-800 uppercase">{c.categoryLabel}</span>
+                  <h3 className="font-bold text-xs text-slate-900 truncate">{c.title}</h3>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-dark-950 rounded-full overflow-hidden">
-                      <div className="w-2/5 h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" />
+                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="w-2/5 h-full bg-teal-600 rounded-full" />
                     </div>
-                    <span className="text-[10px] text-slate-400">40%</span>
+                    <span className="text-[10px] text-slate-500 font-medium">40%</span>
                   </div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
-                  <Play className="w-4 h-4 fill-cyan-400" />
+                <button className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
+                  <Play className="w-4 h-4 fill-teal-700" />
                 </button>
               </div>
             ))}
@@ -121,17 +120,17 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
       {/* 2. All Courses Grid */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-extrabold text-white">
+          <h2 className="text-sm font-extrabold text-slate-900">
             Available Courses ({filteredCourses.length})
           </h2>
-          <span className="text-xs text-slate-400">Instant Lifetime Access</span>
+          <span className="text-xs text-slate-500 font-medium">Instant Lifetime Access</span>
         </div>
 
         {filteredCourses.length === 0 ? (
-          <div className="py-12 text-center rounded-3xl bg-dark-850 border border-slate-800 p-6">
-            <BookOpen className="w-10 h-10 text-slate-600 mx-auto mb-2" />
-            <h3 className="font-bold text-white text-sm">No Courses Found</h3>
-            <p className="text-xs text-slate-400 mt-1">Try searching for a different keyword or category.</p>
+          <div className="py-12 text-center rounded-3xl bg-white border border-slate-200 p-6 shadow-xs">
+            <BookOpen className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+            <h3 className="font-bold text-slate-900 text-sm">No Courses Found</h3>
+            <p className="text-xs text-slate-500 mt-1">Try searching for a different keyword or category.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -141,7 +140,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
                 <div
                   key={course.id}
                   onClick={() => onNavigate(`/courses/${course.id}`)}
-                  className="rounded-3xl bg-dark-850 border border-slate-800/80 overflow-hidden hover:border-teal-500/40 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-lg"
+                  className="rounded-3xl bg-white border border-slate-200 overflow-hidden hover:border-teal-500/40 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-xs"
                 >
                   <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
                     <img
@@ -154,7 +153,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     
-                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-teal-600 text-white shadow-md">
+                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold bg-teal-600 !text-white shadow-md">
                       {course.categoryLabel}
                     </span>
 
@@ -171,7 +170,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
 
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-400 mb-1.5 font-medium">
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 mb-1.5 font-medium">
                         <span className="flex items-center gap-0.5 text-amber-500 font-bold">
                           <Star className="w-3.5 h-3.5 fill-amber-400" /> {course.rating}
                         </span>
@@ -180,29 +179,29 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onNavigate }) => {
                         <span>•</span>
                         <span>{course.durationHours} hrs</span>
                       </div>
-                      <h3 className="font-extrabold text-sm text-white group-hover:text-cyan-400 transition line-clamp-2 leading-snug">
+                      <h3 className="font-extrabold text-sm text-slate-900 group-hover:text-teal-800 transition line-clamp-2 leading-snug">
                         {course.title}
                       </h3>
-                      <p className="text-xs text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">{course.subtitle}</p>
+                      <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">{course.subtitle}</p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                       <div>
                         {isEnrolled ? (
-                          <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">Unlocked Lifetime Access</span>
+                          <span className="text-xs font-black text-emerald-700">Unlocked Lifetime Access</span>
                         ) : (
                           <div className="flex items-baseline gap-1.5">
-                            <span className="text-base font-black text-cyan-500 dark:text-cyan-400">₹{course.price}</span>
+                            <span className="text-base font-black text-teal-800">₹{course.price}</span>
                             <span className="text-xs text-slate-400 line-through">₹{course.originalPrice}</span>
                           </div>
                         )}
                       </div>
-                      <button className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm ${
+                      <button className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-xs ${
                         isEnrolled
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-500'
-                          : 'bg-[#003539] text-white hover:bg-[#004f55] group-hover:shadow-md'
+                          ? 'bg-emerald-600 hover:bg-emerald-700 !text-white'
+                          : 'bg-[#003539] hover:bg-[#004f55] !text-white'
                       }`}>
-                        {isEnrolled ? 'Continue' : 'View Course'}
+                        <span className="!text-white">{isEnrolled ? 'Continue' : 'View Course'}</span>
                       </button>
                     </div>
                   </div>
