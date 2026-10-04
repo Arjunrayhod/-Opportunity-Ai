@@ -24,6 +24,14 @@ import {
   mockCommunityMessages,
   mockNotifications
 } from '../data/mockData';
+import { 
+  checkAndRun24hAiScan, 
+  runAiDailyMarketScan, 
+  createDailyScanNotification, 
+  liveMarketNewsFeed, 
+  AiAgentScanResult, 
+  MarketNewsItem 
+} from '../services/aiMarketAgentService';
 
 interface AppContextType {
   user: User;
@@ -31,6 +39,9 @@ interface AppContextType {
   orders: OrderRecord[];
   marketIndices: MarketIndex[];
   stocks: StockQuote[];
+  aiAgentScanResult: AiAgentScanResult;
+  marketNewsFeed: MarketNewsItem[];
+  runManualAiScan: () => Promise<AiAgentScanResult>;
   opportunities: Opportunity[];
   creatorAssets: CreatorAsset[];
   communityMessages: CommunityMessage[];
@@ -129,6 +140,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem(STORAGE_KEYS.MESSAGES);
     return saved ? JSON.parse(saved) : mockCommunityMessages;
   });
+
+  // 24h AI Market Agent State
+  const initialScan = checkAndRun24hAiScan();
+  const [aiAgentScanResult, setAiAgentScanResult] = useState<AiAgentScanResult>(initialScan.result);
+  const [stocks, setStocks] = useState<StockQuote[]>(initialScan.result.topRecommendedStocks);
+
+  // Check 24h scan on mount and append notification if fresh
+  useEffect(() => {
+    const { hasRun, result } = checkAndRun24hAiScan();
+    setAiAgentScanResult(result);
+    setStocks(result.topRecommendedStocks);
+    if (hasRun && result.topRecommendedStocks.length > 0) {
+      const dailyNotif = createDailyScanNotification(result.topRecommendedStocks[0]);
+      setNotifications(prev => {
+        if (!prev.some(n => n.id === dailyNotif.id)) {
+          return [dailyNotif, ...prev];
+        }
+        return prev;
+      });
+    }
+  }, []);
+
+  const runManualAiScan = async (): Promise<AiAgentScanResult> => {
+    const freshResult = runAiDailyMarketScan();
+    setAiAgentScanResult(freshResult);
+    setStocks(freshResult.topRecommendedStocks);
+    if (freshResult.topRecommendedStocks.length > 0) {
+      const notif = createDailyScanNotification(freshResult.topRecommendedStocks[0]);
+      setNotifications(prev => [notif, ...prev]);
+    }
+    return freshResult;
+  };
 
   const [activeChannel, setActiveChannel] = useState<string>('general');
 
@@ -460,7 +503,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         courses,
         orders,
         marketIndices,
-        stocks: trendingStocks,
+        stocks,
+        aiAgentScanResult,
+        marketNewsFeed: liveMarketNewsFeed,
+        runManualAiScan,
         opportunities,
         creatorAssets: mockCreatorAssets,
         communityMessages,
