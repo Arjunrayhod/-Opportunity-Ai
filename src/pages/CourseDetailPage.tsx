@@ -64,24 +64,30 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* Flash Sale Banner */}
       {!isEnrolled && <FlashSaleTimer />}
 
-      {/* 1. Main In-App Video & Content Studio Screen */}
-      <div className="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-xs">
+      {/* 1. Main In-App Video Studio Player Screen */}
+      <div className="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-lg">
         {isLessonUnlocked ? (
-          <div className="aspect-video w-full bg-slate-950 relative flex items-center justify-center group">
-            {/* DRM Anti-Piracy Watermark Floating Overlay */}
-            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/40 backdrop-blur-sm text-[10px] font-mono text-white/60 z-20 select-none border border-white/10 flex items-center gap-1.5">
-              <ShieldCheck className="w-3 h-3 text-teal-400" />
-              <span>Opportunity Stream • {user.id.toUpperCase()}</span>
+          <div className="relative aspect-video w-full bg-black flex flex-col justify-between overflow-hidden group">
+            {/* DRM Anti-Piracy Floating Watermark */}
+            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Opportunity AI Secure • {user.id.toUpperCase()}</span>
             </div>
 
+            {/* Video Container */}
             {activeLesson.type === 'video' ? (
-              <iframe
-                src={`${activeLesson.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0`}
-                title={activeLesson.title}
-                className="w-full h-full border-0 relative z-10"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
+                <video
+                  key={activeLesson.id}
+                  controls
+                  playsInline
+                  poster={course.thumbnail}
+                  className="w-full h-full object-contain bg-black"
+                  src={activeLesson.videoUrl?.startsWith('http') && !activeLesson.videoUrl.includes('youtube.com') && !activeLesson.videoUrl.includes('drive.google.com') ? activeLesson.videoUrl : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'}
+                >
+                  Your browser does not support HTML5 video streaming.
+                </video>
+              </div>
             ) : activeLesson.type === 'pdf' ? (
               <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
                 <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
@@ -90,18 +96,17 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 <h3 className="font-bold text-slate-900 text-base">{activeLesson.title}</h3>
                 <p className="text-xs text-slate-600 max-w-sm">{activeLesson.textContent}</p>
                 <a
-                  href={activeLesson.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={activeLesson.pdfUrl || '#'}
+                  download
                   onClick={() => handleLessonComplete(activeLesson.id)}
-                  className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition"
+                  className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition shadow-xs"
                 >
                   <Download className="w-4 h-4 !text-white" />
                   <span className="!text-white">Download In-App Blueprint PDF</span>
                 </a>
               </div>
             ) : activeLesson.type === 'quiz' && activeLesson.quiz ? (
-              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white z-10">
+              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white z-10 my-auto rounded-2xl">
                 <div className="flex items-center gap-2 text-teal-800 text-xs font-bold uppercase">
                   <HelpCircle className="w-4 h-4 text-teal-700" />
                   <span>Module Knowledge Check</span>
@@ -147,7 +152,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 )}
               </div>
             ) : (
-              <div className="p-6 text-slate-900 text-xs bg-white z-10">{activeLesson.textContent}</div>
+              <div className="p-6 text-slate-900 text-xs bg-white z-10 m-auto rounded-2xl">{activeLesson.textContent}</div>
             )}
           </div>
         ) : (
