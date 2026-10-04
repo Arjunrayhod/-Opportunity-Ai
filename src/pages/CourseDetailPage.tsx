@@ -173,8 +173,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                     className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowFullScreen
-                    referrerPolicy="no-referrer"
-                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation allow-downloads"
                     loading="eager"
                   />
                 ) : (
@@ -657,8 +655,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                 allowFullScreen
-                referrerPolicy="no-referrer"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-presentation allow-downloads"
                 loading="eager"
               />
             ) : (
