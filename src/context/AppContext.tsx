@@ -383,8 +383,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const clean = emailOrPhone.trim().toLowerCase();
     if (!clean) return false;
 
-    // Check for admin keywords or admin email
-    if (clean === 'admin' || clean.includes('satvik') || clean === 'satvikbhai@ybl' || clean === 'satvikbhai@opportunity.ai') {
+    // Check for admin email
+    if (clean === 'satvikbhai@opportunity.ai') {
       loginAsUser(adminUser);
       return true;
     }

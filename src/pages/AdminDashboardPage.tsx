@@ -491,25 +491,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
     // Valid admin identifiers
     const validIds = [
-      'satvikbhai@opportunity.ai',
-      'satvikbhai@ybl',
-      'satvikbhai',
-      'satvik',
-      'admin',
-      '9876543210'
+      'satvikbhai@opportunity.ai'
     ];
 
     // Valid admin master passwords
     const validPasswords = [
-      'satvik@123',
-      'admin123',
-      'satvik2026',
-      'admin@123',
-      'opportunity@admin',
-      'satvikbhai'
+      'opportunity@admin'
     ];
 
-    const isIdValid = validIds.includes(cleanId) || cleanId === adminUser.email.toLowerCase() || (adminUser.phone && cleanId === adminUser.phone.replace(/[^0-9]/g, ''));
+    const isIdValid = validIds.includes(cleanId);
     const isPassValid = validPasswords.includes(cleanPass);
 
     if (isIdValid && isPassValid) {
@@ -517,7 +507,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       setIsAdminUnlocked(true);
       setAuthError('');
     } else if (!isIdValid) {
-      setAuthError('❌ Invalid Admin ID or Email. Only the owner (Satvik Bhai) can log in.');
+      setAuthError('❌ Invalid Admin ID or Email. Only satvikbhai@opportunity.ai can access.');
     } else {
       setAuthError('❌ Incorrect Admin Master Password. Access denied.');
     }
@@ -563,7 +553,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   required
                   value={adminIdInput}
                   onChange={(e) => setAdminIdInput(e.target.value)}
-                  placeholder="e.g. satvikbhai@opportunity.ai or satvik"
+                  placeholder="satvikbhai@opportunity.ai"
                   className="bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none w-full font-medium"
                 />
               </div>
