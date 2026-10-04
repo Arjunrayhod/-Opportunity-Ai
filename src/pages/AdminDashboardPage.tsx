@@ -627,10 +627,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               SUPER ADMIN MASTER CONTROL
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black !text-white tracking-tight mt-1" style={{ color: '#FFFFFF' }}>
+          <h1 className="text-xl sm:text-2xl font-black admin-hero-title tracking-tight mt-1" style={{ color: '#FFFFFF !important' }}>
             Platform Master Control & CMS Portal
           </h1>
-          <p className="text-xs !text-teal-100 max-w-xl font-medium" style={{ color: '#CCFBF1' }}>
+          <p className="text-xs admin-hero-desc max-w-xl font-medium" style={{ color: '#CCFBF1 !important' }}>
             Upload & edit courses, post student gigs, manage students, verify UPI payments, and reply to chats.
           </p>
         </div>

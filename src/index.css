@@ -58,14 +58,12 @@ nav.fixed {
   border-top: 1px solid var(--border-color) !important;
 }
 
-@layer base {
-  h1, h2, h3, h4, h5, h6, .heading-contrast {
-    color: #0F172A;
-  }
+.admin-hero-title {
+  color: #FFFFFF !important;
+}
 
-  p {
-    color: #475569;
-  }
+.admin-hero-desc {
+  color: #CCFBF1 !important;
 }
 
 .text-white {
