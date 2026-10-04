@@ -74,7 +74,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
   const [activeTab, setActiveTab] = useState<
     'OVERVIEW' | 'COURSES' | 'USERS' | 'CHATS' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'
-  >('OVERVIEW');
+  >('USERS');
 
   const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
@@ -86,7 +86,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showEditUserModal, setShowEditUserModal] = useState(false);
-  const [grantCourseSelectedId, setGrantCourseSelectedId] = useState<string>('');
+  const [grantSelections, setGrantSelections] = useState<{ [userId: string]: string }>({});
 
   // Chat CRM State
   const [selectedChatUserId, setSelectedChatUserId] = useState<string>(user.id);
@@ -349,54 +349,55 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   };
 
   return (
-    <div className="space-y-6 pb-24 max-w-6xl mx-auto">
-      {/* Admin Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-gradient-to-r from-purple-950/80 via-dark-850 to-blue-950/80 border border-purple-500/30">
+    <div className="space-y-6 pb-24 max-w-6xl mx-auto text-slate-900">
+      {/* Admin Top Header (Light Theme High Contrast) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 rounded-3xl bg-[#003539] text-white shadow-lg">
         <div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => onNavigate('/')}
-              className="p-1.5 rounded-lg bg-dark-900 text-slate-300 hover:text-white"
+              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition"
+              title="Back to App"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/30 text-purple-300 border border-purple-500/40">
+            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black bg-teal-400 text-slate-950 uppercase tracking-wider">
               SUPER ADMIN MASTER CONTROL
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
+          <h1 className="text-xl sm:text-2xl font-black text-white mt-1.5 tracking-tight">
             Platform Master Control & CMS Portal
           </h1>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-teal-100/90 mt-0.5 max-w-xl">
             Upload & edit courses, update thumbnails/names, manage students, verify UPI payments, and reply to chats.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
           {/* Online/Offline Status Toggle for Admin */}
           <button
             onClick={() => setAdminOnlineStatus(!adminOnlineStatus)}
-            className={`px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 border ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition active:scale-95 border ${
               adminOnlineStatus
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-xs'
-                : 'bg-dark-850 text-slate-400 border-slate-700 hover:text-white'
+                ? 'bg-emerald-500 text-white border-emerald-400 shadow-xs'
+                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
             }`}
           >
-            <span className={`w-2 h-2 rounded-full ${adminOnlineStatus ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+            <span className={`w-2 h-2 rounded-full ${adminOnlineStatus ? 'bg-white animate-pulse' : 'bg-slate-300'}`} />
             <span>{adminOnlineStatus ? 'Status: ONLINE' : 'Status: OFFLINE'}</span>
           </button>
 
           <button
             onClick={() => setShowAddCourseModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-blue-500/20 transition active:scale-95"
+            className="px-4 py-2 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
           >
-            <Plus className="w-4 h-4" />
-            <span>Upload New Course</span>
+            <Plus className="w-4 h-4 text-slate-950" />
+            <span>Upload Course</span>
           </button>
 
           <button
             onClick={() => setShowNotifModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-slate-800 border border-purple-500/40 text-purple-300 font-bold text-xs flex items-center gap-1.5 transition"
+            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition"
           >
             <Bell className="w-4 h-4" />
             <span>Broadcast</span>
@@ -404,15 +405,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar p-1 rounded-2xl bg-dark-900 border border-slate-800">
+      {/* Navigation Tabs (Strict Light Theme) */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
         {[
-          { id: 'OVERVIEW', label: '📊 Dashboard Overview' },
-          { id: 'COURSES', label: `🎓 Courses CMS (${courses.length})` },
           { id: 'USERS', label: `👥 Student Control (${allUsers.length})` },
+          { id: 'COURSES', label: `🎓 Courses CMS (${courses.length})` },
           { id: 'CHATS', label: `💬 Live Chats (${directChatMessages.length})` },
           { id: 'ORDERS', label: `💰 Orders (${pendingOrders.length} Pending)` },
           { id: 'SETTINGS', label: '💳 UPI & Bank Settings' },
+          { id: 'OVERVIEW', label: '📊 Dashboard Overview' },
           { id: 'NOTIFICATIONS', label: `🔔 Broadcasts (${notifications.length})` },
           { id: 'BACKUP', label: '💾 Database Backup' },
         ].map((tab) => {
@@ -423,8 +424,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
                 isActive
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-[#003539] text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
               }`}
             >
               <span>{tab.label}</span>
@@ -433,87 +434,178 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         })}
       </div>
 
-      {/* 1. Overview Tab */}
-      {activeTab === 'OVERVIEW' && (
-        <div className="space-y-6">
-          {/* Key Metric Stats Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Verified Bank Revenue</span>
-              <div className="text-2xl font-black text-emerald-400">₹{totalVerifiedRevenue.toLocaleString('en-IN')}</div>
-              <span className="text-[10px] text-emerald-300 font-semibold">Direct in Bank (0% Fee)</span>
+      {/* 1. Student User Management Tab (Clean, Responsive, No Overflow) */}
+      {activeTab === 'USERS' && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <div>
+              <h3 className="font-extrabold text-sm sm:text-base text-slate-900">Student User Master Control</h3>
+              <p className="text-xs text-slate-500">
+                Edit student names, change phone numbers, grant free courses, and manage access permissions.
+              </p>
             </div>
 
-            <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Pending UPI Verifications</span>
-              <div className="text-2xl font-black text-amber-400">{pendingOrders.length}</div>
-              <span className="text-[10px] text-amber-300 font-semibold">Awaiting Bank Match</span>
-            </div>
-
-            <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Registered Students</span>
-              <div className="text-2xl font-black text-cyan-400">{allUsers.length}</div>
-              <span className="text-[10px] text-slate-400">Active Profiles</span>
-            </div>
-
-            <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Active Courses Live</span>
-              <div className="text-2xl font-black text-purple-400">{courses.length}</div>
-              <span className="text-[10px] text-slate-400">Published in App</span>
+            {/* Search Bar */}
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 w-full sm:w-72 focus-within:border-teal-600 focus-within:bg-white transition">
+              <Search className="w-4 h-4 text-slate-400 shrink-0" />
+              <input
+                type="text"
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                placeholder="Search student by name/phone..."
+                className="bg-transparent text-xs text-slate-900 placeholder-slate-400 focus:outline-none w-full"
+              />
             </div>
           </div>
 
-          {/* Quick Shortcuts */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button
-              onClick={() => setShowAddCourseModal(true)}
-              className="p-4 rounded-3xl bg-gradient-to-br from-blue-950/40 via-dark-850 to-dark-850 border border-blue-500/30 text-left space-y-1.5 hover:border-blue-400 transition"
-            >
-              <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-cyan-400 flex items-center justify-center font-bold">
-                <Plus className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-xs text-white">Upload New Course</h4>
-              <p className="text-[11px] text-slate-400">Add video lessons, set price & upload thumbnail image</p>
-            </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredUsers.map((u) => {
+              const selectedCourseId = grantSelections[u.id] || '';
 
-            <button
-              onClick={() => setActiveTab('USERS')}
-              className="p-4 rounded-3xl bg-gradient-to-br from-purple-950/40 via-dark-850 to-dark-850 border border-purple-500/30 text-left space-y-1.5 hover:border-purple-400 transition"
-            >
-              <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">
-                <Users className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-xs text-white">Manage Student Access</h4>
-              <p className="text-[11px] text-slate-400">Edit student names, unlock/grant free courses</p>
-            </button>
+              return (
+                <div
+                  key={u.id}
+                  className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-3.5 flex flex-col justify-between hover:border-slate-300 transition"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={u.avatar}
+                        alt={u.name}
+                        className="w-11 h-11 rounded-full object-cover border-2 border-slate-200 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-sm text-slate-900 truncate">{u.name}</h4>
+                        <p className="text-xs text-teal-800 font-semibold font-mono">{u.phone || '+91 98765 43210'}</p>
+                        <p className="text-[11px] text-slate-400 truncate">{u.email}</p>
+                      </div>
+                    </div>
 
-            <button
-              onClick={() => setActiveTab('SETTINGS')}
-              className="p-4 rounded-3xl bg-gradient-to-br from-emerald-950/40 via-dark-850 to-dark-850 border border-emerald-500/30 text-left space-y-1.5 hover:border-emerald-400 transition"
-            >
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                <QrCode className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-xs text-white">Bank UPI ID: {paymentSettings.upiId}</h4>
-              <p className="text-[11px] text-slate-400">Update your payee name & receive direct bank credits</p>
-            </button>
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shrink-0 border ${
+                      u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
+                        ? 'bg-purple-100 text-purple-900 border-purple-200'
+                        : u.role === 'PREMIUM_USER'
+                        ? 'bg-amber-100 text-amber-900 border-amber-300'
+                        : 'bg-slate-100 text-slate-700 border-slate-200'
+                    }`}>
+                      {u.role.replace('_', ' ')}
+                    </span>
+                  </div>
+
+                  {/* Enrolled Courses Summary */}
+                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-slate-600 font-bold">Unlocked Courses ({u.enrolledCourseIds.length}):</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {u.enrolledCourseIds.length === 0 ? (
+                        <span className="text-[11px] text-slate-400 italic">No courses unlocked yet</span>
+                      ) : (
+                        u.enrolledCourseIds.map((cId) => {
+                          const courseObj = courses.find(c => c.id === cId);
+                          return (
+                            <span
+                              key={cId}
+                              className="px-2 py-1 rounded-lg bg-teal-100 border border-teal-300 text-teal-900 text-[10px] font-bold flex items-center gap-1 shadow-2xs"
+                            >
+                              <span className="truncate max-w-[120px]">{courseObj?.title || cId}</span>
+                              <button
+                                type="button"
+                                onClick={() => revokeCourseFromStudent(u.id, cId)}
+                                className="w-3.5 h-3.5 rounded-full bg-teal-200 hover:bg-rose-200 hover:text-rose-800 flex items-center justify-center text-teal-800 ml-0.5 transition"
+                                title="Revoke Course Access"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 1-Click Grant Course Row (Fixed Widths, No Overflow) */}
+                  <div className="space-y-2 pt-2 border-t border-slate-100">
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={selectedCourseId}
+                        onChange={(e) => setGrantSelections(prev => ({ ...prev, [u.id]: e.target.value }))}
+                        className="flex-1 min-w-0 px-2.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-teal-600 truncate"
+                      >
+                        <option value="">-- Select Course to Grant --</option>
+                        {courses.map(c => (
+                          <option key={c.id} value={c.id}>{c.title}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => {
+                          if (selectedCourseId) {
+                            grantCourseToStudent(u.id, selectedCourseId);
+                            setGrantSelections(prev => ({ ...prev, [u.id]: '' }));
+                          }
+                        }}
+                        disabled={!selectedCourseId}
+                        className="px-3 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] disabled:opacity-40 text-white font-black text-xs transition active:scale-95 shrink-0 shadow-xs"
+                      >
+                        Unlock
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <button
+                        onClick={() => openEditUserModal(u)}
+                        className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200 transition"
+                      >
+                        <Edit className="w-3.5 h-3.5 text-slate-600" />
+                        <span>Edit Student</span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setSelectedChatUserId(u.id);
+                          setActiveTab('CHATS');
+                        }}
+                        className="p-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition"
+                        title="Direct Chat with Student"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </button>
+
+                      {u.id !== user.id && (
+                        <button
+                          onClick={() => {
+                            if (confirm(`Delete student "${u.name}"?`)) {
+                              deleteStudent(u.id);
+                            }
+                          }}
+                          className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition"
+                          title="Delete Student"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* 2. Courses CMS & Full Editor Tab (User's Core Request) */}
+      {/* 2. Courses CMS & Full Editor Tab (Clean Light Theme) */}
       {activeTab === 'COURSES' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
             <div>
-              <h3 className="font-bold text-sm text-white">Course Catalog & Live Editor</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="font-extrabold text-sm sm:text-base text-slate-900">Course Catalog & Live Editor</h3>
+              <p className="text-xs text-slate-500">
                 Change course titles, upload custom thumbnails from device, change prices, and update video stream links.
               </p>
             </div>
             <button
               onClick={() => setShowAddCourseModal(true)}
-              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 transition active:scale-95"
+              className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
             >
               <Plus className="w-4 h-4" />
               <span>Upload New Course</span>
@@ -524,39 +616,39 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             {courses.map((c) => (
               <div
                 key={c.id}
-                className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-3 flex flex-col justify-between hover:border-slate-700 transition"
+                className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-3 flex flex-col justify-between hover:border-slate-300 transition"
               >
                 <div className="flex items-start gap-3">
                   <div className="relative shrink-0">
                     <img
                       src={c.thumbnail}
                       alt={c.title}
-                      className="w-20 h-20 rounded-2xl object-cover border border-slate-700"
+                      className="w-20 h-20 rounded-2xl object-cover border border-slate-200"
                     />
-                    <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded bg-dark-950 text-cyan-400 text-[9px] font-black border border-slate-800">
+                    <span className="absolute -top-1 -right-1 px-2 py-0.5 rounded-md bg-[#003539] text-white text-[9px] font-black shadow-xs">
                       ₹{c.price}
                     </span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-cyan-400 uppercase">{c.categoryLabel}</span>
-                      <span className="text-[10px] text-slate-500">• {c.lessonsCount} Lessons</span>
+                      <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider">{c.categoryLabel}</span>
+                      <span className="text-[10px] text-slate-400">• {c.lessonsCount} Lessons</span>
                     </div>
-                    <h4 className="font-bold text-sm text-white truncate mt-0.5">{c.title}</h4>
-                    <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{c.subtitle}</p>
+                    <h4 className="font-bold text-sm text-slate-900 truncate mt-0.5">{c.title}</h4>
+                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{c.subtitle}</p>
                     <div className="flex items-center gap-2 mt-1.5 text-xs">
-                      <span className="font-black text-emerald-400">₹{c.price}</span>
-                      <span className="text-[10px] text-slate-500 line-through">₹{c.originalPrice}</span>
-                      <span className="text-[10px] text-slate-400">• {c.studentsEnrolled} Enrolled</span>
+                      <span className="font-black text-teal-900 text-sm">₹{c.price}</span>
+                      <span className="text-[11px] text-slate-400 line-through">₹{c.originalPrice}</span>
+                      <span className="text-[11px] text-slate-500">• {c.studentsEnrolled} Enrolled</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
                   <button
                     onClick={() => onNavigate(`/courses/${c.id}`)}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
                   >
                     Preview in App
                   </button>
@@ -564,7 +656,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openEditCourseModal(c)}
-                      className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95"
+                      className="px-3 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95"
                     >
                       <Edit className="w-3.5 h-3.5" />
                       <span>Edit & Change Thumbnail</span>
@@ -576,7 +668,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           deleteCourse(c.id);
                         }
                       }}
-                      className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition"
+                      className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition"
                       title="Delete Course"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -589,172 +681,17 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 3. Student User Management Tab (User's Core Request) */}
-      {activeTab === 'USERS' && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="font-bold text-sm text-white">Student User Master Control</h3>
-              <p className="text-xs text-slate-400">
-                Edit student names, change phone numbers, grant free courses, and manage access permissions.
-              </p>
-            </div>
-
-            {/* Search Bar */}
-            <div className="flex items-center gap-2 bg-dark-900 border border-slate-700 rounded-2xl px-3 py-2 w-full sm:w-72">
-              <Search className="w-4 h-4 text-slate-400 shrink-0" />
-              <input
-                type="text"
-                value={userSearchQuery}
-                onChange={(e) => setUserSearchQuery(e.target.value)}
-                placeholder="Search student by name/phone..."
-                className="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {filteredUsers.map((u) => (
-              <div
-                key={u.id}
-                className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-3 flex flex-col justify-between"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src={u.avatar}
-                      alt={u.name}
-                      className="w-10 h-10 rounded-full object-cover border border-slate-700"
-                    />
-                    <div>
-                      <h4 className="font-bold text-xs text-white">{u.name}</h4>
-                      <p className="text-[11px] text-cyan-400 font-mono">{u.phone || 'No phone set'}</p>
-                      <p className="text-[10px] text-slate-500 truncate max-w-[140px]">{u.email}</p>
-                    </div>
-                  </div>
-
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                    u.role === 'ADMIN' || u.role === 'SUPER_ADMIN'
-                      ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                      : u.role === 'PREMIUM_USER'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      : 'bg-slate-800 text-slate-400'
-                  }`}>
-                    {u.role}
-                  </span>
-                </div>
-
-                {/* Enrolled Courses Summary */}
-                <div className="p-2.5 bg-dark-900 rounded-2xl border border-slate-800 space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-slate-400 font-bold">Unlocked Courses ({u.enrolledCourseIds.length}):</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {u.enrolledCourseIds.length === 0 ? (
-                      <span className="text-[10px] text-slate-500 italic">No courses unlocked yet</span>
-                    ) : (
-                      u.enrolledCourseIds.map((cId) => {
-                        const courseObj = courses.find(c => c.id === cId);
-                        return (
-                          <span
-                            key={cId}
-                            className="px-2 py-0.5 rounded-lg bg-teal-950/60 border border-teal-500/30 text-teal-300 text-[9px] font-bold flex items-center gap-1"
-                          >
-                            <span>{courseObj?.title.slice(0, 16) || cId}...</span>
-                            <button
-                              type="button"
-                              onClick={() => revokeCourseFromStudent(u.id, cId)}
-                              className="text-rose-400 hover:text-rose-300 ml-0.5"
-                              title="Revoke Course Access"
-                            >
-                              ×
-                            </button>
-                          </span>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-
-                {/* 1-Click Grant Course & Actions */}
-                <div className="space-y-2 pt-1 border-t border-slate-800">
-                  <div className="flex items-center gap-1.5">
-                    <select
-                      value={grantCourseSelectedId}
-                      onChange={(e) => setGrantCourseSelectedId(e.target.value)}
-                      className="flex-1 px-2 py-1.5 bg-dark-950 border border-slate-700 rounded-xl text-[10px] text-white focus:outline-none"
-                    >
-                      <option value="">-- Select Course to Grant --</option>
-                      {courses.map(c => (
-                        <option key={c.id} value={c.id}>{c.title}</option>
-                      ))}
-                    </select>
-                    <button
-                      onClick={() => {
-                        if (grantCourseSelectedId) {
-                          grantCourseToStudent(u.id, grantCourseSelectedId);
-                          setGrantCourseSelectedId('');
-                        }
-                      }}
-                      disabled={!grantCourseSelectedId}
-                      className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-bold text-[10px] transition"
-                    >
-                      Unlock
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => openEditUserModal(u)}
-                      className="flex-1 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] flex items-center justify-center gap-1 transition"
-                    >
-                      <Edit className="w-3 h-3" />
-                      <span>Edit Student</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setSelectedChatUserId(u.id);
-                        setActiveTab('CHATS');
-                      }}
-                      className="p-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 transition"
-                      title="Direct Chat with Student"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                    </button>
-
-                    {u.id !== user.id && (
-                      <button
-                        onClick={() => {
-                          if (confirm(`Delete student "${u.name}"?`)) {
-                            deleteStudent(u.id);
-                          }
-                        }}
-                        className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition"
-                        title="Delete Student"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 4. Student Live Chats CRM Tab */}
+      {/* 3. Student Live Chats CRM Tab (Light Theme) */}
       {activeTab === 'CHATS' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Left: Students List */}
-          <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-3">
+          <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
-                <MessageCircle className="w-4 h-4 text-cyan-400" />
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                <MessageCircle className="w-4 h-4 text-teal-700" />
                 <span>Student Inquiries</span>
               </h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
+              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-teal-100 text-teal-900">
                 {studentUserIds.length} Student{studentUserIds.length > 1 ? 's' : ''}
               </span>
             </div>
@@ -773,15 +710,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                     onClick={() => setSelectedChatUserId(sId)}
                     className={`w-full p-3 rounded-2xl text-left border transition ${
                       isSelected
-                        ? 'bg-purple-950/40 border-purple-500 text-white shadow-xs'
-                        : 'bg-dark-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-teal-50 border-teal-600 text-teal-950 shadow-2xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-xs truncate text-white">{studentName}</span>
-                      <span className="text-[9px] text-slate-500 font-mono">{lastMsg?.timestamp || 'Active'}</span>
+                      <span className="font-bold text-xs truncate text-slate-900">{studentName}</span>
+                      <span className="text-[9px] text-slate-400 font-mono">{lastMsg?.timestamp || 'Active'}</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 truncate">
+                    <p className="text-[11px] text-slate-500 truncate">
                       {lastMsg?.text || 'New chat session'}
                     </p>
                   </button>
@@ -791,32 +728,32 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
 
           {/* Right: Active Chat Thread & Direct Reply Box */}
-          <div className="md:col-span-2 p-4 rounded-3xl bg-dark-850 border border-slate-800 flex flex-col justify-between h-[65vh]">
+          <div className="md:col-span-2 p-4 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between h-[65vh]">
             {/* Thread Header */}
-            <div className="p-3 bg-dark-900 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center text-xs">
+                <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs">
                   {selectedChatUserId.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="font-bold text-xs text-white">
+                  <h4 className="font-bold text-xs text-slate-900">
                     Direct Thread with {allUsers.find(u => u.id === selectedChatUserId)?.name || user.name}
                   </h4>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-slate-500">
                     Phone: {allUsers.find(u => u.id === selectedChatUserId)?.phone || user.phone || '+91 98765 43210'}
                   </p>
                 </div>
               </div>
 
-              <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                adminOnlineStatus ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'
+              <span className={`px-2.5 py-0.5 rounded text-[9px] font-black uppercase ${
+                adminOnlineStatus ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-600'
               }`}>
                 {adminOnlineStatus ? 'Online' : 'Offline'}
               </span>
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-3 no-scrollbar my-2">
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 no-scrollbar my-2 bg-[#F8F9FA] rounded-2xl border border-slate-200">
               {currentThreadMessages.map((m) => {
                 const isAdmin = m.sender === 'admin';
                 return (
@@ -827,15 +764,17 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                     <div
                       className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed ${
                         isAdmin
-                          ? 'bg-purple-600 text-white font-medium rounded-tr-xs shadow-md'
-                          : 'bg-dark-900 border border-slate-700 text-slate-200 rounded-tl-xs'
+                          ? 'bg-[#003539] text-white font-medium rounded-tr-xs shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs shadow-2xs'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-[10px] font-bold opacity-80 uppercase">
+                        <span className={`text-[10px] font-black uppercase ${isAdmin ? 'text-teal-200' : 'text-teal-800'}`}>
                           {isAdmin ? 'You (Admin)' : m.userName}
                         </span>
-                        <span className="text-[9px] opacity-70 font-mono">{m.timestamp}</span>
+                        <span className={`text-[9px] font-mono ${isAdmin ? 'text-teal-200/70' : 'text-slate-400'}`}>
+                          {m.timestamp}
+                        </span>
                       </div>
                       <p className="whitespace-pre-line">{m.text}</p>
                     </div>
@@ -856,7 +795,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   key={idx}
                   type="button"
                   onClick={() => setAdminReplyInput(template)}
-                  className="px-2.5 py-1 rounded-lg bg-dark-900 hover:bg-slate-800 border border-slate-700 text-[10px] text-slate-300 whitespace-nowrap transition"
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-[10px] text-slate-700 font-medium whitespace-nowrap transition"
                 >
                   {template}
                 </button>
@@ -870,12 +809,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 value={adminReplyInput}
                 onChange={(e) => setAdminReplyInput(e.target.value)}
                 placeholder="Type real direct reply to student..."
-                className="flex-1 px-4 py-3 bg-dark-950 border border-slate-700 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"
+                className="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600"
               />
               <button
                 type="submit"
                 disabled={!adminReplyInput.trim()}
-                className="px-4 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow-md shrink-0"
+                className="px-4 py-2.5 rounded-xl bg-[#003539] hover:bg-[#004f55] disabled:opacity-40 text-white font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow-xs shrink-0"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Send Reply</span>
@@ -885,19 +824,19 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 5. Orders & Verification Queue Tab */}
+      {/* 4. Orders & Verification Queue Tab (Light Theme) */}
       {activeTab === 'ORDERS' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
             <div>
-              <h3 className="font-bold text-sm text-white">Payment Orders & UTR Verification Queue</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="font-extrabold text-sm sm:text-base text-slate-900">Payment Orders & UTR Verification Queue</h3>
+              <p className="text-xs text-slate-500">
                 Courses are unlocked ONLY after you verify money in your bank account
               </p>
             </div>
             <button
               onClick={exportOrdersToCSV}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20 transition active:scale-95"
+              className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition active:scale-95"
             >
               <FileSpreadsheet className="w-4 h-4" />
               <span>Export Buyers to Excel (.CSV)</span>
@@ -917,8 +856,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 onClick={() => setOrderFilter(f.id as any)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
                   orderFilter === f.id
-                    ? 'bg-purple-600 text-white shadow-xs'
-                    : 'bg-dark-900 text-slate-400 hover:text-white border border-slate-800'
+                    ? 'bg-[#003539] text-white shadow-xs'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
                 }`}
               >
                 {f.label}
@@ -927,9 +866,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
           </div>
 
           {/* Orders Table */}
-          <div className="rounded-3xl bg-dark-850 border border-slate-800 overflow-x-auto no-scrollbar">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-dark-950 text-slate-400 font-semibold border-b border-slate-800">
+          <div className="rounded-3xl bg-white border border-slate-200 overflow-x-auto no-scrollbar shadow-xs">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200">
                 <tr>
                   <th className="p-3.5">Student & WhatsApp</th>
                   <th className="p-3.5">Course</th>
@@ -940,47 +879,47 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   <th className="p-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                    <td colSpan={7} className="p-8 text-center text-slate-400">
                       No orders found in this category.
                     </td>
                   </tr>
                 ) : (
                   filteredOrders.map((ord) => (
-                    <tr key={ord.id} className="hover:bg-dark-900/50 transition">
+                    <tr key={ord.id} className="hover:bg-slate-50 transition">
                       <td className="p-3.5">
-                        <div className="font-bold text-white">{ord.studentName}</div>
-                        <div className="text-[11px] text-cyan-400">{ord.studentPhone}</div>
-                        <div className="text-[10px] text-slate-500">{ord.studentEmail}</div>
+                        <div className="font-bold text-slate-900">{ord.studentName}</div>
+                        <div className="text-[11px] text-teal-800 font-mono font-bold">{ord.studentPhone}</div>
+                        <div className="text-[10px] text-slate-400">{ord.studentEmail}</div>
                       </td>
-                      <td className="p-3.5 max-w-[180px] font-medium text-white truncate">
+                      <td className="p-3.5 max-w-[180px] font-medium text-slate-900 truncate">
                         {ord.courseTitle}
                       </td>
-                      <td className="p-3.5 font-black text-emerald-400">
+                      <td className="p-3.5 font-black text-teal-800 text-sm">
                         ₹{ord.amount}
                       </td>
                       <td className="p-3.5">
-                        <span className="font-mono text-xs font-bold text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                        <span className="font-mono text-xs font-bold text-amber-900 bg-amber-100 px-2 py-1 rounded border border-amber-300">
                           {ord.utrNumber || 'N/A'}
                         </span>
                       </td>
-                      <td className="p-3.5 text-[11px] text-slate-400">
+                      <td className="p-3.5 text-[11px] text-slate-500">
                         {ord.purchasedAt}
                       </td>
                       <td className="p-3.5">
                         {ord.status === 'SUCCESS' ? (
-                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="px-2.5 py-1 rounded text-[10px] font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
                             ✅ UNLOCKED
                           </span>
                         ) : ord.status === 'REJECTED' ? (
-                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                          <span className="px-2.5 py-1 rounded text-[10px] font-black bg-rose-100 text-rose-900 border border-rose-300">
                             ❌ REJECTED
                           </span>
                         ) : (
-                          <span className="px-2.5 py-1 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
-                            ⏳ VERIFICATION PENDING
+                          <span className="px-2.5 py-1 rounded text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
+                            ⏳ PENDING MATCH
                           </span>
                         )}
                       </td>
@@ -989,7 +928,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => approveOrderAndUnlockCourse(ord.orderId)}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 transition active:scale-95"
+                              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-xs transition active:scale-95"
                               title="Money Received in Bank: Unlock Course Now"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -998,16 +937,16 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
                             <button
                               onClick={() => rejectOrder(ord.orderId)}
-                              className="px-2 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-[11px] transition"
+                              className="px-2 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-[11px] transition"
                               title="Reject Fake UTR"
                             >
                               <XCircle className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         ) : ord.status === 'SUCCESS' ? (
-                          <span className="text-[11px] text-emerald-400 font-bold">Access Granted</span>
+                          <span className="text-[11px] text-emerald-800 font-bold">Access Granted</span>
                         ) : (
-                          <span className="text-[11px] text-slate-500">Rejected</span>
+                          <span className="text-[11px] text-slate-400">Rejected</span>
                         )}
                       </td>
                     </tr>
@@ -1019,24 +958,24 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 6. UPI & Bank Settings Tab */}
+      {/* 5. UPI & Bank Settings Tab (Light Theme) */}
       {activeTab === 'SETTINGS' && (
         <div className="space-y-4 max-w-2xl">
-          <div className="p-6 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
             <div>
-              <h3 className="font-bold text-base text-white flex items-center gap-2">
-                <Settings className="w-4 h-4 text-purple-400" />
+              <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                <Settings className="w-5 h-5 text-teal-700" />
                 <span>Creator UPI & Bank Gateway Settings</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Enter your exact UPI ID so students can send course fee directly to your bank account.
               </p>
             </div>
 
             <form onSubmit={handleSaveSettings} className="space-y-4 text-xs">
               <div>
-                <label className="font-bold text-slate-200 block mb-1.5 flex items-center gap-1">
-                  <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
+                <label className="font-bold text-slate-800 block mb-1.5 flex items-center gap-1">
+                  <Smartphone className="w-3.5 h-3.5 text-teal-700" />
                   Your Bank UPI ID (GPay / PhonePe / Paytm / BHIM)
                 </label>
                 <input
@@ -1045,7 +984,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   value={upiIdInput}
                   onChange={(e) => setUpiIdInput(e.target.value)}
                   placeholder="e.g. satvikbhai@ybl"
-                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white font-mono font-bold focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono font-bold focus:outline-none focus:border-teal-600 focus:bg-white"
                 />
                 <span className="text-[10px] text-slate-500 mt-1 block">
                   Dynamic QR codes for all courses will automatically route payments directly to this UPI ID.
@@ -1053,7 +992,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               </div>
 
               <div>
-                <label className="font-bold text-slate-200 block mb-1.5">
+                <label className="font-bold text-slate-800 block mb-1.5">
                   Creator / Business Payee Name
                 </label>
                 <input
@@ -1062,12 +1001,12 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   value={payeeNameInput}
                   onChange={(e) => setPayeeNameInput(e.target.value)}
                   placeholder="e.g. Opportunity AI"
-                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-medium"
                 />
               </div>
 
               <div>
-                <label className="font-bold text-slate-200 block mb-1.5">
+                <label className="font-bold text-slate-800 block mb-1.5">
                   Optional Razorpay Merchant Key ID (If using automated card gateway)
                 </label>
                 <input
@@ -1075,20 +1014,20 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   value={rzpKeyInput}
                   onChange={(e) => setRzpKeyInput(e.target.value)}
                   placeholder="rzp_live_..."
-                  className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono focus:outline-none focus:border-teal-600 focus:bg-white"
                 />
               </div>
 
               {settingsSavedToast && (
-                <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
                   <span>Payment Settings Saved! Students will now pay to <strong>{upiIdInput}</strong>.</span>
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-extrabold text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
               >
                 Save Payment Settings
               </button>
@@ -1097,14 +1036,45 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
+      {/* 6. Overview Tab */}
+      {activeTab === 'OVERVIEW' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium">Verified Bank Revenue</span>
+              <div className="text-2xl font-black text-emerald-700">₹{totalVerifiedRevenue.toLocaleString('en-IN')}</div>
+              <span className="text-[10px] text-emerald-700 font-semibold">Direct in Bank (0% Fee)</span>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium">Pending UPI Verifications</span>
+              <div className="text-2xl font-black text-amber-700">{pendingOrders.length}</div>
+              <span className="text-[10px] text-amber-700 font-semibold">Awaiting Bank Match</span>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium">Registered Students</span>
+              <div className="text-2xl font-black text-teal-800">{allUsers.length}</div>
+              <span className="text-[10px] text-slate-500">Active Profiles</span>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium">Active Courses Live</span>
+              <div className="text-2xl font-black text-slate-900">{courses.length}</div>
+              <span className="text-[10px] text-slate-500">Published in App</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 7. Broadcast Notifications Tab */}
       {activeTab === 'NOTIFICATIONS' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-white">Broadcast Notifications History</h3>
+          <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <h3 className="font-bold text-sm text-slate-900">Broadcast Notifications History</h3>
             <button
               onClick={() => setShowNotifModal(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1"
+              className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-bold text-xs flex items-center gap-1"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Create Notification</span>
@@ -1113,17 +1083,17 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
           <div className="space-y-3">
             {notifications.map((n) => (
-              <div key={n.id} className="p-3.5 rounded-2xl bg-dark-850 border border-slate-800 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+              <div key={n.id} className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-teal-100 border border-teal-200 flex items-center justify-center text-teal-800 shrink-0">
                   <Bell className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-cyan-400 uppercase">{n.categoryLabel}</span>
-                    <span className="text-[10px] text-slate-500">• {n.timestamp}</span>
+                    <span className="text-[10px] font-bold text-teal-800 uppercase">{n.categoryLabel}</span>
+                    <span className="text-[10px] text-slate-400">• {n.timestamp}</span>
                   </div>
-                  <h4 className="font-bold text-xs text-white mt-0.5">{n.title}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">{n.message}</p>
+                  <h4 className="font-bold text-xs text-slate-900 mt-0.5">{n.title}</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">{n.message}</p>
                 </div>
               </div>
             ))}
@@ -1134,13 +1104,13 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       {/* 8. 1-Click Database Backup & Restore Tab */}
       {activeTab === 'BACKUP' && (
         <div className="space-y-4">
-          <div className="p-5 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">
+          <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
             <div>
-              <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                <Database className="w-4 h-4 text-cyan-400" />
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Database className="w-4 h-4 text-teal-700" />
                 <span>Zero-Data-Loss Safety Center</span>
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 Your courses, customer orders, phone numbers, and content are saved permanently. You can also download an offline JSON backup file anytime with 1 click.
               </p>
             </div>
@@ -1148,14 +1118,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <button
                 onClick={exportFullDatabaseBackup}
-                className="p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition"
+                className="p-4 rounded-2xl bg-[#003539] hover:bg-[#004f55] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition"
               >
                 <Download className="w-4 h-4" />
                 <span>Download Full Database Backup (.JSON)</span>
               </button>
 
-              <label className="p-4 rounded-2xl bg-dark-950 border border-slate-700 hover:border-cyan-400 text-slate-300 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition">
-                <Upload className="w-4 h-4 text-cyan-400" />
+              <label className="p-4 rounded-2xl bg-slate-50 border border-slate-300 hover:border-teal-600 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition">
+                <Upload className="w-4 h-4 text-teal-700" />
                 <span>Restore Database From File</span>
                 <input
                   type="file"
@@ -1171,43 +1141,43 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       {/* Modal: Add New Course (With Upload from Device Support) */}
       {showAddCourseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-dark-900 border border-slate-700 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-white">Upload New Course</h3>
-              <button onClick={() => setShowAddCourseModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-extrabold text-base text-slate-900">Upload New Course</h3>
+              <button onClick={() => setShowAddCourseModal(false)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateCourse} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Course Title / Name</label>
+                <label className="font-bold text-slate-700 block mb-1">Course Title / Name</label>
                 <input
                   type="text"
                   required
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. CapCut Pro 3D Camera & Velocity Speed Ramping"
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Subtitle / Key Focus</label>
+                <label className="font-bold text-slate-700 block mb-1">Subtitle / Key Focus</label>
                 <input
                   type="text"
                   value={newSubtitle}
                   onChange={(e) => setNewSubtitle(e.target.value)}
                   placeholder="e.g. Learn 3D keyframing, color grading and viral hooks"
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white"
                 />
               </div>
 
               {/* Thumbnail Upload or URL */}
-              <div className="space-y-2 p-3 bg-dark-950 rounded-2xl border border-slate-800">
-                <label className="font-semibold text-slate-300 block flex items-center gap-1.5">
-                  <Image className="w-4 h-4 text-cyan-400" />
+              <div className="space-y-2 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                <label className="font-bold text-slate-800 block flex items-center gap-1.5">
+                  <Image className="w-4 h-4 text-teal-700" />
                   Course Thumbnail Image (Upload or Paste URL)
                 </label>
 
@@ -1215,11 +1185,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   <img
                     src={newThumbnail}
                     alt="Thumbnail Preview"
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-700 shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-slate-300 shrink-0 bg-white"
                   />
                   <div className="flex-1 space-y-1.5">
-                    <label className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer border border-slate-700 transition">
-                      <Upload className="w-3.5 h-3.5" />
+                    <label className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-300 shadow-2xs transition">
+                      <Upload className="w-3.5 h-3.5 text-teal-700" />
                       <span>Upload Image from Device</span>
                       <input
                         type="file"
@@ -1233,7 +1203,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       value={newThumbnail}
                       onChange={(e) => setNewThumbnail(e.target.value)}
                       placeholder="Or paste image URL (https://...)"
-                      className="w-full px-2.5 py-1 bg-dark-900 border border-slate-700 rounded-lg text-[10px] text-white focus:outline-none"
+                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-teal-600"
                     />
                   </div>
                 </div>
@@ -1241,11 +1211,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Category</label>
+                  <label className="font-bold text-slate-700 block mb-1">Category</label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                   >
                     <option value="VIDEO_EDITING">CapCut & Video Editing</option>
                     <option value="YOUTUBE_GROWTH">YouTube Automation</option>
@@ -1258,18 +1228,18 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Price (₹)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Price (₹)</label>
                   <input
                     type="number"
                     value={newPrice}
                     onChange={(e) => setNewPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-mono font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Video Stream URL (YouTube Unlisted Embed or Google Drive)
                 </label>
                 <input
@@ -1277,16 +1247,13 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   value={newVideoUrl}
                   onChange={(e) => setNewVideoUrl(e.target.value)}
                   placeholder="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-mono text-xs"
                 />
-                <span className="text-[10px] text-slate-500 mt-0.5 block">
-                  Paste any private/unlisted video embed link.
-                </span>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 active:scale-95 transition mt-2"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition mt-2"
               >
                 Publish Course Instantly
               </button>
@@ -1297,41 +1264,41 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       {/* Modal: Edit Existing Course (Name, Thumbnail, Price, Video URL) */}
       {showEditCourseModal && editingCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-dark-900 border border-slate-700 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-white">Edit Course & Change Thumbnail</h3>
-              <button onClick={() => setShowEditCourseModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-extrabold text-base text-slate-900">Edit Course & Change Thumbnail</h3>
+              <button onClick={() => setShowEditCourseModal(false)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveEditCourse} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Course Title / Name</label>
+                <label className="font-bold text-slate-700 block mb-1">Course Title / Name</label>
                 <input
                   type="text"
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-purple-400 font-bold"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-bold"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Subtitle</label>
+                <label className="font-bold text-slate-700 block mb-1">Subtitle</label>
                 <input
                   type="text"
                   value={editSubtitle}
                   onChange={(e) => setEditSubtitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               {/* Thumbnail Editor */}
-              <div className="space-y-2 p-3 bg-dark-950 rounded-2xl border border-slate-800">
-                <label className="font-semibold text-slate-300 block flex items-center gap-1.5">
-                  <Image className="w-4 h-4 text-purple-400" />
+              <div className="space-y-2 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                <label className="font-bold text-slate-800 block flex items-center gap-1.5">
+                  <Image className="w-4 h-4 text-teal-700" />
                   Update Thumbnail Image
                 </label>
 
@@ -1339,11 +1306,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   <img
                     src={editThumbnail}
                     alt="Thumbnail Preview"
-                    className="w-16 h-16 rounded-xl object-cover border border-slate-700 shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-slate-300 shrink-0 bg-white"
                   />
                   <div className="flex-1 space-y-1.5">
-                    <label className="px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 font-bold text-[11px] flex items-center justify-center gap-1.5 cursor-pointer transition">
-                      <Upload className="w-3.5 h-3.5" />
+                    <label className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer border border-slate-300 shadow-2xs transition">
+                      <Upload className="w-3.5 h-3.5 text-teal-700" />
                       <span>Upload New Image from Device</span>
                       <input
                         type="file"
@@ -1357,7 +1324,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                       value={editThumbnail}
                       onChange={(e) => setEditThumbnail(e.target.value)}
                       placeholder="Or paste image URL"
-                      className="w-full px-2.5 py-1 bg-dark-900 border border-slate-700 rounded-lg text-[10px] text-white focus:outline-none"
+                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1365,11 +1332,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Category</label>
+                  <label className="font-bold text-slate-700 block mb-1">Category</label>
                   <select
                     value={editCategory}
                     onChange={(e) => setEditCategory(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-purple-400"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                   >
                     <option value="VIDEO_EDITING">CapCut & Video Editing</option>
                     <option value="YOUTUBE_GROWTH">YouTube Automation</option>
@@ -1382,31 +1349,31 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 </div>
 
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">Price (₹)</label>
+                  <label className="font-bold text-slate-700 block mb-1">Price (₹)</label>
                   <input
                     type="number"
                     value={editPrice}
                     onChange={(e) => setEditPrice(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-purple-400 font-mono"
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-mono font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">
+                <label className="font-bold text-slate-700 block mb-1">
                   Video Stream URL
                 </label>
                 <input
                   type="text"
                   value={editVideoUrl}
                   onChange={(e) => setEditVideoUrl(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-purple-400 font-mono"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-mono text-xs"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition mt-2"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition mt-2"
               >
                 Save Course Changes
               </button>
@@ -1417,54 +1384,54 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       {/* Modal: Edit Student User */}
       {showEditUserModal && editingUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-dark-900 border border-slate-700 rounded-3xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-white">Edit Student Details</h3>
-              <button onClick={() => setShowEditUserModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-extrabold text-base text-slate-900">Edit Student Details</h3>
+              <button onClick={() => setShowEditUserModal(false)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveEditUser} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Student Name</label>
+                <label className="font-bold text-slate-700 block mb-1">Student Name</label>
                 <input
                   type="text"
                   required
                   value={editUserName}
                   onChange={(e) => setEditUserName(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-bold"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-bold"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">WhatsApp / Phone Number</label>
+                <label className="font-bold text-slate-700 block mb-1">WhatsApp / Phone Number</label>
                 <input
                   type="text"
                   value={editUserPhone}
                   onChange={(e) => setEditUserPhone(e.target.value)}
                   placeholder="+91 98765 43210"
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400 font-mono"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-mono font-bold"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Email Address</label>
+                <label className="font-bold text-slate-700 block mb-1">Email Address</label>
                 <input
                   type="email"
                   value={editUserEmail}
                   onChange={(e) => setEditUserEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">User Role</label>
+                <label className="font-bold text-slate-700 block mb-1">User Role</label>
                 <select
                   value={editUserRole}
                   onChange={(e) => setEditUserRole(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 font-medium"
                 >
                   <option value="USER">Regular Student</option>
                   <option value="PREMIUM_USER">VIP Premium Member</option>
@@ -1474,7 +1441,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 active:scale-95 transition mt-2"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition mt-2"
               >
                 Save Student Profile
               </button>
@@ -1485,43 +1452,43 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
       {/* Modal: Broadcast Notification */}
       {showNotifModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-dark-900 border border-slate-700 rounded-3xl p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-white">Broadcast Notification</h3>
-              <button onClick={() => setShowNotifModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-extrabold text-base text-slate-900">Broadcast Notification</h3>
+              <button onClick={() => setShowNotifModal(false)} className="text-slate-400 hover:text-slate-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSendBroadcast} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Notification Title</label>
+                <label className="font-bold text-slate-700 block mb-1">Notification Title</label>
                 <input
                   type="text"
                   required
                   value={notifTitle}
                   onChange={(e) => setNotifTitle(e.target.value)}
                   placeholder="e.g. 🚀 Special ₹99 Price on CapCut Course!"
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Message Body</label>
+                <label className="font-bold text-slate-700 block mb-1">Message Body</label>
                 <textarea
                   required
                   rows={3}
                   value={notifMessage}
                   onChange={(e) => setNotifMessage(e.target.value)}
                   placeholder="e.g. Master viral transitions and land freelance clients today."
-                  className="w-full px-3 py-2 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-xs shadow-lg shadow-purple-500/20 active:scale-95 transition"
+                className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
               >
                 Broadcast to All Students
               </button>
