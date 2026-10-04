@@ -122,13 +122,13 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* Flash Sale Banner */}
       {!isEnrolled && <FlashSaleTimer />}
 
-      {/* 1. Main In-App Video Studio Player Screen */}
+      {/* 1. Main In-App Video Studio Player Screen (YouTube-Style 16:9 Auto-Responsive Ratio) */}
       <div className="rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
         {isLessonUnlocked ? (
           <div
             onDoubleClick={handleDoubleTapOrClick}
             onTouchEnd={handleTouchTap}
-            className="relative aspect-video min-h-[240px] sm:min-h-[380px] md:min-h-[440px] w-full bg-black flex flex-col justify-between overflow-hidden group cursor-pointer"
+            className="relative w-full aspect-video max-h-[78vh] bg-black flex flex-col justify-between overflow-hidden group cursor-pointer select-none"
             title="Double Click or 2x Tap anywhere to Play / Pause (चालू / बंद)"
           >
             {/* DRM Anti-Piracy Floating Watermark (Mobile-safe placement) */}
@@ -156,15 +156,15 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               </div>
             )}
 
-            {/* Video Player or Paused Screen */}
+            {/* Video Player or Paused Screen (Exact Edge-to-Edge 16:9 Fit) */}
             {activeLesson.type === 'video' ? (
               isPlaying ? (
-                <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
+                <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
                   <iframe
                     key={`${course.id}_${activeLesson.id}`}
                     src={embedUrl}
                     title={activeLesson.title}
-                    className="w-full h-full border-0 relative z-10"
+                    className="w-full h-full border-0 absolute inset-0 z-10"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                     allowFullScreen
                     loading="eager"
@@ -174,7 +174,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 /* Paused Overlay Screen */
                 <div
                   onClick={togglePlayPause}
-                  className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
+                  className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
                 >
                   <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 border border-teal-400/40 flex items-center justify-center shadow-lg hover:scale-110 transition active:scale-95">
                     <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
@@ -251,7 +251,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             )}
           </div>
         ) : (
-          <div className="aspect-video min-h-[360px] w-full bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col items-center justify-center text-center space-y-3 relative">
+          <div className="w-full aspect-video max-h-[78vh] bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col items-center justify-center text-center space-y-3 relative">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300">
               <Lock className="w-6 h-6" />
             </div>
@@ -615,61 +615,63 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             </div>
           </div>
 
-          {/* Theater Viewport */}
-          <div
-            onDoubleClick={handleDoubleTapOrClick}
-            onTouchEnd={handleTouchTap}
-            className="relative flex-1 w-full max-h-[82vh] bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer"
-            title="Double Click or 2x Tap to Play / Pause (चालू / बंद)"
-          >
-            {/* DRM Anti-Piracy Watermark */}
-            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Opportunity Stream • {user.id.toUpperCase()}</span>
-            </div>
+          {/* Theater Viewport (YouTube Theater 16:9 Auto-Responsive) */}
+          <div className="flex-1 w-full flex items-center justify-center p-0 sm:p-2 overflow-hidden">
+            <div
+              onDoubleClick={handleDoubleTapOrClick}
+              onTouchEnd={handleTouchTap}
+              className="relative w-full max-w-5xl aspect-video max-h-[76vh] bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer shadow-2xl"
+              title="Double Click or 2x Tap to Play / Pause (चालू / बंद)"
+            >
+              {/* DRM Anti-Piracy Watermark */}
+              <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Opportunity Stream • {user.id.toUpperCase()}</span>
+              </div>
 
-            {/* Gesture Feedback Ripple in Theater */}
-            {gestureFeedback && (
-              <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center animate-in fade-in zoom-in-75 duration-200">
-                <div className="flex flex-col items-center gap-2 p-5 rounded-3xl bg-black/90 backdrop-blur-md border border-teal-500/40 shadow-2xl scale-125">
-                  <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center ring-4 ring-teal-500/30">
-                    {gestureFeedback === 'play' ? (
-                      <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
-                    ) : (
-                      <Pause className="w-8 h-8 fill-teal-400 text-teal-400" />
-                    )}
+              {/* Gesture Feedback Ripple in Theater */}
+              {gestureFeedback && (
+                <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center animate-in fade-in zoom-in-75 duration-200">
+                  <div className="flex flex-col items-center gap-2 p-5 rounded-3xl bg-black/90 backdrop-blur-md border border-teal-500/40 shadow-2xl scale-125">
+                    <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center ring-4 ring-teal-500/30">
+                      {gestureFeedback === 'play' ? (
+                        <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
+                      ) : (
+                        <Pause className="w-8 h-8 fill-teal-400 text-teal-400" />
+                      )}
+                    </div>
+                    <span className="text-xs font-black tracking-wider text-white uppercase">
+                      {gestureFeedback === 'play' ? '▶ Video Started (चालू)' : '⏸ Video Paused (बंद)'}
+                    </span>
                   </div>
-                  <span className="text-xs font-black tracking-wider text-white uppercase">
-                    {gestureFeedback === 'play' ? '▶ Video Started (चालू)' : '⏸ Video Paused (बंद)'}
-                  </span>
                 </div>
-              </div>
-            )}
+              )}
 
-            {isPlaying ? (
-              <iframe
-                key={`theater_${course.id}_${activeLesson.id}`}
-                src={embedUrl}
-                title={activeLesson.title}
-                className="w-full h-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowFullScreen
-                loading="eager"
-              />
-            ) : (
-              <div
-                onClick={togglePlayPause}
-                className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
-              >
-                <div className="w-20 h-20 rounded-full bg-teal-500/20 text-teal-400 border border-teal-400/40 flex items-center justify-center shadow-2xl hover:scale-110 transition active:scale-95">
-                  <Play className="w-10 h-10 fill-teal-400 text-teal-400 ml-1" />
+              {isPlaying ? (
+                <iframe
+                  key={`theater_${course.id}_${activeLesson.id}`}
+                  src={embedUrl}
+                  title={activeLesson.title}
+                  className="w-full h-full border-0 absolute inset-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                  loading="eager"
+                />
+              ) : (
+                <div
+                  onClick={togglePlayPause}
+                  className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
+                >
+                  <div className="w-20 h-20 rounded-full bg-teal-500/20 text-teal-400 border border-teal-400/40 flex items-center justify-center shadow-2xl hover:scale-110 transition active:scale-95">
+                    <Play className="w-10 h-10 fill-teal-400 text-teal-400 ml-1" />
+                  </div>
+                  <div className="text-center px-4">
+                    <p className="text-white font-black text-base sm:text-lg">Video Paused (बंद है)</p>
+                    <p className="text-xs text-slate-400 mt-1">Double Click or Tap on screen to Play (चालू करें)</p>
+                  </div>
                 </div>
-                <div className="text-center px-4">
-                  <p className="text-white font-black text-base sm:text-lg">Video Paused (बंद है)</p>
-                  <p className="text-xs text-slate-400 mt-1">Double Click or Tap on screen to Play (चालू करें)</p>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Theater Bottom Bar Controls */}
