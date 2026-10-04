@@ -38,8 +38,8 @@ export const RazorpayModal: React.FC<RazorpayModalProps> = ({ course, isOpen, on
 
   if (!isOpen || !course) return null;
 
-  const upiId = paymentSettings.upiId || 'creator@okaxis';
-  const payeeName = paymentSettings.payeeName || 'AI Opportunity Creator';
+  const upiId = paymentSettings.upiId || 'satvikbhai@ybl';
+  const payeeName = paymentSettings.payeeName || 'Opportunity AI';
   const upiDeepLink = generateUpiPaymentLink(upiId, payeeName, course.price, course.title, course.id);
   const qrCodeUrl = generateUpiQrCodeUrl(upiDeepLink);
 

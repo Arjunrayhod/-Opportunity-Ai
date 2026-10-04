@@ -101,8 +101,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     e.preventDefault();
     updatePaymentSettings({
       ...paymentSettings,
-      upiId: upiIdInput.trim() || 'creator@okaxis',
-      payeeName: payeeNameInput.trim() || 'AI Opportunity Creator',
+      upiId: upiIdInput.trim() || 'satvikbhai@ybl',
+      payeeName: payeeNameInput.trim() || 'Opportunity AI',
       razorpayKeyId: rzpKeyInput.trim()
     });
     setSettingsSavedToast(true);

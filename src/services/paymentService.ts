@@ -6,8 +6,8 @@ const STORAGE_KEYS = {
 };
 
 export const defaultPaymentSettings: PaymentSettings = {
-  upiId: 'opportunityai@upi',
-  payeeName: 'Opportunity AI Masterclass',
+  upiId: 'satvikbhai@ybl',
+  payeeName: 'Opportunity AI',
   razorpayKeyId: '',
   mode: 'DIRECT_UPI_UTR',
   qrNote: 'Course Enrollment'
