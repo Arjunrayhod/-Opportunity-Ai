@@ -1,7 +1,11 @@
 import React from 'react';
 import { MessageCircle, Users, ArrowRight } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 
 export const VipCommunityBanner: React.FC = () => {
+  const { paymentSettings } = useApp();
+  const vipUrl = paymentSettings.vipGroupLink || 'https://whatsapp.com/channel/0029Vb74V4H9Bb6445cKNs3D';
+
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50/80 to-emerald-100/60 border border-emerald-200/90 p-4 sm:p-5 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -28,7 +32,7 @@ export const VipCommunityBanner: React.FC = () => {
         </div>
 
         <a
-          href="https://wa.me/?text=Hi%20I%20want%20to%20join%20the%20VIP%20Opportunity%20Community"
+          href={vipUrl}
           target="_blank"
           rel="noreferrer"
           className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 !text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm active:scale-95 transition shrink-0"

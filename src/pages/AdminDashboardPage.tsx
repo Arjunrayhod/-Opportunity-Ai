@@ -92,10 +92,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
   const [selectedChatUserId, setSelectedChatUserId] = useState<string>(user.id);
   const [adminReplyInput, setAdminReplyInput] = useState('');
 
-  // UPI / Payment Settings Form
+  // UPI / Payment & Platform Settings Form
   const [upiIdInput, setUpiIdInput] = useState(paymentSettings.upiId);
   const [payeeNameInput, setPayeeNameInput] = useState(paymentSettings.payeeName);
   const [rzpKeyInput, setRzpKeyInput] = useState(paymentSettings.razorpayKeyId || '');
+  const [vipGroupLinkInput, setVipGroupLinkInput] = useState(paymentSettings.vipGroupLink || 'https://whatsapp.com/channel/0029Vb74V4H9Bb6445cKNs3D');
   const [settingsSavedToast, setSettingsSavedToast] = useState(false);
 
   // New Course Form State
@@ -174,7 +175,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       ...paymentSettings,
       upiId: upiIdInput.trim() || 'satvikbhai@ybl',
       payeeName: payeeNameInput.trim() || 'Opportunity AI',
-      razorpayKeyId: rzpKeyInput.trim()
+      razorpayKeyId: rzpKeyInput.trim(),
+      vipGroupLink: vipGroupLinkInput.trim() || 'https://whatsapp.com/channel/0029Vb74V4H9Bb6445cKNs3D'
     });
     setSettingsSavedToast(true);
     setTimeout(() => setSettingsSavedToast(false), 3000);
@@ -1007,6 +1009,22 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
 
               <div>
                 <label className="font-bold text-slate-800 block mb-1.5">
+                  Official VIP WhatsApp Broadcast Group / Channel Link
+                </label>
+                <input
+                  type="url"
+                  value={vipGroupLinkInput}
+                  onChange={(e) => setVipGroupLinkInput(e.target.value)}
+                  placeholder="https://whatsapp.com/channel/..."
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:bg-white font-mono text-xs"
+                />
+                <span className="text-[10px] text-slate-500 mt-1 block">
+                  Students clicking on the "Join VIP WhatsApp" banner will be redirected directly to this link.
+                </span>
+              </div>
+
+              <div>
+                <label className="font-bold text-slate-800 block mb-1.5">
                   Optional Razorpay Merchant Key ID (If using automated card gateway)
                 </label>
                 <input
@@ -1021,7 +1039,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
               {settingsSavedToast && (
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Payment Settings Saved! Students will now pay to <strong>{upiIdInput}</strong>.</span>
+                  <span>Platform & Payment Settings Saved! VIP Channel & Payments Updated.</span>
                 </div>
               )}
 
@@ -1029,7 +1047,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                 type="submit"
                 className="w-full py-3.5 rounded-xl bg-[#003539] hover:bg-[#004f55] text-white font-extrabold text-xs shadow-md active:scale-95 transition"
               >
-                Save Payment Settings
+                Save Platform & Payment Settings
               </button>
             </form>
           </div>

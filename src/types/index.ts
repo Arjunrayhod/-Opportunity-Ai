@@ -121,6 +121,7 @@ export interface PaymentSettings {
   upiId: string;
   payeeName: string;
   razorpayKeyId?: string;
+  vipGroupLink?: string;
   mode: 'DIRECT_UPI_UTR' | 'RAZORPAY_GATEWAY';
   qrNote?: string;
 }

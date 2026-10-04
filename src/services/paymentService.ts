@@ -9,6 +9,7 @@ export const defaultPaymentSettings: PaymentSettings = {
   upiId: 'satvikbhai@ybl',
   payeeName: 'Opportunity AI',
   razorpayKeyId: '',
+  vipGroupLink: 'https://whatsapp.com/channel/0029Vb74V4H9Bb6445cKNs3D',
   mode: 'DIRECT_UPI_UTR',
   qrNote: 'Course Enrollment'
 };
