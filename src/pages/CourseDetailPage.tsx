@@ -11,6 +11,15 @@ interface CourseDetailPageProps {
   onNavigate: (path: string) => void;
 }
 
+const getDriveFolderId = (url?: string) => {
+  if (!url) return '';
+  const match = url.match(/folders\/([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (idMatch) return idMatch[1];
+  return url;
+};
+
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, onNavigate }) => {
   const { courses, user } = useApp();
   const course = courses.find((c) => c.id === courseId) || courses[0];
@@ -64,135 +73,44 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* Flash Sale Banner */}
       {!isEnrolled && <FlashSaleTimer />}
 
-      {/* 1. Main In-App Video Studio Player Screen */}
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-lg">
+      {/* 1. Main In-App Live Video Studio Player Screen */}
+      <div className="rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
         {isLessonUnlocked ? (
-          <div className="relative aspect-video w-full bg-black flex flex-col justify-between overflow-hidden group">
+          <div className="relative w-full aspect-video min-h-[360px] sm:min-h-[480px] bg-slate-950 flex flex-col justify-between overflow-hidden group">
             {/* DRM Anti-Piracy Floating Watermark */}
-            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Opportunity AI Secure • {user.id.toUpperCase()}</span>
+              <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            {/* Video Player Stage */}
-            {activeLesson.type === 'video' ? (
-              <div className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950 overflow-hidden">
-                <img
-                  src={course.thumbnail}
-                  alt={activeLesson.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-35 filter blur-xs group-hover:scale-105 transition duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/40" />
-
-                <div className="relative z-10 p-6 text-center flex flex-col items-center justify-center space-y-4 max-w-md">
-                  <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    Ultra HD 1080p Stream Ready
-                  </span>
-
-                  <div>
-                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
-                      {activeLesson.title}
-                    </h3>
-                    <p className="text-xs text-slate-300 mt-1 line-clamp-2">
-                      {course.subtitle}
-                    </p>
-                  </div>
-
-                  <a
-                    href={course.driveUrl || '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => handleLessonComplete(activeLesson.id)}
-                    className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2.5 transition transform hover:scale-105 active:scale-95 cursor-pointer"
-                  >
-                    <Play className="w-5 h-5 fill-slate-950" />
-                    <span>Watch HD Lecture Stream (Instant Play)</span>
-                  </a>
-
-                  <span className="text-[10px] text-slate-400 font-medium">
-                    ⚡ Zero Buffering • High-Speed CDN • Full Course Folder
-                  </span>
-                </div>
-              </div>
-            ) : activeLesson.type === 'pdf' ? (
-              <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
-                <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
-                  <Download className="w-7 h-7" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-base">{activeLesson.title}</h3>
-                <p className="text-xs text-slate-600 max-w-sm">{activeLesson.textContent}</p>
-                <a
-                  href={course.driveUrl || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => handleLessonComplete(activeLesson.id)}
-                  className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition shadow-xs"
-                >
-                  <Download className="w-4 h-4 !text-white" />
-                  <span className="!text-white">Download Practice Toolkit & Assets</span>
-                </a>
-              </div>
-            ) : activeLesson.type === 'quiz' && activeLesson.quiz ? (
-              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white z-10 my-auto rounded-2xl">
-                <div className="flex items-center gap-2 text-teal-800 text-xs font-bold uppercase">
-                  <HelpCircle className="w-4 h-4 text-teal-700" />
-                  <span>Module Knowledge Check</span>
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                  {activeLesson.quiz.question}
-                </h3>
-                <div className="space-y-2">
-                  {activeLesson.quiz.options.map((opt, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setQuizSelectedOption(idx);
-                        setShowQuizResult(true);
-                        if (idx === activeLesson.quiz?.correctIndex) {
-                          handleLessonComplete(activeLesson.id);
-                        }
-                      }}
-                      className={`w-full p-3 rounded-xl text-left text-xs font-semibold border transition ${
-                        quizSelectedOption === idx
-                          ? idx === activeLesson.quiz?.correctIndex
-                            ? 'bg-emerald-50 border-emerald-500 text-emerald-800'
-                            : 'bg-rose-50 border-rose-500 text-rose-800'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-slate-300'
-                      }`}
-                    >
-                      <span>{String.fromCharCode(65 + idx)}. {opt}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {showQuizResult && (
-                  <div className={`p-3 rounded-xl text-xs ${
-                    quizSelectedOption === activeLesson.quiz?.correctIndex
-                      ? 'bg-emerald-50 border border-emerald-300 text-emerald-900'
-                      : 'bg-rose-50 border border-rose-300 text-rose-900'
-                  }`}>
-                    <p className="font-bold">
-                      {quizSelectedOption === activeLesson.quiz?.correctIndex ? '✅ Correct Answer!' : '❌ Incorrect'}
-                    </p>
-                    <p className="mt-1 text-[11px] opacity-90">{activeLesson.quiz?.explanation}</p>
-                  </div>
-                )}
-              </div>
+            {/* In-App Live Cloud Streaming Frame */}
+            {course.driveUrl ? (
+              <iframe
+                key={course.id}
+                src={`https://drive.google.com/embeddedfolderview?id=${getDriveFolderId(course.driveUrl)}#list`}
+                title={course.title}
+                className="w-full h-full border-0 relative z-10 bg-slate-900"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             ) : (
-              <div className="p-6 text-slate-900 text-xs bg-white z-10 m-auto rounded-2xl">{activeLesson.textContent}</div>
+              <div className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950 p-6 text-center space-y-3">
+                <Play className="w-12 h-12 text-teal-400 fill-teal-400/20" />
+                <h3 className="text-white font-bold text-base">{activeLesson.title}</h3>
+                <p className="text-xs text-slate-400">{activeLesson.textContent || course.subtitle}</p>
+              </div>
             )}
           </div>
         ) : (
-          <div className="aspect-video w-full bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col items-center justify-center text-center space-y-3 relative">
+          <div className="aspect-video min-h-[360px] w-full bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col items-center justify-center text-center space-y-3 relative">
             <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400 flex items-center justify-center text-amber-300">
               <Lock className="w-6 h-6" />
             </div>
             <h3 className="font-black text-white text-base sm:text-lg">
-              This Premium Lesson is Locked
+              This Premium Course is Locked
             </h3>
             <p className="text-xs text-slate-300 max-w-sm">
-              Unlock the complete course with all in-app video modules, downloadable PDF checklists, and lifetime updates.
+              Unlock the complete in-app video series with all video modules, downloadable checklists, and lifetime access.
             </p>
             <button
               onClick={() => setIsRazorpayOpen(true)}
