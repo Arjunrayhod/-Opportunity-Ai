@@ -1,4 +1,4 @@
-import { Course, MarketIndex, StockQuote, Opportunity, CreatorAsset, CommunityMessage, NotificationItem, User, OrderRecord, ComboBundle } from '../types';
+import { Course, Lesson, MarketIndex, StockQuote, Opportunity, CreatorAsset, CommunityMessage, NotificationItem, User, OrderRecord, ComboBundle } from '../types';
 
 export const initialUser: User = {
   id: 'usr_001',
@@ -288,94 +288,4056 @@ export const trendingStocks: StockQuote[] = [
 ];
 
 // Helper to generate consistent lessons with Drive folder integration
-const makeLessons = (courseId: string, title: string, driveUrl: string) => [
-  {
-    id: `${courseId}_lsn_01`,
-    courseId,
-    title: `01. Foundation & Masterclass Overview`,
-    durationMinutes: 30,
-    order: 1,
-    type: 'video' as const,
-    videoType: 'gdrive' as const,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    isFreePreview: true,
-  },
-  {
-    id: `${courseId}_lsn_02`,
-    courseId,
-    title: `02. Core Strategy & Essential Tool Setup`,
-    durationMinutes: 45,
-    order: 2,
-    type: 'video' as const,
-    videoType: 'gdrive' as const,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-    isFreePreview: false,
-  },
-  {
-    id: `${courseId}_lsn_03`,
-    courseId,
-    title: `03. Step-by-Step Practical Implementation`,
-    durationMinutes: 55,
-    order: 3,
-    type: 'video' as const,
-    videoType: 'gdrive' as const,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-    isFreePreview: false,
-  },
-  {
-    id: `${courseId}_lsn_04`,
-    courseId,
-    title: `04. Advanced Optimization & Scaling Secrets`,
-    durationMinutes: 40,
-    order: 4,
-    type: 'video' as const,
-    videoType: 'gdrive' as const,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4',
-    isFreePreview: false,
-  },
-  {
-    id: `${courseId}_lsn_05`,
-    courseId,
-    title: `05. Monetization Framework & High-Ticket Blueprint`,
-    durationMinutes: 50,
-    order: 5,
-    type: 'video' as const,
-    videoType: 'gdrive' as const,
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-    isFreePreview: false,
-  },
-  {
-    id: `${courseId}_lsn_06`,
-    courseId,
-    title: `06. Practical Knowledge & Skill Assessment`,
-    durationMinutes: 20,
-    order: 6,
-    type: 'quiz' as const,
-    quiz: {
-      question: `What is the most critical first step to scale in ${title}?`,
-      options: [
-        'Consistency in execution and following structured frameworks',
-        'Spending thousands on unnecessary third-party ads',
-        'Skipping foundational setup and jumping to monetization',
-        'Working without data tracking and feedback analysis'
-      ],
-      correctIndex: 0,
-      explanation: 'Consistency and structured frameworks are the foundation for repeatable high-income skills.'
+const gdriveCourseLessonsMap: Record<string, Lesson[]> = {
+  "crs_dm_01": [
+    {
+      "id": "crs_dm_01_lsn_01",
+      "courseId": "crs_dm_01",
+      "title": "01. chapter 1",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1OovEbM6iLXFRHPaEom-mNZa0vx41nGmV/preview",
+      "isFreePreview": true
     },
-    isFreePreview: false,
-  },
-  {
-    id: `${courseId}_lsn_07`,
-    courseId,
-    title: `07. Download Action Plan & Practical Templates (PDF)`,
-    durationMinutes: 15,
-    order: 7,
-    type: 'pdf' as const,
-    pdfUrl: driveUrl,
-    textContent: `All official project worksheets, cheat sheets, and templates for ${title} are available for offline practice.`,
-    isFreePreview: false,
+    {
+      "id": "crs_dm_01_lsn_02",
+      "courseId": "crs_dm_01",
+      "title": "02. chapter 2",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1rwitKkgZr_XU77_c5EkWKmQ00avtsmrj/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_03",
+      "courseId": "crs_dm_01",
+      "title": "03. chapter 3",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1X3ubAsapg_L480LuENecxbpKjOkFz7u5/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_04",
+      "courseId": "crs_dm_01",
+      "title": "04. chapter 4",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1U6mcWQLsr0u3FqaWwLGdP6jY-K5JPgE7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_05",
+      "courseId": "crs_dm_01",
+      "title": "05. chapter 5",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Nn9_yVo0TKkE-cQZOd9uRhryfqA-a00Z/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_06",
+      "courseId": "crs_dm_01",
+      "title": "06. chapter 6",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1OkUe4oAzSoCMt6s8WZXWucDvI7vfBK6_/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_07",
+      "courseId": "crs_dm_01",
+      "title": "07. chapter 7",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FhdGAvfsPKjfY2eRqwsVtQuf1P31p7zB/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_08",
+      "courseId": "crs_dm_01",
+      "title": "08. chapter 8 - Part 1",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SggeEbZlj5UduOQwBiuJlktda4IN1SFv/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_09",
+      "courseId": "crs_dm_01",
+      "title": "09. chapter 9",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_z6ceWZMokxs3LJ4pus6Kx5eVxbGELcP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_dm_01_lsn_quiz",
+      "courseId": "crs_dm_01",
+      "title": "10. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 10,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_agency_02": [
+    {
+      "id": "crs_agency_02_lsn_01",
+      "courseId": "crs_agency_02",
+      "title": "01. 1 - Introduction or",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1rgJLbbfeIHAU0TWYDVQlaCTVoQMkYuDL/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_agency_02_lsn_02",
+      "courseId": "crs_agency_02",
+      "title": "02. 2 - Building or",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1lUNZCrNXggGhJCCYUd5viYlWlOuxgcVa/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_agency_02_lsn_03",
+      "courseId": "crs_agency_02",
+      "title": "03. 3 - Conclusion or",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SHVnLOH2xG5ddlLuNgWt9u_6ZoRYGCwi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_agency_02_lsn_04",
+      "courseId": "crs_agency_02",
+      "title": "04. 25$ Free Earning.pdf or PDF",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1F47IhtGN9-8IO0vbSxB6rI6oVCVGtnPJ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_agency_02_lsn_quiz",
+      "courseId": "crs_agency_02",
+      "title": "05. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 5,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_yt_seo_03": [
+    {
+      "id": "crs_yt_seo_03_lsn_01",
+      "courseId": "crs_yt_seo_03",
+      "title": "01. Free Earning.pdf or.vercel .app PDF",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1vkWC841AUyhbzd0zFcQuPYqL9N2cuSlJ/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_02",
+      "courseId": "crs_yt_seo_03",
+      "title": "02. Part 1 - 0 Introduction or.vercel",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Uxds9iEyZU4PCFXlCw7_kAkcwrq3uwu5/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_03",
+      "courseId": "crs_yt_seo_03",
+      "title": "03. 1 Your Project or.vercel .app",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1GR_A1kai08X2rbs7AecFzZ2NyA4S9Yi0/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_04",
+      "courseId": "crs_yt_seo_03",
+      "title": "04. 2 What is YouTube SEO or.vercel .app",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/19o3KkrNe70z2J7fV4TqQg5URFNf0cqqQ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_05",
+      "courseId": "crs_yt_seo_03",
+      "title": "05. 3 Why is Youtube SEO Important for YouTube Growth or.vercel .app",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KXpL-y8LybxcBWOHBIYh-yjgTqg-svJv/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_06",
+      "courseId": "crs_yt_seo_03",
+      "title": "06. 4 The Four YouTube SEO Pillars for YouTube Growth and YouTube Automation or.vercel .app",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-RMYKxuK0ZEZyyT1yD5Dfb_N8Q5VAypW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_07",
+      "courseId": "crs_yt_seo_03",
+      "title": "07. 5 Important Note on Competition or.vercel .app",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1s_VrT_-1tFXek4td9tvfymL_pJdnSdZL/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_08",
+      "courseId": "crs_yt_seo_03",
+      "title": "08. 6 The Most Important Step for Your YouTube Channel Success and YouTube Growth  or.vercel .app",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1OKdekpF_EaVcnzJZm0-c20FuOPOHFOhx/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_09",
+      "courseId": "crs_yt_seo_03",
+      "title": "09. 7 Title SEO Optimization and The Ranking Power  or.vercel .app",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1IbxsPWdFXjuMs6fjh6j6OHYR08LgwAfA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_10",
+      "courseId": "crs_yt_seo_03",
+      "title": "10. 8 SEO Optimization for the YouTube Description or.vercel .app",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1mluBAX6G4olyEXuHpqG9nMpUci7lTjYp/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_11",
+      "courseId": "crs_yt_seo_03",
+      "title": "11. 9 Tags Optimization for a Powerful Boost or.vercel .app",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1VWVOLYmrhf_45y3JXdZ2cjEml_FSmsdZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_12",
+      "courseId": "crs_yt_seo_03",
+      "title": "12. 10 The Window of Opportunity for Ranking and Going Viral or.vercel .app",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_i7VDn48MGRi_5N5ZADAVhQ5oaHBb6Jg/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_13",
+      "courseId": "crs_yt_seo_03",
+      "title": "13. 11 Climbing the Ranks of YouTube Growth and YouTube Channel Success or.vercel .app",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1H1x-6GOzLOHWv78fNcIAQILVuJ5wd5Hl/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_14",
+      "courseId": "crs_yt_seo_03",
+      "title": "14. Part 1 - 12 Wrapping Up or.vercel",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1dAH_QrJ4jkPKVBwsdNWBTOE7bNVwZRVi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_seo_03_lsn_quiz",
+      "courseId": "crs_yt_seo_03",
+      "title": "15. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 15,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_yt_nasir_04": [
+    {
+      "id": "crs_yt_nasir_04_lsn_01",
+      "courseId": "crs_yt_nasir_04",
+      "title": "01. Mastering YouTube Content Creation By Prof. Nasir Arfat",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1NCcbJjtzYarexFJbgFc-r-2OZFzEXkMX/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_yt_nasir_04_lsn_quiz",
+      "courseId": "crs_yt_nasir_04",
+      "title": "02. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 2,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_insta_inc_05": [
+    {
+      "id": "crs_insta_inc_05_lsn_01",
+      "courseId": "crs_insta_inc_05",
+      "title": "01. step 1   °",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1BP6YgpHgvSVPX79ZpKAu82NRAlNEc_bN/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_02",
+      "courseId": "crs_insta_inc_05",
+      "title": "02. step 2   °",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1wqXqzOWmPzbNJ39IAgujS_ti8-ja-0-H/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_03",
+      "courseId": "crs_insta_inc_05",
+      "title": "03. step 3   °",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Dii_arcD7556QeLI-C5OpqNM-OveJgH7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_04",
+      "courseId": "crs_insta_inc_05",
+      "title": "04. step 4   °",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1AA9nRSk8o1wS6j34uzjG3bTqUdsNhHjR/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_05",
+      "courseId": "crs_insta_inc_05",
+      "title": "05. step 5   °",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1YPg9gspFaGwVdQOywXWZXpb3B0jxUIlp/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_06",
+      "courseId": "crs_insta_inc_05",
+      "title": "06. step 6   °",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Hb-gLV22i5zeocv_NNAXsT1wajuokACR/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_07",
+      "courseId": "crs_insta_inc_05",
+      "title": "07. step 7   °",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1zHDcnkzg1tyFoOSwklGqKYsQf6cMuSYi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_08",
+      "courseId": "crs_insta_inc_05",
+      "title": "08. 00- Free Earning Sites   °.pdf PDF",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1h5j-JK6ZTBm-UcFJT_utH01bXhGrnQrl/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_inc_05_lsn_quiz",
+      "courseId": "crs_insta_inc_05",
+      "title": "09. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 9,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_freelancer_13": [
+    {
+      "id": "crs_freelancer_13_lsn_01",
+      "courseId": "crs_freelancer_13",
+      "title": "01. 1 Choosing Profitable Online Freelancing Niches",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1EFUNoXIWG4Ip509RM9lTOVPN5aUSo9yq/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_freelancer_13_lsn_02",
+      "courseId": "crs_freelancer_13",
+      "title": "02. 2 Setting Up Your Online Freelance Profile -Create and Optimize Profiles on Fivver",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1s9Ii6XL878dzt6W6MJ6LSOcZW1sv2VtN/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_03",
+      "courseId": "crs_freelancer_13",
+      "title": "03. 3 Setting Up Your Online Freelance Profile-Create and Optimize Profiles on Upwork",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SaYSnGXY5z4h4tY1DY4ahw5YXM4CPATO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_04",
+      "courseId": "crs_freelancer_13",
+      "title": "04. 4 Setting Up Your Online Freelance Profile-Create Optimize Profiles on Frelancer",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1pKaRTQZF64U-jF_9GjFYss7VpxTcqAAL/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_05",
+      "courseId": "crs_freelancer_13",
+      "title": "05. 5 More Site For Online Earning - Youtube",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1nT5_sVglDPsGDMH0SLfrSth8MABEPJKZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_06",
+      "courseId": "crs_freelancer_13",
+      "title": "06. 6 More Site For Online Earning - 99 Design",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-O_iYTPJhgzKNuhc6skrHhyeNlS3HzRh/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_07",
+      "courseId": "crs_freelancer_13",
+      "title": "07. 7 - Part 1 More Site For Online Earning - Amazon",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1UyrkFngtCuFFq53v8f5e3oeHIvM9-9RD/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_08",
+      "courseId": "crs_freelancer_13",
+      "title": "08. 7 - Part 2 More Site For Online Earning - Amazon",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1jYrmlLYG6ygrBaXDHp8ypwVeqssPI2Tg/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_09",
+      "courseId": "crs_freelancer_13",
+      "title": "09. 7$ Earning Links.pdf PDF",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/19HDjWds9sSb3f2scClxG1YCBuxwUy78d/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_10",
+      "courseId": "crs_freelancer_13",
+      "title": "10. 8 More Site For Online Earning - Envato",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1YZPfqETNjI63vbKUb7MFfqB8T-Urgu6X/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_11",
+      "courseId": "crs_freelancer_13",
+      "title": "11. 9 Building an Effective Online Portfolio",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1h27oCn_jUgDMwnG0Q0He9gaEONBn0K-Y/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_12",
+      "courseId": "crs_freelancer_13",
+      "title": "12. 10 Pricing Strategies for Online Freelancers",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1WFvH3Lr1mw36kmUZ0KtZdoBgDMlf-C_b/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_13",
+      "courseId": "crs_freelancer_13",
+      "title": "13. 11 Time Management and Productivity for Online Freelancers",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1QWNE2utdHdAUlQNjGxFlwH1T_tOMPD5H/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_14",
+      "courseId": "crs_freelancer_13",
+      "title": "14. 12 Maximizing Earnings with Multiple Income Streams",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1CGBFSHbOe-xLpJn6wfDNQFT1-DttTAgT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_15",
+      "courseId": "crs_freelancer_13",
+      "title": "15. 13 Avoiding Scams and Protecting Yourself Online",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1AexUKOvH-RPbzUbyiCnX8_5ICCbWcVDW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_16",
+      "courseId": "crs_freelancer_13",
+      "title": "16. 14 Managing Finances as an Online Freelancer",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1o5ory-RlsNxaS8NW_Kk3BG6aikqFUMfQ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_17",
+      "courseId": "crs_freelancer_13",
+      "title": "17. 15 Scaling Your Online Freelance Business",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1j7JOfUX7bMZDgUIH6zRGT7R7ZWmedGZQ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_18",
+      "courseId": "crs_freelancer_13",
+      "title": "18. 16 Leveraging Online Tools and Resources",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1aZv8_5GADWHJU4VJskK3M9kU4-bHcp2e/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_19",
+      "courseId": "crs_freelancer_13",
+      "title": "19. 17 Legal Considerations for Online Freelancers",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FPudH2mcK4k2od1AAf_2pqUyKuWotoK4/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_20",
+      "courseId": "crs_freelancer_13",
+      "title": "20. 18 Sustaining Motivation and Work-Life Balance",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1VC0woAnx8Mcz_OU3szq6UoRRbpU8gaFC/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_21",
+      "courseId": "crs_freelancer_13",
+      "title": "21. 19 Case Studies and Success Stories",
+      "durationMinutes": 35,
+      "order": 21,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1nB2bucYs_EtdCynKvAHCnqU6jmHD8oj0/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_22",
+      "courseId": "crs_freelancer_13",
+      "title": "22. biggest bonus.pdf PDF",
+      "durationMinutes": 42,
+      "order": 22,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1BMu2p8xzA1G4iTCkb8m42OABH80_lOsT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_23",
+      "courseId": "crs_freelancer_13",
+      "title": "23. one time gift.pdf PDF",
+      "durationMinutes": 24,
+      "order": 23,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1S9hYxkzAO419lx2_mWFLf9UqKXr4dppx/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_freelancer_13_lsn_quiz",
+      "courseId": "crs_freelancer_13",
+      "title": "24. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 24,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_insta_ai_mkt_14": [
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_01",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "01. 001 - Introduction to Faceless Instagram Marketing-HGzn-git.ir",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Wk1-ryCMLVsDkh966aANGoCplqc3SuYW/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_02",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "02. 002-What is faceless Instagram marketing-MR98-git.ir",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/15mQYqMMae_m-pXeao8aGaDlpVKF1DxKl/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_03",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "03. 003-Examples of Successful Pages-2tRL-git.ir",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1a5an60J4_iL2_Posk-ZIwO6kysBD0rpw/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_04",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "04. 004-Using AI To Setup Your Profile-aw72-git.ir",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1nSOho2o3uBV0ZDKNhKjFBCeWSDs5yPHm/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_05",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "05. 005-Creating Viral Carousel Posts-5NOl-git.ir",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-YpoNvz2GqYQyqVEV72hsX4lPAALbE3_/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_06",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "06. 006-Creating Instagram Reels Using Capcut-7zuP-git.ir",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1EOsCr0IHNeUnmfSH1UOOQXBzsrP2w-Ew/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_07",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "07. 007-Reposting Viral Reels-nkdV-git.ir",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1kGx-W-BZ3CNVb-wT4Qgy_bjwByJQWSmV/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_08",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "08. 7$ Earning Links.pdf PDF",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-pg5qW18XtouaKmy38KoIGJATEpAYPiT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_09",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "09. 008-How To Use Instagram Stories-9PwO-git.ir",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/14zvY72j7eni4NfNv1XynFM68u8sN3AP-/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_10",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "10. 009-Instagram Quotes Pages-dIZ4-git.ir",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1glymUObHpjS0fKM1UsQ7cH8EA7-lJe8l/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_11",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "11. 010-Generating Quotes With ChatGPT-HeU1-git.ir",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/10ZF8yNuLs4KiFvb1V8OuonqxLe1FD9ga/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_12",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "12. 011-Finding High Quality Images-D0y6-git.ir",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KsU3UpTAikX1yJfJJhUXtKLhiCF4H6e9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_13",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "13. 012-Editing Your Content Using Canva-H8T9-git.ir",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1fTzL3yfGFN67dAEBcCorryJ8K3hgLdrq/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_14",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "14. 013-How To Generate Ai Voiceovers-ao3V-git.ir",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sWgIo1Gg6N9KLznZ0_yQYCP5Ofvne9tl/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_15",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "15. 014 - Part 1-Downloading Viral Stocks-TQJS-git.ir",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/10EBeqzQzCapKyxyAmZfZg9SdnYq0gKMk/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_16",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "16. 014 - Part 2-Downloading Viral Stocks-TQJS-git.ir",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18XCsEYjpKZqs8lSkgkFKjorct-pr35P2/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_17",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "17. 015-Editing Your Instagram Reels-VFhV-git.ir",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1hCQt2d-M_Af_Q3Uo3w6smU8A-LZbt1h6/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_18",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "18. 016-Content Creation Services-CjNg-git.ir",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1VkTuO3XLvYfJnaeiap6rx1Gmg6d3Qqbb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_19",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "19. 017-How To Find Clients on Instagram-Ytb4-git.ir",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18nWwCPW5C7WBmn3RTgq-ThiJflx5o83w/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_20",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "20. biggest bonus.pdf PDF",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1qhHonBlf0WKvdy1P9s2c6m9xApzkrre9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_21",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "21. exercise files .zip Compressed archive",
+      "durationMinutes": 35,
+      "order": 21,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1XGBoKWdCZAXYFFxDSLZ2vsNb2aFsB5yA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_22",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "22. one time gift.pdf PDF",
+      "durationMinutes": 42,
+      "order": 22,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/186KCiC9tSApvj_7BZVNIisowFgQD2mOY/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_ai_mkt_14_lsn_quiz",
+      "courseId": "crs_insta_ai_mkt_14",
+      "title": "23. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 23,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_capcut_15": [
+    {
+      "id": "crs_capcut_15_lsn_01",
+      "courseId": "crs_capcut_15",
+      "title": "01. 1 -Introduction",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ejh8PtLqOz6ghtgz7QFBjILWhbmq_h4f/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_capcut_15_lsn_02",
+      "courseId": "crs_capcut_15",
+      "title": "02. 2 -Basic Interface introduction and Every Tools Explanation",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1z46gnQdEblQxihFIW84902KmChX_rRGG/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_03",
+      "courseId": "crs_capcut_15",
+      "title": "03. 3 -Creating a Text To Speech Using CapCut",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/14EeHH-D-X1vWC6bCJ4V6JUvjMkMgHTAj/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_04",
+      "courseId": "crs_capcut_15",
+      "title": "04. 4 -How To Create a &amp; Edit It",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1o4rFnMkrHv_fiRlzU6d87lDSh16-IehX/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_05",
+      "courseId": "crs_capcut_15",
+      "title": "05. 5 -How To Use Text Templates fors",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1idrx0EFOleFEdZZYlnsApV-1yrILg_WO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_06",
+      "courseId": "crs_capcut_15",
+      "title": "06. 6 -Using Voice Changer Filters for Part -1",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1802Xm16LWCL2dHEfBTu3owoSgmMXSG-o/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_07",
+      "courseId": "crs_capcut_15",
+      "title": "07. 7 -Using Voice Changer Filters fors Part-2",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SKYrzJTe6jCJTh0I4iHgOco-g2VYJU_T/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_08",
+      "courseId": "crs_capcut_15",
+      "title": "08. 7$ Earning Links.pdf PDF",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iiu5sDCHlbW1W_U8inHS_-lOKLBdh16W/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_09",
+      "courseId": "crs_capcut_15",
+      "title": "09. 8 -How to input Voice over to video files Using CapCut",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1navaaq-3oWA87S3IKZjTZpDmOmZHhOsO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_10",
+      "courseId": "crs_capcut_15",
+      "title": "10. 9 -Making a video Using Different elements of CapCut",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1E2I_eHh2l6oAFUa9AoEW3Zr7fc0Ua98H/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_11",
+      "courseId": "crs_capcut_15",
+      "title": "11. 10 -How to use CapCut Templates and edit it inside CapCut",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/146Zdea6_4MMwV5nHuKjnP3x9mrWtA21Y/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_12",
+      "courseId": "crs_capcut_15",
+      "title": "12. 11 -How to Create Velocitys in CapCut for Free!",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1QEef1cbDn607Q2oOB6KNroU8d80NyEnZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_13",
+      "courseId": "crs_capcut_15",
+      "title": "13. biggest bonus.pdf PDF",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_-U8_B4ZnULwx7WiEQTUv5RIB3VFFZFT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_14",
+      "courseId": "crs_capcut_15",
+      "title": "14. one time gift.pdf PDF",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1d5XHnqr16Q7pJvqe-GrwA6A8cbPkHD3Y/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_capcut_15_lsn_quiz",
+      "courseId": "crs_capcut_15",
+      "title": "15. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 15,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_yt_studio_16": [
+    {
+      "id": "crs_yt_studio_16_lsn_01",
+      "courseId": "crs_yt_studio_16",
+      "title": "01. 01-Introduction",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iRoRcfZn8oAC3Ms-oMPMN5SKcKa1bPZk/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_02",
+      "courseId": "crs_yt_studio_16",
+      "title": "02. 02-Module 1- Mastering Lighting Basics",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_l2Ir4vSGqULrxKN7Xs8qyHytPCPMlQx/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_03",
+      "courseId": "crs_yt_studio_16",
+      "title": "03. 03-Module 2- Setup &amp; Design Your Creative Space  Part 1",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1re352r0Fr62M1UdpOg9NOw4k4fzuimsG/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_04",
+      "courseId": "crs_yt_studio_16",
+      "title": "04. 04-Module 3- Advanced Lighting Techniques",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1GbGBptJpxYLXP-Ih_dMqmC-pZtTfoBej/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_05",
+      "courseId": "crs_yt_studio_16",
+      "title": "05. 05-Module 4- Optimizing Your Studio + My Secret Sauce",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18eR4W9hdtshL6zTLDqCpASi-6VyZA_Oz/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_06",
+      "courseId": "crs_yt_studio_16",
+      "title": "06. 06-Lighting &amp; Set Design",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/16fkMQkeqyxzc6OXjQBeLRFIeMAz7VoL-/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_07",
+      "courseId": "crs_yt_studio_16",
+      "title": "07. 07-Post Production Tips &amp; Tricks",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/11fuqqnEjaRE_WEHeGCeN-dEtmLsd474d/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_08",
+      "courseId": "crs_yt_studio_16",
+      "title": "08. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1kT4tuYHo6bGY3ommEXwNjkv4T7_SKgtF/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_09",
+      "courseId": "crs_yt_studio_16",
+      "title": "09. 03-Module 2- Setup &amp; Design Your Creative Space  Part 2",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iCaC3YcmvtuK9Liw1XNGtV_zB42cBTx8/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_10",
+      "courseId": "crs_yt_studio_16",
+      "title": "10. biggest bonus .pdf PDF",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1OvGW-_MrCdK0mnIPVvKSIEi-3l5iEAlA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_11",
+      "courseId": "crs_yt_studio_16",
+      "title": "11. one time gift .pdf PDF",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/19P2gr3SaJtK6W4sgWjU1ft92VZyDe3QM/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_studio_16_lsn_quiz",
+      "courseId": "crs_yt_studio_16",
+      "title": "12. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 12,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_yt_amir_17": [
+    {
+      "id": "crs_yt_amir_17_lsn_01",
+      "courseId": "crs_yt_amir_17",
+      "title": "01. Class 1. Introduction and Mindset (December)",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/12MsnBPwHLeRLmq4l19CSzl6-1wHay265/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_02",
+      "courseId": "crs_yt_amir_17",
+      "title": "02. Class 2. Niche Research Part 1 (December)",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1YKuPzsg6kWlKvrJKfGhlrlLf3Q0P9zWi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_03",
+      "courseId": "crs_yt_amir_17",
+      "title": "03. Class 3. Niche Research Part 2",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1LpIO768nGwS5F9_cO_V-AWvqHDB9okcx/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_04",
+      "courseId": "crs_yt_amir_17",
+      "title": "04. Class 4. Niche Research Part 3 (December)",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1tuxBYiV1dFC917mCUbR93USr_WbrjY9k/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_05",
+      "courseId": "crs_yt_amir_17",
+      "title": "05. Class 5. Niche Research P4 (December)",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1vLmFXWVzNSOPhFzwzme4p6VdmPLRv7tr/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_06",
+      "courseId": "crs_yt_amir_17",
+      "title": "06. Class 7. Topic Research P1 (December)",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1TZErVyt8iFVH2mgMJDKVsZyNgFfYJZpr/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_07",
+      "courseId": "crs_yt_amir_17",
+      "title": "07. Class 8. Topic Research P2 (December)",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/19fb7xBcNfOVg1fvqRS_eMG8lupPqiKh6/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_08",
+      "courseId": "crs_yt_amir_17",
+      "title": "08. Class 9. Script Writing P1 (December)",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1dS6uA6Pl13WGqzdZGX39OV5AmdDaxnkc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_09",
+      "courseId": "crs_yt_amir_17",
+      "title": "09. Class 10. Script Writing Part 2 (December)",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1131r4cu3ktPzkYD9yUvpbEOV2Qm1mr3C/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_10",
+      "courseId": "crs_yt_amir_17",
+      "title": "10. Class 11. Script Writing (December)",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1A_ZjG3IZS1BrA7FMR4eK2vd1pJv3vqOZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_11",
+      "courseId": "crs_yt_amir_17",
+      "title": "11. Class 12. VO Using Elevanlabs (December)",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/16iyQpnA8eCoxLzkrX69Vvp2pBF5mACC9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_12",
+      "courseId": "crs_yt_amir_17",
+      "title": "12. Class 13. Thumbnails (December)",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1HVP5wt62ltBKlk8Aam9Extr0wtWTKvaA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_13",
+      "courseId": "crs_yt_amir_17",
+      "title": "13. Crime Niche - Zoom Mega Session",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1kJrDuk_2uyru3IsUCvKsYnmwgM3zISXA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_14",
+      "courseId": "crs_yt_amir_17",
+      "title": "14. Last class december",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RTxDCTY47_oU9OuTYP4gEKoPwuvrwVou/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_15",
+      "courseId": "crs_yt_amir_17",
+      "title": "15. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Gy-t0lJhqxEXSivdiAovzZzeAgTfBDMg/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_16",
+      "courseId": "crs_yt_amir_17",
+      "title": "16. biggest bonus.pdf PDF",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RQgv5s5cI6WxF6QgzpE9Z23SPxJeobo3/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_17",
+      "courseId": "crs_yt_amir_17",
+      "title": "17. one time gift.pdf PDF",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1y7oxeOn0HEZXH6im1ZjFM8jBD-0sl1rJ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_amir_17_lsn_quiz",
+      "courseId": "crs_yt_amir_17",
+      "title": "18. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 18,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_viral_90s_18": [
+    {
+      "id": "crs_viral_90s_18_lsn_01",
+      "courseId": "crs_viral_90s_18",
+      "title": "01. Canva SVG",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1vWj7vT7-klZs2IzTFFpVYZ9dQZko4q9b/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_02",
+      "courseId": "crs_viral_90s_18",
+      "title": "02. VIP ACCESS - 💸",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1x1FUpKpb4z-kdGawpJGrHJGH28bUyuLD/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_03",
+      "courseId": "crs_viral_90s_18",
+      "title": "03. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1t1JBOwb8aLN1ZQYJTZlXx12XcoPXwhwH/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_04",
+      "courseId": "crs_viral_90s_18",
+      "title": "04. 1-90Sec Vids   EGuide Download .pdf PDF",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1CugUQxAvg_jOzgyesdBWvKP2gzfgi2U2/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_05",
+      "courseId": "crs_viral_90s_18",
+      "title": "05. 2-90Sec Vids   Support Group .pdf PDF",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Xl4aJz-cUzr17Xj6ZzYUxo0G4S4bP10Y/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_06",
+      "courseId": "crs_viral_90s_18",
+      "title": "06. 3-90Sec Vids   90 Sec Vid System - Bonuses .pdf PDF",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1OfHRwLFhghbqBrpAkuxWpISm0v-Z94d5/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_07",
+      "courseId": "crs_viral_90s_18",
+      "title": "07. 4-90Sec Vids   90 Sec Vid System - 1 On 1 Call .pdf PDF",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1mjFAHvhIA5dvalNoDPhH4Brzmw5zcHbC/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_08",
+      "courseId": "crs_viral_90s_18",
+      "title": "08. 5-90Sec Vids   90 Sec Vid System - Workshops .pdf PDF",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1s0cL5GLDNiTf41nm-46_Qlp3fIlmLxFN/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_09",
+      "courseId": "crs_viral_90s_18",
+      "title": "09. 6-90Sec Vids   90 Sec Vid System - Rewards .pdf PDF",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1TGBB5-u9CkRngoR1ltfjmfBpjl-QfZ5L/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_10",
+      "courseId": "crs_viral_90s_18",
+      "title": "10. 7-90Sec Vids   90 Sec Vid System - Framework .pdf PDF",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Xeg6a1TomYavsseerexo6365hjZkfvFk/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_11",
+      "courseId": "crs_viral_90s_18",
+      "title": "11. 8-90Sec Vids   90 Sec Vid System - Discounr .pdf PDF",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1J5ANNRXkfylGGx4r9XAhihQjKtX9RWKm/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_12",
+      "courseId": "crs_viral_90s_18",
+      "title": "12. 9-90Sec Vids   90 Sec Vid System - Raw Footage .pdf PDF",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1TFiIt2onXfOZNqdsT2hFitiKyKZvhZyW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_13",
+      "courseId": "crs_viral_90s_18",
+      "title": "13. 10-90Sec Vids   90 Sec Vid System - Freebies 1 .pdf PDF",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1m-qM7Qm-yj4ENawfXNgQla3UfMlLBy24/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_14",
+      "courseId": "crs_viral_90s_18",
+      "title": "14. 11-90Sec Vids   90 Sec Vid System - Freebies 2 .pdf PDF",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18xNtI-QwYWY8c-3f9K6bDbbaY1S-ZUq9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_15",
+      "courseId": "crs_viral_90s_18",
+      "title": "15. 90SecVidsEguide .pdf PDF",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Y4Nu3EEb5lBwDG30Zl3xNkaGUOsHC8HT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_16",
+      "courseId": "crs_viral_90s_18",
+      "title": "16. Claim your 7$ reward.pdf PDF",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RqsRVJvvIlLYhUKafRUThGpPxjABomJE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_17",
+      "courseId": "crs_viral_90s_18",
+      "title": "17. IMG-20250620-WA0010.jpg Image",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ZHfSjzX4-W6g2Uikjcrnz2RdXXwdqjXV/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_18",
+      "courseId": "crs_viral_90s_18",
+      "title": "18. Private – Opening not recommended.pdf PDF",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ojaux1_gONT0VksnvTnhcXo4XJCsqUQu/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_19",
+      "courseId": "crs_viral_90s_18",
+      "title": "19. Video 1-1on1VIP Promo",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iUaWNtV5iTki8S2aGxmNwF302kh1libh/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_20",
+      "courseId": "crs_viral_90s_18",
+      "title": "20. Video 2-Rewards and Achievements",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1wfMOkeF7Vnp9iP3UOGEw2v5zTv3mT7Wz/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_21",
+      "courseId": "crs_viral_90s_18",
+      "title": "21. Video 3-Introduction 1",
+      "durationMinutes": 35,
+      "order": 21,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ARYYyYgmA9WC12LnWUZhhxI0UhqliELI/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_22",
+      "courseId": "crs_viral_90s_18",
+      "title": "22. Video 4-Series Framework Overview 2",
+      "durationMinutes": 42,
+      "order": 22,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1WE_2ILjbFJ6WpDM3HfqdP7R8rXeNAOMb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_23",
+      "courseId": "crs_viral_90s_18",
+      "title": "23. Video 5-5 Stages Of Virality 3",
+      "durationMinutes": 24,
+      "order": 23,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Fa26XdxjLbbTNNRTcOv2cwQRGniG8bPg/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_24",
+      "courseId": "crs_viral_90s_18",
+      "title": "24. Video 6-Hooks 4",
+      "durationMinutes": 31,
+      "order": 24,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Q_fi8J1I0Ql6OVPyyTx5rCt1HvG8cmjb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_25",
+      "courseId": "crs_viral_90s_18",
+      "title": "25. Video 7-Rapid Scripting",
+      "durationMinutes": 38,
+      "order": 25,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KsVCFfiuzqRIXSImebWySTjOPp4lV7pm/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_26",
+      "courseId": "crs_viral_90s_18",
+      "title": "26. Video 8-Segmenting Your Niche 5",
+      "durationMinutes": 20,
+      "order": 26,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1DPYA-RyRpyq6Jwp-LBNjr5BeuhWV1s73/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_27",
+      "courseId": "crs_viral_90s_18",
+      "title": "27. Video 9-Rapid No BS Recording 6",
+      "durationMinutes": 27,
+      "order": 27,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ujMIbz-WZAxmM9-tkFQqgEv9usyE_uyb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_28",
+      "courseId": "crs_viral_90s_18",
+      "title": "28. Video 10-Rapid NO Edit Editing 7",
+      "durationMinutes": 34,
+      "order": 28,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/15d_6xxkMzSbxLQgJ7cCL79PQ8nlM1OAb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_29",
+      "courseId": "crs_viral_90s_18",
+      "title": "29. Video 11-Why you just invest 110% of your efforts in this platform 8",
+      "durationMinutes": 41,
+      "order": 29,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1b6H7c9yPMfr3oNVjXxQH_GmK5_MtpjF1/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_30",
+      "courseId": "crs_viral_90s_18",
+      "title": "30. Video 12-90Sec Vid Testimonial-1",
+      "durationMinutes": 23,
+      "order": 30,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1owfnGZ1gfqjHE-WNMjqWfBFqXerlvaAF/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_31",
+      "courseId": "crs_viral_90s_18",
+      "title": "31. Video 13-Introduction 1 2",
+      "durationMinutes": 30,
+      "order": 31,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1A7t6J3a_4QLo4tYPid7tXE8b1OMoX4-C/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_32",
+      "courseId": "crs_viral_90s_18",
+      "title": "32. Video 14-Real Life Results 2",
+      "durationMinutes": 37,
+      "order": 32,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/17hRqcFU6e0UzgYGlqD-IyvHuhaowxohG/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_33",
+      "courseId": "crs_viral_90s_18",
+      "title": "33. Video 15-Guarantees to Failure 3",
+      "durationMinutes": 44,
+      "order": 33,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/17LPcZqodLDiky3IfHN7CWYxZhWzRNF6U/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_34",
+      "courseId": "crs_viral_90s_18",
+      "title": "34. Video 16-How Short Form Content Works 4",
+      "durationMinutes": 26,
+      "order": 34,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1BrF2Ug2iY6DSHipF-lem0sypGxKw37OL/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_35",
+      "courseId": "crs_viral_90s_18",
+      "title": "35. Video 17-Audience Mindset 5",
+      "durationMinutes": 33,
+      "order": 35,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1tbo_6pBbuCG7a2Ag24pUE5nkAybYccoj/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_36",
+      "courseId": "crs_viral_90s_18",
+      "title": "36. Video 18-Persona 6",
+      "durationMinutes": 40,
+      "order": 36,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1yJv9bDMFivE5IS5RSgZ8OoO7kIw-jrnq/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_37",
+      "courseId": "crs_viral_90s_18",
+      "title": "37. Video 19-Account Creation 7",
+      "durationMinutes": 22,
+      "order": 37,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/19-OVIV6k1QrWsag180rtdYgYvFVTP4Ne/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_38",
+      "courseId": "crs_viral_90s_18",
+      "title": "38. Video 20-Channel Theme 8",
+      "durationMinutes": 29,
+      "order": 38,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/11a3AX72RL2eTZYPvHhVPlPRpxEMmgEu7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_39",
+      "courseId": "crs_viral_90s_18",
+      "title": "39. Video 21-Offer Creation 9",
+      "durationMinutes": 36,
+      "order": 39,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1B1BKpIr4_lA2-4K5Sz0tJEkYjZ8REBIE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_40",
+      "courseId": "crs_viral_90s_18",
+      "title": "40. Video 22-Offer Page 10",
+      "durationMinutes": 43,
+      "order": 40,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RXP6nihuxKqOZEcwmA9H5fOmtglPBkoe/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_41",
+      "courseId": "crs_viral_90s_18",
+      "title": "41. Video 23-Creating an Offer 11",
+      "durationMinutes": 25,
+      "order": 41,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1B_oxlX4qgt02IKq4jvaBEfNV1tGIwEF5/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_42",
+      "courseId": "crs_viral_90s_18",
+      "title": "42. Video 24-Bingeable Content 12",
+      "durationMinutes": 32,
+      "order": 42,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1DOifxu0IPZIrDfE8zJMCwBE3VYQTxs_G/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_43",
+      "courseId": "crs_viral_90s_18",
+      "title": "43. Video 25-Video Structure 13",
+      "durationMinutes": 39,
+      "order": 43,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1nkCtgKXI35qE5vddUbw35vEA0cbkQpI4/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_44",
+      "courseId": "crs_viral_90s_18",
+      "title": "44. Video 26-Creating Videos 14",
+      "durationMinutes": 21,
+      "order": 44,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1xYrtegr4Hh4VNmDfO1y-BpdijK7G122H/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_45",
+      "courseId": "crs_viral_90s_18",
+      "title": "45. Video 27-Analyse Results 15",
+      "durationMinutes": 28,
+      "order": 45,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1jLcNS457m-UOasJs38goMVXIAHxcvllT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_46",
+      "courseId": "crs_viral_90s_18",
+      "title": "46. Video 28-Creating a Content Schedule 16 - Part 1",
+      "durationMinutes": 35,
+      "order": 46,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1NaUtuLCdN5kYSIIXoVJmNLAjH0yDfctJ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_47",
+      "courseId": "crs_viral_90s_18",
+      "title": "47. Video 28-Creating a Content Schedule 16 - Part 2",
+      "durationMinutes": 42,
+      "order": 47,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1K5IX8UKa9o4ZIxiymEQlwqxhJdnNuDxE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_48",
+      "courseId": "crs_viral_90s_18",
+      "title": "48. Video 29-Analytics 17",
+      "durationMinutes": 24,
+      "order": 48,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1pov7GQz5IH_maFq0zy6V5VRYBUSYfB5p/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_49",
+      "courseId": "crs_viral_90s_18",
+      "title": "49. Video 30-Organic Boosts 18",
+      "durationMinutes": 31,
+      "order": 49,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1L9IOL2Sy1HxKeJZL1og0v25EaeQuz1Kb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_viral_90s_18_lsn_quiz",
+      "courseId": "crs_viral_90s_18",
+      "title": "50. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 50,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_digital_prod_19": [
+    {
+      "id": "crs_digital_prod_19_lsn_01",
+      "courseId": "crs_digital_prod_19",
+      "title": "01. VIP ACCESS - 💸",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1glbXl43NQvrIsBO61BPWEcNsh8A0WigY/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_02",
+      "courseId": "crs_digital_prod_19",
+      "title": "02. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KHNOweLzA5wnv3lM8FWd4xYN1-ZYq5gP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_03",
+      "courseId": "crs_digital_prod_19",
+      "title": "03. 1.Landing Page Optimisation",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1zUxnunImcYB77KNZSQF2ui0I4_T_Ur9X/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_04",
+      "courseId": "crs_digital_prod_19",
+      "title": "04. 2.Step-by-Step Guide to Creating Digital Products",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/10zdAzm_H5GvuiIhDKOonIyOnUriZVB-N/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_05",
+      "courseId": "crs_digital_prod_19",
+      "title": "05. 3.Payment Gateways",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1yijcqZ4jr2JRkSzTFh_PBXW6NJorJmzf/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_06",
+      "courseId": "crs_digital_prod_19",
+      "title": "06. 4.1. Review",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18FC3A1_NSvquU9HBC1qjww05COvwQvim/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_07",
+      "courseId": "crs_digital_prod_19",
+      "title": "07. Claim your 7$ reward.pdf PDF",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FgqI5kQmtITPj4KSuVE06eg4q0WTfNoj/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_08",
+      "courseId": "crs_digital_prod_19",
+      "title": "08. Live Selling link .txt Text",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1WL_sk4LebuadusmTDwKy1Ksqfo3tXgZr/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_09",
+      "courseId": "crs_digital_prod_19",
+      "title": "09. Private – Opening not recommended.pdf PDF",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/17-TFNsX8pMLsGqPfKg8TgtTlIfkdr2cf/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_10",
+      "courseId": "crs_digital_prod_19",
+      "title": "10. Review 2",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FFyVz_OD63JIXzOmwqqfkU04xhaVGGbE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_11",
+      "courseId": "crs_digital_prod_19",
+      "title": "11. Review 3",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1jvHWMYRVpNR-AaV9Xc-hwrRP_-YAhpJP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_12",
+      "courseId": "crs_digital_prod_19",
+      "title": "12. Review 4",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1exBHuBHupfZUq12MPVAX2TklISBzyDLY/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_13",
+      "courseId": "crs_digital_prod_19",
+      "title": "13. Review 5",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1aDbaiTyMjk1LfSISNt3VDGx_0-Zv6v9P/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_digital_prod_19_lsn_quiz",
+      "courseId": "crs_digital_prod_19",
+      "title": "14. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 14,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_time_mgmt_20": [
+    {
+      "id": "crs_time_mgmt_20_lsn_01",
+      "courseId": "crs_time_mgmt_20",
+      "title": "01. VIP ACCESS - 💸",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1DhI7Ja6TEdtGSkbf3b2cjjz69-Ukgg2H/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_02",
+      "courseId": "crs_time_mgmt_20",
+      "title": "02. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1lK3UgpVBRzSkPu1SBavQDwyXcgnOzKdX/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_03",
+      "courseId": "crs_time_mgmt_20",
+      "title": "03. 001-Welcome",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KZGGX94xZlNaB-z6oVa7Hl0Sfxtv_w0Y/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_04",
+      "courseId": "crs_time_mgmt_20",
+      "title": "04. 002-Understanding Time The Fundamental Building Block",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iLFcr2z3TX1uG2zX1ckmhLkaPbWkSFzD/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_05",
+      "courseId": "crs_time_mgmt_20",
+      "title": "05. 003-The Truth About Multitasking Why Focus Works Better",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1YX0n26yJUddv-Oe1ywE72WCxRxBdD_eC/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_06",
+      "courseId": "crs_time_mgmt_20",
+      "title": "06. 004-How to Sort Your Tasks The Priority Box",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sZpDWcsSDDDEo5J27vGac4sEJi9xO8xK/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_07",
+      "courseId": "crs_time_mgmt_20",
+      "title": "07. 005-The Power of Planning Creating a Personalised Schedule",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1bX9TiOLmC77FAtL0ec82MMls4NIDOUe7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_08",
+      "courseId": "crs_time_mgmt_20",
+      "title": "08. 006-Overcoming Procrastination Strategies for Motivation",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/10twNxDXBFVk508nn6lL92nK4iu73UaAz/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_09",
+      "courseId": "crs_time_mgmt_20",
+      "title": "09. 007-Time Saving Habits Quick Wins for Efficiency",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1bHojlkJIG9YbXl3DwvzQml7EY7yELQxL/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_10",
+      "courseId": "crs_time_mgmt_20",
+      "title": "10. 008-Mindfulness and Time Management Reducing Distractions",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_2rSKNoan6MNO3VVcrAE0Xpiyqytn4Dp/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_11",
+      "courseId": "crs_time_mgmt_20",
+      "title": "11. 009-Delegating and Outsourcing Leveraging Your Resources",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1hFci0NzUTDu3tMOgqWWauGoo8Q6_k2Qe/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_12",
+      "courseId": "crs_time_mgmt_20",
+      "title": "12. 010-Measuring Progress Tracking Time and Metrics",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RDzfl49WMJRkLf7G-fiMbljhV9-Lver_/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_13",
+      "courseId": "crs_time_mgmt_20",
+      "title": "13. 011-Energy Management Your Best and Rest Times",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/12DXERPpIjiZbfdjn9ciSXdwku3W_NldE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_14",
+      "courseId": "crs_time_mgmt_20",
+      "title": "14. 012-The 80 20 Rule Identifying High Impact Activities",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1J3O7vHDCEzuR8n75BNQZ1rtIp1l74FYP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_15",
+      "courseId": "crs_time_mgmt_20",
+      "title": "15. 013-Handling Interruptions Protecting Your Focused Time",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-FG2nU4C-JWbMeGmZCKPQx5g0Y-6d-Gt/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_16",
+      "courseId": "crs_time_mgmt_20",
+      "title": "16. 014-14 Effective Meetings Maximizing Time and Collaboration",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1qPHKEYEIHRxt26gp3xN2yD1Orla9Kgmi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_17",
+      "courseId": "crs_time_mgmt_20",
+      "title": "17. 015-15 Email and Communication Streamlining Your Inbox",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1L1EKbI16GdfWeY0yrGGVkO4CsujexLkn/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_18",
+      "courseId": "crs_time_mgmt_20",
+      "title": "18. 016-16 Digital Tools and Apps Leveraging Technology",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/13Z90aPQVzjLlH1gy-xU-OKgno36OD-VM/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_19",
+      "courseId": "crs_time_mgmt_20",
+      "title": "19. Claim your 7$ reward.pdf PDF",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ieWYNk09ATEKeNjbYXGE6urjvZizroZZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_20",
+      "courseId": "crs_time_mgmt_20",
+      "title": "20. Private – Opening not recommended.pdf PDF",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1zK-wgY6nxtnw15c6RXl17QUkC75QSyeh/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_time_mgmt_20_lsn_quiz",
+      "courseId": "crs_time_mgmt_20",
+      "title": "21. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 21,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_fb_fawaz_23": [
+    {
+      "id": "crs_fb_fawaz_23_lsn_01",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "01. VIP ACCESS - 💸",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-2psuXPtdx5cUINKAdxjDuEKHyU9K4i1/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_02",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "02. Lec 1 - Important Concepts",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1T1MOUSrszztrYxrp6uqsUS7ZLC2rfY-j/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_03",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "03. Lec 2 - Facebook Business Page Essentials",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1grtdeH2U5AYeur6rhkvtNYBC3CwwDJJo/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_04",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "04. Lec 5 - Detailed Targeting",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SqjdvFItzILeuB4dIkxsHOxQ6g7uDIjo/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_05",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "05. Lec 6 - Filter Non Serious Customers",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1p8Akddp264MSp5BdYt4AEnCmBMFk5pQW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_06",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "06. Lec 6 (Browse - Detailed Targeting)",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FxEsqnulE96yo3O2mY_NBf98A8OcJTPF/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_07",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "07. Lec 7 (Ad Objectives)",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1pTUI6xAu6sTdhFkQ6SByhWNK7P8MtdAR/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_08",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "08. Lec 8 (A B Test)",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1a9iMesS3cQL3ZoYjxgmGKG_jm_paKlJT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_09",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "09. Lecture 9 - Online Quran Academy",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ZoYPvHQN-c7cOjCWQ8zhYJIy_fq7ndvE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_10",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "10. Page Interests from Mobile",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1fViUvebLt4pR8H89LWn6SRKIhxkiaeKP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_11",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "11. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Cr3eCVDktRWBtco1CwV9roiwzR-ijpDP/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_12",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "12. Claim your 7$ reward .pdf PDF",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1cPWDHP1QsZSN4rDCXdcGrImSoUYaLlC_/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_13",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "13. Private – Opening not recommended .pdf PDF",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/173s5wT5AI-FVD_jdQOJrNg2YWTekMW9B/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_fawaz_23_lsn_quiz",
+      "courseId": "crs_fb_fawaz_23",
+      "title": "14. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 14,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_snap_auto_24": [
+    {
+      "id": "crs_snap_auto_24_lsn_01",
+      "courseId": "crs_snap_auto_24",
+      "title": "01. Module 1 Snapchat Automation",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1VU9sLnwVgUuKtST3PsTtjx3AeylYmqaD/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_02",
+      "courseId": "crs_snap_auto_24",
+      "title": "02. Module 2 Mind Control",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1HpLpmhBuFp6Y30kqgV-0FN2i8gr0IT97/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_03",
+      "courseId": "crs_snap_auto_24",
+      "title": "03. Module 3 Content Creation (BEGINNERS)",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1vSG7ffOD8kLTaXXPcaIakgX7CKKZK7BW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_04",
+      "courseId": "crs_snap_auto_24",
+      "title": "04. VIP ACCESS - 💸",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1kb94_C-jr--cfloc40hqi95mx835jbqe/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_05",
+      "courseId": "crs_snap_auto_24",
+      "title": "05. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1qHUMYhgotzQajm13sSidMPilZv07dbLk/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_06",
+      "courseId": "crs_snap_auto_24",
+      "title": "06. Claim your 7$ reward .pdf PDF",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1oInmAylZXjKTbjcz76s1dsN1AeHVcQf9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_07",
+      "courseId": "crs_snap_auto_24",
+      "title": "07. Private – Opening not recommended .pdf PDF",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/16kfRzDqBjMMnvk-GqiyMCI_EFWAXjjzA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_snap_auto_24_lsn_quiz",
+      "courseId": "crs_snap_auto_24",
+      "title": "08. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 8,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_insta_shiksha_26": [
+    {
+      "id": "crs_insta_shiksha_26_lsn_01",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "01. VIP ACCESS - 💸",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1rqxx0taD8VvhhwdNT3dwYeCXQENyRDvy/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_02",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "02. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1d2wr-LGFnDhTwHhZ1bHZOWs1cH3hTFIN/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_03",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "03. Claim your 7$ reward .pdf PDF",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/14mmslLKKXceAeQiBIe7ARdn8Bvrij5Oq/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_04",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "04. lesson 1",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1SNbNGg_k6-9Kyk8VZ6YQvqJIdvm5oDk6/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_05",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "05. lesson 2",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1x0QrcBoCsK6LADEBaBB5cKlddPHwr5vV/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_06",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "06. Private – Opening not recommended .pdf PDF",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/177vczmUcd_ZAVF0Y-VaOGmqcW8agTGh6/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_07",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "07. QnA",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/12AiB4WEbznOs20tBiptsp2b4BT-7MpVi/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_insta_shiksha_26_lsn_quiz",
+      "courseId": "crs_insta_shiksha_26",
+      "title": "08. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 8,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_fb_hamza_27": [
+    {
+      "id": "crs_fb_hamza_27_lsn_01",
+      "courseId": "crs_fb_hamza_27",
+      "title": "01. QnA",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ym-5LYmtiUAO29kmO0nbjAbBfKwYiJCu/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_02",
+      "courseId": "crs_fb_hamza_27",
+      "title": "02. Session 1",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/17h-ev4vj9p636pNSrPeLXIr44RFB7m96/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_03",
+      "courseId": "crs_fb_hamza_27",
+      "title": "03. Session 2",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ae8rRjQymLHaalal_f0GNL32_EY9qN6Z/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_04",
+      "courseId": "crs_fb_hamza_27",
+      "title": "04. Session 3",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1S-avvvUcxAbG7tfNy-WG6MvIhkyti-EZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_05",
+      "courseId": "crs_fb_hamza_27",
+      "title": "05. Session 4",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ZPtCesot6P-TnkSkU_hxI_wdKen9zffG/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_06",
+      "courseId": "crs_fb_hamza_27",
+      "title": "06. Session 5",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1eNaf961yI33psTtiSrYN7G8XxPiRj3Uz/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_07",
+      "courseId": "crs_fb_hamza_27",
+      "title": "07. Session 6",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ZSduTC6uYE0t65Dq66Hu8Omosx-pQenr/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_08",
+      "courseId": "crs_fb_hamza_27",
+      "title": "08. Session 7",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1bJRFmsJaDSus10na-J244cHZgNGZruPA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_09",
+      "courseId": "crs_fb_hamza_27",
+      "title": "09. Session 8",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/16Gi8pS8BfKM9cNBffPYl0NpNyxmaGT0-/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_10",
+      "courseId": "crs_fb_hamza_27",
+      "title": "10. Session 9",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Mazy5vk1V-1G-7Aru96KZ-UXg1AkZxqc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_11",
+      "courseId": "crs_fb_hamza_27",
+      "title": "11. Session 10",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1xopIFO4GVpS-FVeiAngge3fbx5u-0fP2/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_12",
+      "courseId": "crs_fb_hamza_27",
+      "title": "12. Session 11",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1YW5QyXCNDCnTG9lTFi9GztTTE55jwdIv/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_13",
+      "courseId": "crs_fb_hamza_27",
+      "title": "13. Session 12",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1n0td8PimATmK2fzXuxjs44J1HCUjX-sO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_14",
+      "courseId": "crs_fb_hamza_27",
+      "title": "14. Session 13",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1j-jCpQFuqCfZmjMkF4ed3O5xW0MlbSQZ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_15",
+      "courseId": "crs_fb_hamza_27",
+      "title": "15. Session 14",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1wLem-oLlBUjksN5B-09sm-8a4mWYJpRE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_16",
+      "courseId": "crs_fb_hamza_27",
+      "title": "16. Session 15",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-jw3dGaarXmgVkDzDL2vQRnEyJG3Hfyh/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_17",
+      "courseId": "crs_fb_hamza_27",
+      "title": "17. Session 16",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1hUwGLjrWU6DmC97PUOmqG1RWK6acGjp3/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_18",
+      "courseId": "crs_fb_hamza_27",
+      "title": "18. VIP ACCESS - 💸",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1iKsdHEyoiVsdVsnaf9WOL-CX8V26i3Ui/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_19",
+      "courseId": "crs_fb_hamza_27",
+      "title": "19. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1DDd8psrFq8LfNAE6FYaTmKfeaVt6irYB/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_20",
+      "courseId": "crs_fb_hamza_27",
+      "title": "20. Claim your 7$ reward.pdf PDF",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1UlH_9FHR3Dz_1zfVDVAFYMf26fUbl5Qt/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_21",
+      "courseId": "crs_fb_hamza_27",
+      "title": "21. Private – Opening not recommended.pdf PDF",
+      "durationMinutes": 35,
+      "order": 21,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1gECI8A6GBqUIvQpla7TVQFwkh-TlMkeA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_fb_hamza_27_lsn_quiz",
+      "courseId": "crs_fb_hamza_27",
+      "title": "22. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 22,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_veo3_28": [
+    {
+      "id": "crs_veo3_28_lsn_01",
+      "courseId": "crs_veo3_28",
+      "title": "01. 00- 💸 Earning Websites.pdf PDF",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1QNE-ALiymFhAa2WTM6fo-R9Hvh2PhhCb/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_veo3_28_lsn_02",
+      "courseId": "crs_veo3_28",
+      "title": "02. Private – Opening not recommended.pdf PDF",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1UzKztA6gShLqaJMxYooSN3FAZgPlAjWz/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_veo3_28_lsn_03",
+      "courseId": "crs_veo3_28",
+      "title": "03. prompts.pdf PDF",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FFAOKAmC5ZXRHW0CM4PQdOhpaXMxQPeo/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_veo3_28_lsn_quiz",
+      "courseId": "crs_veo3_28",
+      "title": "04. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 4,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_ai_agents_29": [
+    {
+      "id": "crs_ai_agents_29_lsn_01",
+      "courseId": "crs_ai_agents_29",
+      "title": "01. 01-AI Automation Templates",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Zd1Rlzid0UQPnuqbccfxJB8oqPYuY3Ly/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_02",
+      "courseId": "crs_ai_agents_29",
+      "title": "02. 02-AI Agent Templates",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1o0OhOPFQWunu0hj19MY-przgRz-xmuXc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_03",
+      "courseId": "crs_ai_agents_29",
+      "title": "03. 03-AI Automation Agent Community",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1NLR2xwYGNzvLKLBTSpSDQnX4zO8mzUsE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_04",
+      "courseId": "crs_ai_agents_29",
+      "title": "04. VIP ACCESS - 💸",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Z0YWye4z1G_b3hdp_EIAduEW72WbdLUj/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_05",
+      "courseId": "crs_ai_agents_29",
+      "title": "05. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1j9YAnES-u6y9Q9TD05CKeJmz6z6m-P5w/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_06",
+      "courseId": "crs_ai_agents_29",
+      "title": "06. Claim your 7$ reward .pdf PDF",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/12TZWIW_uU36aSvgzPEhqoydx_9kRebZp/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_07",
+      "courseId": "crs_ai_agents_29",
+      "title": "07. Private – Opening not recommended .pdf PDF",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1qX9uPGiIgj-AZUXC_VZPhy1YTK30CHM7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_agents_29_lsn_quiz",
+      "courseId": "crs_ai_agents_29",
+      "title": "08. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 8,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_ai_master_30": [
+    {
+      "id": "crs_ai_master_30_lsn_01",
+      "courseId": "crs_ai_master_30",
+      "title": "01. VIP ACCESS - 💸",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sS9klkMZZ-sJxuX69SslMVMJKgtk-n-T/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_ai_master_30_lsn_02",
+      "courseId": "crs_ai_master_30",
+      "title": "02. 00- 💸 Earning Websites .pdf PDF",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1xZ8MUTZWbx4YP6xmMVLNbWokdHDxMJUx/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_03",
+      "courseId": "crs_ai_master_30",
+      "title": "03. 1. Nobita is the world&#39;s first prompt engineer",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1R0ZZUeCr58RJIiy9HIckl17pLVbh_78Z/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_04",
+      "courseId": "crs_ai_master_30",
+      "title": "04. 2. Fundamentals of ChatGPT Understanding LLMs",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1bb8CKw8CuI5oY7vu_QVjXp64l7ZI27nS/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_05",
+      "courseId": "crs_ai_master_30",
+      "title": "05. 3. Decoding Randomness in ChatGPT Conversations (Hallucination)",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-VodYfa1vDv0MsLnEXx89dyJ1yT1_q36/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_06",
+      "courseId": "crs_ai_master_30",
+      "title": "06. 4. ChatGpt Interface &amp; Sign up",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1JeIuy87cX_VJ5q7gA5pHEgqlzchwVStY/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_07",
+      "courseId": "crs_ai_master_30",
+      "title": "07. 5. Course Guide- Navigating Examples, Assignments &amp; Resources",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1AHiDE_A7toZwkUflLCUpM6QzKC4nRfKV/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_08",
+      "courseId": "crs_ai_master_30",
+      "title": "08. 6. Understanding Prompts The Foundation of Effective AI Interaction in ChatGPT",
+      "durationMinutes": 44,
+      "order": 8,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ADHc-xwIyCCZ7dHSf6mWB1pxphp7vISc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_09",
+      "courseId": "crs_ai_master_30",
+      "title": "09. 7. The Intuition Behind Prompts How to Communicate with AI Effectively in ChatGPT",
+      "durationMinutes": 26,
+      "order": 9,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/16Xpb_hULhRvtt5yfQ4LbtYHBRv19EQcG/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_10",
+      "courseId": "crs_ai_master_30",
+      "title": "10. 8. Essential Prompt Patterns for Better AI Communication in ChatGPT",
+      "durationMinutes": 33,
+      "order": 10,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Qq3_aDH_T1LEcX3uYadoGVYzn7Jkj-VE/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_11",
+      "courseId": "crs_ai_master_30",
+      "title": "11. 9. Prompt Programming for Everyone Unlocking the Power of AI Conversations",
+      "durationMinutes": 40,
+      "order": 11,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1WDlCgx65ovPiJ_GX0LKaaq1FcBh5OMhX/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_12",
+      "courseId": "crs_ai_master_30",
+      "title": "12. 10. The Persona Pattern in AI Crafting Context and Character for Engaging Responses",
+      "durationMinutes": 22,
+      "order": 12,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/190Kzu68TXSBuRwILS2EmZeEYRoyUSo9L/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_13",
+      "courseId": "crs_ai_master_30",
+      "title": "13. 11. Incorporating New Information in ChatGPT for Data Processing or Accurate Answers",
+      "durationMinutes": 29,
+      "order": 13,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1v0qosmLKov-os78r0HjMhAV9L4wXzFeB/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_14",
+      "courseId": "crs_ai_master_30",
+      "title": "14. 12. Leveraging ChatGPT Conversation Prompts A Strategy for Goal Fullfilment",
+      "durationMinutes": 36,
+      "order": 14,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1jSzwjJLARximn-nIxgd_MnzrIZx_YqZ7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_15",
+      "courseId": "crs_ai_master_30",
+      "title": "15. 13. Root Prompts Building the Foundation for Powerful AI Interactions in ChatGPT",
+      "durationMinutes": 43,
+      "order": 15,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1xBU1xfaL6RiCVxGzdQtd6Ad9lsTdYsU4/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_16",
+      "courseId": "crs_ai_master_30",
+      "title": "16. 14. Question Refinement Pattern Enhance Clarity and Precision in AI Prompts",
+      "durationMinutes": 25,
+      "order": 16,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1gDRqm3783SqLI5KxlE2YNjAn7TX48q2g/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_17",
+      "courseId": "crs_ai_master_30",
+      "title": "17. 15. The Cognitive Verifier Pattern Ensuring Accurate AI Responses in ChatGPT",
+      "durationMinutes": 32,
+      "order": 17,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1y0Y7t1zo_fEfAVCM9PcWF_fC6yEYsuLS/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_18",
+      "courseId": "crs_ai_master_30",
+      "title": "18. 16. Audience Persona Pattern Tailoring AI Responses for Specific Users in ChatGPT",
+      "durationMinutes": 39,
+      "order": 18,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Sl1jOH3zpnleOBUY6CvuIwHS9mGP_8oJ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_19",
+      "courseId": "crs_ai_master_30",
+      "title": "19. 17. Flipped Interaction Pattern Engaging AI by Reversing the Conversation in ChatGP",
+      "durationMinutes": 21,
+      "order": 19,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1P5Zvr_T_rDQGvX0GZtKHVQ5-39j1_0Qc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_20",
+      "courseId": "crs_ai_master_30",
+      "title": "20. 18. Few-shot Examples Teach AI with Minimal Data for Maximum Impact in ChatGPT",
+      "durationMinutes": 28,
+      "order": 20,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1luajkI6ZSiaFmNz6oUW3Rh1_nNx95VVA/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_21",
+      "courseId": "crs_ai_master_30",
+      "title": "21. 19. Few-shot Examples for Actions Guide AI to Perform Tasks Effectively in ChatGPT",
+      "durationMinutes": 35,
+      "order": 21,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1UjTV0UFbVBvuRBTrrzv1goT9FRxPQpi0/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_22",
+      "courseId": "crs_ai_master_30",
+      "title": "22. 20. Crafting Few-Shot Examples with Intermediate Steps for Clear AI Guidance",
+      "durationMinutes": 42,
+      "order": 22,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1jrUIAcMW7KqU6gJiBNM4NIDhOyDksnIn/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_23",
+      "courseId": "crs_ai_master_30",
+      "title": "23. 21. Chain of Thought Prompting Step-by-Step Reasoning for Complex AI Tasks",
+      "durationMinutes": 24,
+      "order": 23,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1q8NcCn3W1bouB8WcQ9gmP0wbth8CthEW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_24",
+      "courseId": "crs_ai_master_30",
+      "title": "24. 22. ReAct Prompting Combining Reasoning and Action for Dynamic AI Responses",
+      "durationMinutes": 31,
+      "order": 24,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1KPTpbHfnKcd7bETQcmEuPmnR6b1i8FR0/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_25",
+      "courseId": "crs_ai_master_30",
+      "title": "25. 23. The Game Play Pattern Making AI Interactions Fun and Interactive in ChatGPT",
+      "durationMinutes": 38,
+      "order": 25,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/17BsqJSRCNQSnQdOzum866mDMU5e2VVjO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_26",
+      "courseId": "crs_ai_master_30",
+      "title": "26. 24. The Recipe Pattern Step-by-Step Instructions for Guiding AI Responses",
+      "durationMinutes": 20,
+      "order": 26,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-nRvveMlJMaZj3agoxQTeMcp7mIzvQvc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_27",
+      "courseId": "crs_ai_master_30",
+      "title": "27. 25. Exploring the Alternative Approaches Pattern for Diverse AI Responses in ChatGPT",
+      "durationMinutes": 27,
+      "order": 27,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1E8u4A0SBsSt8GzwQyXP9yOsyruDDzqIQ/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_28",
+      "courseId": "crs_ai_master_30",
+      "title": "28. 26. Template Pattern Structuring AI Prompts for Consistent and Reliable Outputs",
+      "durationMinutes": 34,
+      "order": 28,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Oa9b9THjHASJR9Z5PP6Z7t_NCHzdxrV_/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_29",
+      "courseId": "crs_ai_master_30",
+      "title": "29. 27. Meta Language Creation Pattern Developing New Ways to Communicate with AI",
+      "durationMinutes": 41,
+      "order": 29,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1M3wdufB0kC5f3-7WXGKfLYoww0mKa_kv/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_30",
+      "courseId": "crs_ai_master_30",
+      "title": "30. 28. Ask for Input Pattern Engaging AI Users for Collaborative Conversations",
+      "durationMinutes": 23,
+      "order": 30,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/18GQHhJyilkefrI0L7r679U-APZNcE2VN/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_31",
+      "courseId": "crs_ai_master_30",
+      "title": "31. 29. Outline Expansion Pattern Breaking Down Concepts for Detailed AI Explanations",
+      "durationMinutes": 30,
+      "order": 31,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1S62yUCe4bHIqwva2WpF_Fo0mDYq5f0Z8/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_32",
+      "courseId": "crs_ai_master_30",
+      "title": "32. 30. Menu Actions Pattern Creating Interactive and Dynamic AI Choices in ChatGPT",
+      "durationMinutes": 37,
+      "order": 32,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Rz0Uua8mjoRq3jeDLjebXpdQVOBTMUDs/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_33",
+      "courseId": "crs_ai_master_30",
+      "title": "33. 31. Fact Check List Pattern Ensuring Accuracy in AI-Generated Content in ChatGPT",
+      "durationMinutes": 44,
+      "order": 33,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1oGnJ7FQED2eyzQm7Cg0XwyBSZ8wvqyOU/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_34",
+      "courseId": "crs_ai_master_30",
+      "title": "34. 32. Tail Generation Pattern Generating Complete and Contextual AI Responses in Chat",
+      "durationMinutes": 26,
+      "order": 34,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1RrISzR6wIASfkEVUgtdR4_3xsz4L5X1x/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_35",
+      "courseId": "crs_ai_master_30",
+      "title": "35. 33. Semantic Filter Pattern Filtering AI Responses for Relevance and Clarity",
+      "durationMinutes": 33,
+      "order": 35,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1mcsO5A3Tgh1nOj39V1_F0fVZHvYVZKry/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_36",
+      "courseId": "crs_ai_master_30",
+      "title": "36. 34. Why Making AI Write Like You Is Tricky in ChatGPT",
+      "durationMinutes": 40,
+      "order": 36,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ePvweLWa7xNyxrSm1-fHt9YQaS_T4xWa/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_37",
+      "courseId": "crs_ai_master_30",
+      "title": "37. 35. Crafting Effective Prompts and Clear Instructions in ChatGPT",
+      "durationMinutes": 22,
+      "order": 37,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1MHyAVGWKhoacGrKsBS361cX9g10dwj6S/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_38",
+      "courseId": "crs_ai_master_30",
+      "title": "38. 36. Refining Responses The Art of Iterative Prompting in ChatGPT",
+      "durationMinutes": 29,
+      "order": 38,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sHqJRnTEM_qej8jwZKVIaz_0kui7nR2f/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_39",
+      "courseId": "crs_ai_master_30",
+      "title": "39. 37. Writing With Depth In-Context Learning Techniques in ChatGPT",
+      "durationMinutes": 36,
+      "order": 39,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1FBCoFPe7E1Lh-E6jIhXegPJqfh1OSzOO/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_40",
+      "courseId": "crs_ai_master_30",
+      "title": "40. 38. Using Persona Patterns for Unique Writing Styles in ChatGPT",
+      "durationMinutes": 43,
+      "order": 40,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1qH0Sp09CT3IO_CXnUdA6_Wzc27MocynH/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_41",
+      "courseId": "crs_ai_master_30",
+      "title": "41. 39. Choosing the Right Examples for In-Context Learning in ChatGPT",
+      "durationMinutes": 25,
+      "order": 41,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1QGr2bxv6veehubBAvDrHUnCbuuskhkEH/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_42",
+      "courseId": "crs_ai_master_30",
+      "title": "42. 40. Customizing Prompts for Personal Preferences in ChatGPT",
+      "durationMinutes": 32,
+      "order": 42,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1r4artVh4BOje_McSIvxNIbSkl8eGJsj9/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_43",
+      "courseId": "crs_ai_master_30",
+      "title": "43. 41. Different Approaches to AI Generation in ChatGPT",
+      "durationMinutes": 39,
+      "order": 43,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1CQJ7VQTCt2cOrSajcdmuJKgTh5seGheW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_44",
+      "courseId": "crs_ai_master_30",
+      "title": "44. 42. Five Creative Ways to Tackle Prompt Challenges in ChatGPT",
+      "durationMinutes": 21,
+      "order": 44,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1E5vpyIwdpXhCJsK9pGIxytfnobNcsx87/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_45",
+      "courseId": "crs_ai_master_30",
+      "title": "45. 43. Creating Metrics for Evaluating AI Responses in ChatGPT",
+      "durationMinutes": 28,
+      "order": 45,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1wP8KUyB4dVWOhfxxM6O9KExfP518KpPN/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_46",
+      "courseId": "crs_ai_master_30",
+      "title": "46. 44. Using Automated Search for Prompt Improvement in ChatGPT",
+      "durationMinutes": 35,
+      "order": 46,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1ON0EnKv9UUaavMbq0YnV-FNHABajsJdq/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_47",
+      "courseId": "crs_ai_master_30",
+      "title": "47. 45. Demystifying Machine Learning Concepts in ChatGPT",
+      "durationMinutes": 42,
+      "order": 47,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1rMc8szzDpbcefcLJumjkM_6mAQ5IM2nM/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_48",
+      "courseId": "crs_ai_master_30",
+      "title": "48. 46. Classifying Ideas and Data With Simple Prompts in ChatGPT",
+      "durationMinutes": 24,
+      "order": 48,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1Nt6rgn9jzT3IF476xKOHkB_OX517MjZW/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_49",
+      "courseId": "crs_ai_master_30",
+      "title": "49. 47. Grouping and Clustering Content Easily in ChatGPT",
+      "durationMinutes": 31,
+      "order": 49,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1QJky9UZxyNG_oLUGBR7jichkuDOJI9sb/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_ai_master_30_lsn_quiz",
+      "courseId": "crs_ai_master_30",
+      "title": "50. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 50,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ],
+  "crs_yt_18days_31": [
+    {
+      "id": "crs_yt_18days_31_lsn_01",
+      "courseId": "crs_yt_18days_31",
+      "title": "01. Class 1",
+      "durationMinutes": 20,
+      "order": 1,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1-o_jk14tw5oPw8Jr1wI0bmoVrCZZ1zln/preview",
+      "isFreePreview": true
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_02",
+      "courseId": "crs_yt_18days_31",
+      "title": "02. Class 2",
+      "durationMinutes": 27,
+      "order": 2,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/11eJJNGIQLqR6WBH--jMrv1ZEc7aH3WOp/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_03",
+      "courseId": "crs_yt_18days_31",
+      "title": "03. Class 3",
+      "durationMinutes": 34,
+      "order": 3,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1_SLCuF3us9woF8Df7rJiWMuLvw0ePax7/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_04",
+      "courseId": "crs_yt_18days_31",
+      "title": "04. Class 4",
+      "durationMinutes": 41,
+      "order": 4,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1XZFPp2F9D7mWtJrEVE_GjWr4K7yZVv9U/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_05",
+      "courseId": "crs_yt_18days_31",
+      "title": "05. 00- 💸 Earning Websites 🤍.pdf PDF",
+      "durationMinutes": 23,
+      "order": 5,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1yN0nu7XXooUYwgq4WEibiXV-JVjKNBId/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_06",
+      "courseId": "crs_yt_18days_31",
+      "title": "06. Claim your 7$ reward 🤍.pdf PDF",
+      "durationMinutes": 30,
+      "order": 6,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sKxvyZwadgOD56oAVn2KZR0Ux3VY3YxT/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_07",
+      "courseId": "crs_yt_18days_31",
+      "title": "07. Private – Opening not recommended 🤍.pdf PDF",
+      "durationMinutes": 37,
+      "order": 7,
+      "type": "video",
+      "videoType": "gdrive",
+      "videoUrl": "https://drive.google.com/file/d/1sh6IR6GvcaDL0h25v5b7j0eocYbH_crc/preview",
+      "isFreePreview": false
+    },
+    {
+      "id": "crs_yt_18days_31_lsn_quiz",
+      "courseId": "crs_yt_18days_31",
+      "title": "08. Practical Knowledge & Skill Assessment",
+      "durationMinutes": 15,
+      "order": 8,
+      "type": "quiz",
+      "quiz": {
+        "question": "What is the primary factor for achieving high-income mastery in this course?",
+        "options": [
+          "Consistent daily implementation of frameworks and systems",
+          "Relying purely on luck without structured practice",
+          "Purchasing expensive equipment before understanding basics",
+          "Ignoring client requirements and feedback"
+        ],
+        "correctIndex": 0,
+        "explanation": "Consistent daily implementation of structured frameworks is proven to generate sustainable results."
+      },
+      "isFreePreview": false
+    }
+  ]
+};
+
+const makeLessons = (courseId: string, title: string, driveUrl: string): Lesson[] => {
+  if (gdriveCourseLessonsMap[courseId] && gdriveCourseLessonsMap[courseId].length > 0) {
+    return gdriveCourseLessonsMap[courseId];
   }
-];
+
+  // Extract folder id
+  const match = driveUrl.match(/folders\/([a-zA-Z0-9_-]+)/);
+  const folderId = match ? match[1] : '';
+
+  return [
+    {
+      id: `${courseId}_lsn_01`,
+      courseId,
+      title: `01. Foundation & Masterclass Overview`,
+      durationMinutes: 30,
+      order: 1,
+      type: 'video' as const,
+      videoType: 'gdrive' as const,
+      videoUrl: `https://drive.google.com/embeddedfolderview?id=${folderId}#list`,
+      isFreePreview: true,
+    },
+    {
+      id: `${courseId}_lsn_02`,
+      courseId,
+      title: `02. Core Strategy & Technical Implementation`,
+      durationMinutes: 45,
+      order: 2,
+      type: 'video' as const,
+      videoType: 'gdrive' as const,
+      videoUrl: `https://drive.google.com/embeddedfolderview?id=${folderId}#list`,
+      isFreePreview: false,
+    },
+    {
+      id: `${courseId}_lsn_03`,
+      courseId,
+      title: `03. Advanced Optimization & Scaling Secrets`,
+      durationMinutes: 40,
+      order: 3,
+      type: 'video' as const,
+      videoType: 'gdrive' as const,
+      videoUrl: `https://drive.google.com/embeddedfolderview?id=${folderId}#list`,
+      isFreePreview: false,
+    },
+    {
+      id: `${courseId}_lsn_04`,
+      courseId,
+      title: `04. Practical Knowledge & Skill Assessment`,
+      durationMinutes: 15,
+      order: 4,
+      type: 'quiz' as const,
+      quiz: {
+        question: `What is the most critical first step to scale in ${title}?`,
+        options: [
+          'Consistency in execution and following structured frameworks',
+          'Spending thousands on unnecessary third-party ads',
+          'Skipping foundational setup and jumping to monetization',
+          'Working without data tracking and feedback analysis'
+        ],
+        correctIndex: 0,
+        explanation: 'Consistency and structured frameworks are the foundation for repeatable high-income skills.'
+      },
+      isFreePreview: false,
+    },
+    {
+      id: `${courseId}_lsn_05`,
+      courseId,
+      title: `05. Download Action Plan & Practical Templates (PDF)`,
+      durationMinutes: 15,
+      order: 5,
+      type: 'pdf' as const,
+      pdfUrl: driveUrl,
+      textContent: `All official project worksheets, cheat sheets, and templates for ${title} are available for offline practice.`,
+      isFreePreview: false,
+    }
+  ];
+};
 
 export const mockCourses: Course[] = [
   {

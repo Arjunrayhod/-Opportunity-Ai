@@ -65,12 +65,12 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  USER: 'aiopp_user_v4',
-  COURSES: 'aiopp_courses_v4',
-  ORDERS: 'aiopp_orders_v4',
-  OPPORTUNITIES: 'aiopp_opportunities_v4',
-  NOTIFICATIONS: 'aiopp_notifs_v4',
-  MESSAGES: 'aiopp_messages_v4',
+  USER: 'aiopp_user_v5',
+  COURSES: 'aiopp_courses_v5',
+  ORDERS: 'aiopp_orders_v5',
+  OPPORTUNITIES: 'aiopp_opportunities_v5',
+  NOTIFICATIONS: 'aiopp_notifs_v5',
+  MESSAGES: 'aiopp_messages_v5',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -20,22 +20,29 @@ const getDriveFolderId = (url?: string) => {
   return url;
 };
 
-const getVideoEmbedUrl = (lesson: Lesson, course: { category: string; title: string }) => {
-  if (lesson.videoUrl && lesson.videoUrl.includes('youtube') && !lesson.videoUrl.includes('dQw4w9WgXcQ')) {
+const getVideoEmbedUrl = (lesson: Lesson, course: { category: string; title: string; driveUrl?: string }) => {
+  // 1. If lesson has a direct Google Drive file preview URL
+  if (lesson.videoUrl && lesson.videoUrl.includes('drive.google.com/file/d/')) {
     return lesson.videoUrl;
   }
   
-  const categoryVideoMap: Record<string, string> = {
-    'MARKETING_BIZ': 'https://www.youtube-nocookie.com/embed/nU-IIXBWlS4?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'YOUTUBE_GROWTH': 'https://www.youtube-nocookie.com/embed/1_0b4m5558g?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'AI_EARNING': 'https://www.youtube-nocookie.com/embed/0ukjZ_7n2oQ?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'VIDEO_EDITING': 'https://www.youtube-nocookie.com/embed/3O2fA7Qy7pE?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'TRADING_FINANCE': 'https://www.youtube-nocookie.com/embed/aircAruvnKk?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'CYBERSECURITY': 'https://www.youtube-nocookie.com/embed/inWWhr5tnEA?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-    'FITNESS_HEALTH': 'https://www.youtube-nocookie.com/embed/gC_L9qAHVJ8?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3',
-  };
+  // 2. If lesson has embeddedfolderview
+  if (lesson.videoUrl && lesson.videoUrl.includes('embeddedfolderview')) {
+    return lesson.videoUrl;
+  }
 
-  return categoryVideoMap[course.category] || 'https://www.youtube-nocookie.com/embed/nU-IIXBWlS4?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3';
+  // 3. If lesson has a custom video URL
+  if (lesson.videoUrl && lesson.videoUrl.startsWith('http')) {
+    return lesson.videoUrl;
+  }
+
+  // 4. Fallback to Google Drive embedded folder
+  if (course.driveUrl) {
+    const folderId = getDriveFolderId(course.driveUrl);
+    return `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
+  }
+
+  return '';
 };
 
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, onNavigate }) => {
