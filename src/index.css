@@ -14,12 +14,6 @@
     --header-bg: rgba(7, 10, 19, 0.85);
     --bottom-nav-bg: rgba(7, 10, 19, 0.92);
     --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --cta-bg: #b0edf4;
-    --cta-text: #003539;
-    --price-color: #38BDF8;
-    --tag-bg: rgba(14, 165, 233, 0.15);
-    --tag-text: #7DD3FC;
-    --tag-border: rgba(14, 165, 233, 0.3);
     color-scheme: dark;
   }
 
@@ -35,13 +29,7 @@
     --border-card: #E2E8F0;
     --header-bg: rgba(255, 255, 255, 0.95);
     --bottom-nav-bg: rgba(255, 255, 255, 0.98);
-    --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
-    --cta-bg: #003539;
-    --cta-text: #FFFFFF;
-    --price-color: #004F55;
-    --tag-bg: #F0FDFA;
-    --tag-text: #0D9488;
-    --tag-border: #CCFBF1;
+    --card-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
     color-scheme: light;
   }
   
@@ -51,54 +39,58 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
     padding-bottom: env(safe-area-inset-bottom);
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
 /* Custom Surface Adapters */
 .bg-dark-950 {
-  background-color: var(--bg-canvas) !important;
+  background-color: var(--bg-canvas);
 }
 .bg-dark-900 {
-  background-color: var(--bg-surface) !important;
+  background-color: var(--bg-surface);
 }
 .bg-dark-850 {
-  background-color: var(--bg-card) !important;
+  background-color: var(--bg-card);
 }
 .bg-dark-800 {
-  background-color: var(--bg-elevated) !important;
+  background-color: var(--bg-elevated);
 }
 
 header.sticky {
-  background-color: var(--header-bg) !important;
-  border-bottom-color: var(--border-color) !important;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
 }
 
 nav.fixed {
-  background-color: var(--bottom-nav-bg) !important;
-  border-top-color: var(--border-color) !important;
+  background-color: var(--bottom-nav-bg);
+  border-top: 1px solid var(--border-color);
 }
 
-/* Light Theme Precision Overrides for Top Craft UI */
-html.light .text-white {
-  color: #0F172A !important;
+/* =========================================================
+   LIGHT THEME PRECISION DESIGN (Tailored, Non-destructive)
+   ========================================================= */
+
+/* Headings and body card text in Light Mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light .heading-contrast {
+  color: #0F172A;
 }
 
-html.light .text-slate-100,
-html.light .text-slate-200 {
-  color: #1E293B !important;
+html.light p,
+html.light .text-slate-400 {
+  color: #475569;
 }
 
 html.light .text-slate-300 {
-  color: #334155 !important;
-}
-
-html.light .text-slate-400 {
-  color: #64748B !important;
+  color: #334155;
 }
 
 html.light .text-slate-500 {
-  color: #94A3B8 !important;
+  color: #64748B;
 }
 
 html.light .border-slate-800,
@@ -106,111 +98,105 @@ html.light .border-slate-800\/80,
 html.light .border-slate-800\/60,
 html.light .border-slate-700,
 html.light .border-slate-700\/80 {
-  border-color: #E2E8F0 !important;
+  border-color: #E2E8F0;
 }
 
-html.light .bg-slate-900,
-html.light .bg-slate-900\/80,
-html.light .bg-slate-900\/60,
-html.light .bg-slate-900\/90 {
-  background-color: #FFFFFF !important;
+/* Card surfaces */
+html.light .bg-dark-850 {
+  background-color: #FFFFFF;
+  border-color: #E2E8F0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
-html.light .bg-slate-800,
-html.light .bg-slate-800\/60,
-html.light .bg-slate-800\/80 {
-  background-color: #F1F5F9 !important;
+html.light .bg-dark-900 {
+  background-color: #F8FAFC;
+  border-color: #E2E8F0;
 }
 
-/* Light mode card elevation & crisp border */
-html.light .rounded-3xl,
-html.light .rounded-2xl {
-  box-shadow: var(--card-shadow);
+/* Ensure active tabs and solid buttons keep crisp white text */
+html.light button.bg-gradient-to-r,
+html.light .btn-solid-dark,
+html.light button.bg-blue-600,
+html.light button.bg-teal-600,
+html.light button.bg-emerald-600,
+html.light button.bg-purple-600 {
+  color: #FFFFFF !important;
 }
 
-/* Buttons in Light Mode: Bold high contrast, no washed out pastel */
-html.light .bg-blue-600\/30 {
+/* Active Stock Selector Chips in Light Mode */
+html.light .stock-chip-active {
   background-color: #003539 !important;
   color: #FFFFFF !important;
   border-color: #003539 !important;
 }
 
-html.light .text-blue-300 {
+html.light .stock-chip-active span {
   color: #FFFFFF !important;
 }
 
-html.light .bg-emerald-500\/20 {
-  background-color: #DCFCE7 !important;
-  color: #166534 !important;
+html.light .stock-chip-inactive {
+  background-color: #FFFFFF !important;
+  color: #334155 !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Active Tab Bar in Light Mode */
+html.light .tab-container {
+  background-color: #F1F5F9;
+  border-color: #E2E8F0;
+}
+
+html.light .tab-btn-active {
+  background-color: #003539 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(0, 53, 57, 0.25) !important;
+}
+
+html.light .tab-btn-inactive {
+  color: #475569 !important;
+}
+
+html.light .tab-btn-inactive:hover {
+  color: #0F172A !important;
+}
+
+/* Ticker Code Badges in Light Mode */
+html.light .ticker-badge {
+  background-color: #F1F5F9 !important;
+  color: #0F766E !important;
+  border-color: #CCFBF1 !important;
+}
+
+/* Market Scenarios & Alert Cards in Light Mode */
+html.light .bg-emerald-950\/20,
+html.light .bg-emerald-950\/30 {
+  background-color: #F0FDF4 !important;
   border-color: #BBF7D0 !important;
 }
 
-html.light .text-emerald-300 {
+html.light .text-emerald-400 {
   color: #15803D !important;
 }
 
-html.light .text-cyan-400,
-html.light .text-cyan-300 {
-  color: #004F55 !important;
+html.light .text-emerald-300 {
+  color: #166534 !important;
 }
 
-html.light .bg-cyan-500\/20 {
-  background-color: #CCFBF1 !important;
-  color: #0F766E !important;
+html.light .bg-rose-950\/20,
+html.light .bg-rose-950\/30 {
+  background-color: #FFF1F2 !important;
+  border-color: #FECDD3 !important;
 }
 
-html.light .fill-cyan-400 {
-  fill: #0F766E !important;
+html.light .text-rose-400 {
+  color: #BE123C !important;
 }
 
-html.light .bg-blue-500\/20 {
-  background-color: #E0F2FE !important;
-  color: #0369A1 !important;
+html.light .text-rose-300 {
+  color: #9F1239 !important;
 }
 
-html.light .text-amber-300,
-html.light .text-amber-400 {
-  color: #B45309 !important;
-}
-
-html.light .bg-amber-500\/10,
-html.light .bg-amber-500\/20 {
-  background-color: #FEF3C7 !important;
-  color: #B45309 !important;
-  border-color: #FDE68A !important;
-}
-
-html.light .bg-purple-950\/20,
-html.light .bg-purple-950\/40 {
-  background-color: #FAF5FF !important;
-  border-color: #E9D5FF !important;
-}
-
-html.light .text-purple-300,
-html.light .text-purple-200 {
-  color: #7E22CE !important;
-}
-
-html.light .bg-purple-500\/30,
-html.light .bg-purple-500\/20 {
-  background-color: #F3E8FF !important;
-  color: #6B21A8 !important;
-  border-color: #D8B4FE !important;
-}
-
-/* Light mode hero banners & cards */
-html.light section.bg-gradient-to-br,
-html.light div.bg-gradient-to-br {
-  background: linear-gradient(135deg, #F0FDFA 0%, #FFFFFF 60%, #E0F2FE 100%) !important;
-  border-color: #99F6E4 !important;
-}
-
-html.light section.from-orange-950\/40,
-html.light div.from-orange-950\/40 {
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FFFFFF 100%) !important;
-  border-color: #FCD34D !important;
-}
-
+/* Light Mode Input Fields */
 html.light input,
 html.light textarea,
 html.light select {
@@ -219,12 +205,13 @@ html.light select {
   border-color: #CBD5E1 !important;
 }
 
-html.light input::placeholder,
-html.light textarea::placeholder {
-  color: #94A3B8 !important;
+html.light input:focus,
+html.light textarea:focus {
+  border-color: #0D9488 !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15) !important;
 }
 
-/* Glass panel light adaptation */
+/* Glass panel */
 .glass-panel {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
@@ -248,4 +235,3 @@ html.light textarea::placeholder {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-

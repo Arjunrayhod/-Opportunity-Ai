@@ -50,7 +50,7 @@ export const MarketPage: React.FC = () => {
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex gap-1.5 p-1 rounded-2xl bg-dark-900 border border-slate-800">
+      <div className="tab-container flex gap-1.5 p-1 rounded-2xl bg-dark-900 border border-slate-800">
         {[
           { id: 'ANALYSIS', label: 'AI Trend Analysis', icon: Sparkles },
           { id: 'CALCULATOR', label: 'Risk Calculator', icon: Calculator },
@@ -64,8 +64,8 @@ export const MarketPage: React.FC = () => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                 isActive
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'tab-btn-active bg-[#003539] text-white shadow-md'
+                  : 'tab-btn-inactive text-slate-400 hover:text-slate-200'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ export const MarketPage: React.FC = () => {
           <div key={idx.symbol} className="p-3 rounded-2xl bg-dark-850 border border-slate-800">
             <div className="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-0.5">
               <span>{idx.symbol}</span>
-              <span className={idx.isPositive ? 'text-emerald-400' : 'text-rose-400'}>
+              <span className={idx.isPositive ? 'text-emerald-500' : 'text-rose-500'}>
                 {idx.isPositive ? '+' : ''}{idx.changePercent}%
               </span>
             </div>
@@ -102,13 +102,13 @@ export const MarketPage: React.FC = () => {
                   onClick={() => handleSelectStock(st)}
                   className={`px-3.5 py-2 rounded-2xl border text-xs font-bold flex items-center gap-2 whitespace-nowrap transition ${
                     isSelected
-                      ? 'bg-blue-600/30 border-cyan-400 text-cyan-300'
-                      : 'bg-dark-850 border-slate-800 text-slate-400 hover:border-slate-700'
+                      ? 'stock-chip-active bg-[#003539] text-white border-[#003539] shadow-sm'
+                      : 'stock-chip-inactive bg-dark-850 border-slate-700/60 text-slate-300 hover:border-slate-500'
                   }`}
                 >
-                  <span>{st.name.split(' ')[0]}</span>
-                  <span className="text-[10px] font-mono text-slate-300">₹{st.price}</span>
-                  <span className={st.change >= 0 ? 'text-emerald-400 text-[10px]' : 'text-rose-400 text-[10px]'}>
+                  <span className="font-extrabold">{st.name.split(' ')[0]}</span>
+                  <span className={`text-[10px] font-mono ${isSelected ? 'text-teal-100' : 'text-slate-400'}`}>₹{st.price}</span>
+                  <span className={st.change >= 0 ? 'text-emerald-400 font-bold text-[10px]' : 'text-rose-400 font-bold text-[10px]'}>
                     {st.change >= 0 ? '+' : ''}{st.changePercent}%
                   </span>
                 </button>
@@ -122,7 +122,7 @@ export const MarketPage: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg sm:text-xl font-black text-white">{selectedStock.name}</h2>
-                  <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 font-bold">
+                  <span className="ticker-badge text-xs font-mono px-2 py-0.5 rounded-md bg-slate-800 text-cyan-400 border border-slate-700 font-bold">
                     {selectedStock.ticker}
                   </span>
                   <button
