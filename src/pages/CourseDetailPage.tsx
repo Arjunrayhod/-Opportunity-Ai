@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, Maximize2, Minimize2, Smartphone, Sparkles, X, ExternalLink } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RazorpayModal } from '../components/payment/RazorpayModal';
 import { CertificateModal } from '../components/growth/CertificateModal';
@@ -48,12 +48,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
   const [activeLessonIndex, setActiveLessonIndex] = useState(0);
   const [isRazorpayOpen, setIsRazorpayOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isTheaterOpen, setIsTheaterOpen] = useState(false);
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>(['lsn_01', 'lsn_02']);
   const [quizSelectedOption, setQuizSelectedOption] = useState<number | null>(null);
   const [showQuizResult, setShowQuizResult] = useState(false);
 
   const activeLesson: Lesson = course.lessons[activeLessonIndex] || course.lessons[0];
   const isLessonUnlocked = isEnrolled || activeLesson?.isFreePreview;
+  const embedUrl = getVideoEmbedUrl(activeLesson, course);
 
   const handleLessonComplete = (lessonId: string) => {
     if (!completedLessonIds.includes(lessonId)) {
@@ -96,10 +98,10 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* 1. Main In-App Video Studio Player Screen */}
       <div className="rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
         {isLessonUnlocked ? (
-          <div className="relative aspect-video w-full bg-black flex flex-col justify-between overflow-hidden group">
-            {/* DRM Anti-Piracy Floating Watermark */}
-            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="relative aspect-video min-h-[240px] sm:min-h-[380px] md:min-h-[440px] w-full bg-black flex flex-col justify-between overflow-hidden group">
+            {/* DRM Anti-Piracy Floating Watermark (Mobile-safe placement) */}
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 pointer-events-none px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
@@ -108,11 +110,12 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
                 <iframe
                   key={`${course.id}_${activeLesson.id}`}
-                  src={getVideoEmbedUrl(activeLesson, course)}
+                  src={embedUrl}
                   title={activeLesson.title}
                   className="w-full h-full border-0 relative z-10"
-                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                   allowFullScreen
+                  loading="eager"
                 />
               </div>
             ) : activeLesson.type === 'pdf' ? (
@@ -202,7 +205,24 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
         )}
 
         {/* In-App Player Navigation & Action Controls */}
-        <div className="p-4 bg-white border-t border-slate-200 space-y-3">
+        <div className="p-3.5 sm:p-4 bg-white border-t border-slate-200 space-y-3">
+          {/* Mobile Fast-Stream Action Helper */}
+          {isLessonUnlocked && activeLesson.type === 'video' && (
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs">
+              <div className="flex items-center gap-2 text-teal-900 font-bold">
+                <Smartphone className="w-4 h-4 text-teal-700 shrink-0" />
+                <span className="text-[11px] sm:text-xs">Mobile Touch Optimized • 1080p Stream</span>
+              </div>
+              <button
+                onClick={() => setIsTheaterOpen(true)}
+                className="px-3 py-1 rounded-lg bg-[#003539] hover:bg-[#004f55] !text-white text-[11px] font-extrabold flex items-center gap-1.5 transition active:scale-95 shadow-xs shrink-0"
+              >
+                <Maximize2 className="w-3 h-3 !text-white" />
+                <span className="!text-white">Fullscreen Theater</span>
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -222,17 +242,17 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             </div>
 
             {isLessonUnlocked ? (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center flex-wrap gap-2 shrink-0">
                 {activeLesson.videoUrl && (
                   <a
                     href={activeLesson.videoUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
-                    title="Open in Fullscreen HD Player"
+                    title="Open in HD Popout Window"
                   >
-                    <Play className="w-3.5 h-3.5 fill-teal-800 text-teal-800" />
-                    <span>Popout Player</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-teal-800" />
+                    <span>Popout</span>
                   </a>
                 )}
                 <button
@@ -476,6 +496,90 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
         isOpen={isCertModalOpen}
         onClose={() => setIsCertModalOpen(false)}
       />
+
+      {/* 4. Fullscreen In-App Mobile Theater Studio Modal */}
+      {isTheaterOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-2 sm:p-6 select-none animate-in fade-in duration-200">
+          {/* Theater Header */}
+          <div className="flex items-center justify-between p-2 sm:p-3 bg-slate-900/90 rounded-2xl border border-slate-800 mb-2">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
+                <Play className="w-4 h-4 fill-teal-400" />
+              </div>
+              <div className="truncate">
+                <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block">
+                  Module {activeLessonIndex + 1} of {course.lessons.length} • HD Theater
+                </span>
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">{activeLesson.title}</h4>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setIsTheaterOpen(false)}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition active:scale-95 flex items-center gap-1 text-xs font-bold"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline">Close</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Theater Viewport */}
+          <div className="relative flex-1 w-full max-h-[82vh] bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center">
+            {/* DRM Anti-Piracy Watermark */}
+            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Opportunity Stream • {user.id.toUpperCase()}</span>
+            </div>
+
+            <iframe
+              key={`theater_${course.id}_${activeLesson.id}`}
+              src={embedUrl}
+              title={activeLesson.title}
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowFullScreen
+              loading="eager"
+            />
+          </div>
+
+          {/* Theater Bottom Bar Controls */}
+          <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-slate-900/90 rounded-2xl border border-slate-800 mt-2">
+            <button
+              disabled={activeLessonIndex === 0}
+              onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
+              className="px-3 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              Previous
+            </button>
+
+            <button
+              onClick={() => handleLessonComplete(activeLesson.id)}
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                completedLessonIds.includes(activeLesson.id)
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-teal-700 hover:bg-teal-600 text-white'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>{completedLessonIds.includes(activeLesson.id) ? 'Completed' : 'Mark Done'}</span>
+            </button>
+
+            <button
+              disabled={activeLessonIndex === course.lessons.length - 1}
+              onClick={() => {
+                handleLessonComplete(activeLesson.id);
+                setActiveLessonIndex(prev => Math.min(course.lessons.length - 1, prev + 1));
+              }}
+              className="px-3 sm:px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+            >
+              <span>Next</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
