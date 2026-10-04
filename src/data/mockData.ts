@@ -20,6 +20,48 @@ export const initialUser: User = {
   isPremium: false,
 };
 
+export const initialMockUsers: User[] = [
+  initialUser,
+  {
+    id: 'usr_002',
+    name: 'Rahul Deshmukh',
+    email: 'rahul.d99@gmail.com',
+    phone: '+91 91234 56789',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    role: 'USER',
+    level: 2,
+    streakDays: 3,
+    streakCoins: 40,
+    referralCode: 'RAHUL50',
+    referralsCount: 1,
+    walletBalance: 20,
+    interests: ['Trading', 'Digital Marketing'],
+    enrolledCourseIds: ['crs_dm_01'],
+    savedOpportunityIds: ['opp_02'],
+    watchlistTickers: ['INFY', 'TCS'],
+    isPremium: false
+  },
+  {
+    id: 'usr_003',
+    name: 'Pooja Sharma',
+    email: 'pooja.creator@gmail.com',
+    phone: '+91 99887 76655',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',
+    role: 'PREMIUM_USER',
+    level: 5,
+    streakDays: 14,
+    streakCoins: 280,
+    referralCode: 'POOJA99',
+    referralsCount: 6,
+    walletBalance: 150,
+    interests: ['CapCut Video Editing', 'AI Tools', 'YouTube Growth'],
+    enrolledCourseIds: ['crs_capcut_15', 'crs_yt_auto_06', 'crs_ai_master_30'],
+    savedOpportunityIds: ['opp_01', 'opp_03', 'opp_04'],
+    watchlistTickers: ['RELIANCE', 'TATAMOTORS'],
+    isPremium: true
+  }
+];
+
 export const initialComboBundles: ComboBundle[] = [
   {
     id: 'bndl_creator_all_in_one',

@@ -16,6 +16,7 @@ import {
 } from '../types';
 import {
   initialUser,
+  initialMockUsers,
   initialOrders,
   marketIndices,
   trendingStocks,
@@ -76,7 +77,12 @@ interface AppContextType {
   markAllNotificationsRead: () => void;
   sendCommunityMessage: (channelId: string, text: string) => void;
   likeCommunityMessage: (messageId: string) => void;
-  // Admin CMS & Sales Actions
+  // Admin CMS & Student Management Actions
+  allUsers: User[];
+  updateStudentUser: (userId: string, updatedData: Partial<User>) => void;
+  grantCourseToStudent: (userId: string, courseId: string) => void;
+  revokeCourseFromStudent: (userId: string, courseId: string) => void;
+  deleteStudent: (userId: string) => void;
   addCourse: (course: Partial<Course>) => void;
   updateCourse: (id: string, updatedData: Partial<Course>) => void;
   deleteCourse: (id: string) => void;
@@ -94,6 +100,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
   USER: 'aiopp_user_v7',
+  ALL_USERS: 'aiopp_all_users_v8',
   COURSES: 'aiopp_courses_v7',
   ORDERS: 'aiopp_orders_v7',
   OPPORTUNITIES: 'aiopp_opportunities_v7',
@@ -122,6 +129,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<User>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.USER);
     return saved ? JSON.parse(saved) : initialUser;
+  });
+
+  const [allUsers, setAllUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.ALL_USERS);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return initialMockUsers;
   });
 
   const [courses, setCourses] = useState<Course[]>(() => {
@@ -297,6 +314,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
   }, [user]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(allUsers));
+  }, [allUsers]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
@@ -529,6 +550,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCommunityMessages(prev => prev.map(m => m.id === messageId ? { ...m, likes: m.likes + 1 } : m));
   };
 
+  const updateStudentUser = (userId: string, updatedData: Partial<User>) => {
+    setAllUsers(prev => prev.map(u => u.id === userId ? { ...u, ...updatedData } : u));
+    if (user.id === userId) {
+      setUser(prev => ({ ...prev, ...updatedData }));
+    }
+  };
+
+  const grantCourseToStudent = (userId: string, courseId: string) => {
+    setAllUsers(prev => prev.map(u => {
+      if (u.id === userId && !u.enrolledCourseIds.includes(courseId)) {
+        return { ...u, enrolledCourseIds: [...u.enrolledCourseIds, courseId] };
+      }
+      return u;
+    }));
+    if (user.id === userId && !user.enrolledCourseIds.includes(courseId)) {
+      setUser(prev => ({ ...prev, enrolledCourseIds: [...prev.enrolledCourseIds, courseId] }));
+    }
+  };
+
+  const revokeCourseFromStudent = (userId: string, courseId: string) => {
+    setAllUsers(prev => prev.map(u => {
+      if (u.id === userId) {
+        return { ...u, enrolledCourseIds: u.enrolledCourseIds.filter(id => id !== courseId) };
+      }
+      return u;
+    }));
+    if (user.id === userId) {
+      setUser(prev => ({ ...prev, enrolledCourseIds: prev.enrolledCourseIds.filter(id => id !== courseId) }));
+    }
+  };
+
+  const deleteStudent = (userId: string) => {
+    setAllUsers(prev => prev.filter(u => u.id !== userId));
+  };
+
   // Admin Actions
   const addCourse = (courseData: Partial<Course>) => {
     const newCourse: Course = {
@@ -749,6 +805,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         markAllNotificationsRead,
         sendCommunityMessage,
         likeCommunityMessage,
+        allUsers,
+        updateStudentUser,
+        grantCourseToStudent,
+        revokeCourseFromStudent,
+        deleteStudent,
         addCourse,
         updateCourse,
         deleteCourse,
