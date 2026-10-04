@@ -259,3 +259,15 @@ export interface RiskCalculatorResult {
   suggestedQuantity: number;
   disclaimer: string;
 }
+
+export interface DirectChatMessage {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  sender: 'user' | 'admin';
+  text: string;
+  timestamp: string;
+  read?: boolean;
+}
+

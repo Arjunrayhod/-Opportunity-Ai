@@ -11,7 +11,8 @@ import {
   RiskCalculatorInput,
   RiskCalculatorResult,
   UserRole,
-  OrderRecord
+  OrderRecord,
+  DirectChatMessage
 } from '../types';
 import {
   initialUser,
@@ -56,6 +57,11 @@ interface AppContextType {
   opportunities: Opportunity[];
   creatorAssets: CreatorAsset[];
   communityMessages: CommunityMessage[];
+  directChatMessages: DirectChatMessage[];
+  adminOnlineStatus: boolean;
+  setAdminOnlineStatus: (status: boolean) => void;
+  sendDirectMessage: (text: string) => void;
+  sendAdminDirectReply: (userId: string, replyText: string) => void;
   notifications: NotificationItem[];
   unreadNotifsCount: number;
   activeChannel: string;
@@ -93,6 +99,8 @@ const STORAGE_KEYS = {
   OPPORTUNITIES: 'aiopp_opportunities_v7',
   NOTIFICATIONS: 'aiopp_notifs_v7',
   MESSAGES: 'aiopp_messages_v7',
+  DIRECT_CHATS: 'aiopp_direct_chats_v8',
+  ADMIN_ONLINE: 'aiopp_admin_online_v8',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -152,6 +160,105 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : mockCommunityMessages;
   });
 
+  // Direct Student-to-Admin Live Chat State
+  const [directChatMessages, setDirectChatMessages] = useState<DirectChatMessage[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.DIRECT_CHATS);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return [
+      {
+        id: 'msg_welcome_adm',
+        userId: 'usr_default',
+        userName: 'Satvik (Admin)',
+        sender: 'admin',
+        text: 'Namaste! Welcome to Opportunity AI. Aap yahan direct mujhse (Admin/Mentor) query pooch sakte hain.',
+        timestamp: 'Yesterday',
+        read: true
+      }
+    ];
+  });
+
+  const [adminOnlineStatus, setAdminOnlineStatus] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.ADMIN_ONLINE);
+    return saved ? JSON.parse(saved) : false; // Default: offline
+  });
+
+  const sendDirectMessage = (text: string) => {
+    if (!text.trim()) return;
+    const cleanText = text.trim();
+    const userMsg: DirectChatMessage = {
+      id: `msg_usr_${Date.now()}`,
+      userId: user.id,
+      userName: user.name,
+      userAvatar: user.avatar,
+      sender: 'user',
+      text: cleanText,
+      timestamp: 'Just now',
+      read: false
+    };
+
+    // User Message
+    setDirectChatMessages(prev => [...prev, userMsg]);
+
+    // In-App Notification for Admin
+    const adminNotif: NotificationItem = {
+      id: `notif_adm_chat_${Date.now()}`,
+      title: `💬 New Message from ${user.name}`,
+      message: cleanText,
+      category: 'ANNOUNCEMENT',
+      categoryLabel: 'Student Chat',
+      deepLink: '/admin',
+      timestamp: 'Just now',
+      read: false
+    };
+    setNotifications(prev => [adminNotif, ...prev]);
+
+    // Automated default reply when admin is offline
+    setTimeout(() => {
+      const autoReply: DirectChatMessage = {
+        id: `msg_adm_auto_${Date.now()}`,
+        userId: user.id,
+        userName: 'Satvik (Admin)',
+        sender: 'admin',
+        text: 'Admin currently offline',
+        timestamp: 'Just now',
+        read: false
+      };
+      setDirectChatMessages(prev => [...prev, autoReply]);
+    }, 400);
+  };
+
+  const sendAdminDirectReply = (targetUserId: string, replyText: string) => {
+    if (!replyText.trim()) return;
+    const adminMsg: DirectChatMessage = {
+      id: `msg_adm_${Date.now()}`,
+      userId: targetUserId,
+      userName: 'Satvik (Admin)',
+      sender: 'admin',
+      text: replyText.trim(),
+      timestamp: 'Just now',
+      read: false
+    };
+
+    setDirectChatMessages(prev => [...prev, adminMsg]);
+
+    // Student notification
+    const studentNotif: NotificationItem = {
+      id: `notif_std_reply_${Date.now()}`,
+      title: `💬 Admin Replied to Your Message`,
+      message: replyText.trim(),
+      category: 'COURSE',
+      categoryLabel: 'Admin Reply',
+      deepLink: '/',
+      timestamp: 'Just now',
+      read: false
+    };
+    setNotifications(prev => [studentNotif, ...prev]);
+  };
+
   // 24h AI Market Agent State
   const initialScan = checkAndRun24hAiScan();
   const [aiAgentScanResult, setAiAgentScanResult] = useState<AiAgentScanResult>(initialScan.result);
@@ -210,6 +317,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(communityMessages));
   }, [communityMessages]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.DIRECT_CHATS, JSON.stringify(directChatMessages));
+  }, [directChatMessages]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ADMIN_ONLINE, JSON.stringify(adminOnlineStatus));
+  }, [adminOnlineStatus]);
 
   const unreadNotifsCount = notifications.filter(n => !n.read).length;
 
@@ -616,6 +731,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         opportunities,
         creatorAssets: mockCreatorAssets,
         communityMessages,
+        directChatMessages,
+        adminOnlineStatus,
+        setAdminOnlineStatus,
+        sendDirectMessage,
+        sendAdminDirectReply,
         notifications,
         unreadNotifsCount,
         activeChannel,

@@ -27,7 +27,9 @@ import {
   XCircle,
   MessageCircle,
   Settings,
-  AlertCircle
+  AlertCircle,
+  UserCheck,
+  Power
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Course, CourseCategory, Lesson, OrderRecord } from '../types';
@@ -52,13 +54,21 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     updatePaymentSettings,
     approveOrderAndUnlockCourse,
     rejectOrder,
+    directChatMessages,
+    adminOnlineStatus,
+    setAdminOnlineStatus,
+    sendAdminDirectReply,
     user
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'COURSES' | 'ORDERS' | 'SETTINGS' | 'NOTIFICATIONS' | 'BACKUP'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'CHATS' | 'ORDERS' | 'SETTINGS' | 'COURSES' | 'NOTIFICATIONS' | 'BACKUP'>('OVERVIEW');
   const [orderFilter, setOrderFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
   const [showNotifModal, setShowNotifModal] = useState(false);
+
+  // Chat CRM State
+  const [selectedChatUserId, setSelectedChatUserId] = useState<string>(user.id);
+  const [adminReplyInput, setAdminReplyInput] = useState('');
 
   // UPI / Payment Settings Form
   const [upiIdInput, setUpiIdInput] = useState(paymentSettings.upiId);
@@ -96,6 +106,23 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
     if (orderFilter === 'REJECTED') return ord.status === 'REJECTED';
     return true;
   });
+
+  // Extract distinct students who messaged
+  const studentUserIds = Array.from(new Set(directChatMessages.filter(m => m.userId !== 'usr_default').map(m => m.userId)));
+  if (!studentUserIds.includes(user.id)) {
+    studentUserIds.unshift(user.id);
+  }
+
+  const currentThreadMessages = directChatMessages.filter(
+    m => m.userId === selectedChatUserId || (selectedChatUserId === user.id && m.userId === 'usr_default')
+  );
+
+  const handleAdminReplySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adminReplyInput.trim()) return;
+    sendAdminDirectReply(selectedChatUserId, adminReplyInput.trim());
+    setAdminReplyInput('');
+  };
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,20 +231,33 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-white mt-1">
-            Course CMS & Direct Payment Gateway Control
+            Course CMS, Direct Chat & Payment Gateway
           </h1>
           <p className="text-xs text-slate-300">
-            Verify student UPI bank payments, unlock courses, manage catalog, and configure your bank account.
+            Reply to student chats, verify UPI payments, manage catalog, and configure your bank account.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Online/Offline Status Toggle for Admin */}
+          <button
+            onClick={() => setAdminOnlineStatus(!adminOnlineStatus)}
+            className={`px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 border ${
+              adminOnlineStatus
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-xs'
+                : 'bg-dark-850 text-slate-400 border-slate-700 hover:text-white'
+            }`}
+          >
+            <span className={`w-2 h-2 rounded-full ${adminOnlineStatus ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`} />
+            <span>{adminOnlineStatus ? 'Status: ONLINE' : 'Status: OFFLINE'}</span>
+          </button>
+
           <button
             onClick={() => setShowAddCourseModal(true)}
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-blue-500/20 transition active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>Upload New Course</span>
+            <span>Upload Course</span>
           </button>
 
           <button
@@ -225,7 +265,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             className="px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-slate-800 border border-purple-500/40 text-purple-300 font-bold text-xs flex items-center gap-1.5 transition"
           >
             <Bell className="w-4 h-4" />
-            <span>Send Notification</span>
+            <span>Broadcast</span>
           </button>
         </div>
       </div>
@@ -234,6 +274,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
       <div className="flex gap-2 overflow-x-auto no-scrollbar p-1 rounded-2xl bg-dark-900 border border-slate-800">
         {[
           { id: 'OVERVIEW', label: '📊 Overview' },
+          { id: 'CHATS', label: `💬 Student Chats (${directChatMessages.length})` },
           { id: 'ORDERS', label: `💰 Orders & Verification (${pendingOrders.length} Pending)` },
           { id: 'SETTINGS', label: '💳 UPI & Bank Settings' },
           { id: 'COURSES', label: `🎓 Course CMS (${courses.length})` },
@@ -275,15 +316,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
             </div>
 
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Active Courses Live</span>
-              <div className="text-2xl font-black text-purple-400">{courses.length}</div>
-              <span className="text-[10px] text-slate-400">Published in Store</span>
+              <span className="text-[11px] text-slate-400 font-medium">Student Chat Inquiries</span>
+              <div className="text-2xl font-black text-cyan-400">{directChatMessages.filter(m => m.sender === 'user').length}</div>
+              <span className="text-[10px] text-slate-400">Direct Support</span>
             </div>
 
             <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-1">
-              <span className="text-[11px] text-slate-400 font-medium">Total Students Enrolled</span>
-              <div className="text-2xl font-black text-cyan-400">{totalEnrollments.toLocaleString('en-IN')}</div>
-              <span className="text-[10px] text-slate-400">Lifetime Access</span>
+              <span className="text-[11px] text-slate-400 font-medium">Active Courses Live</span>
+              <div className="text-2xl font-black text-purple-400">{courses.length}</div>
+              <span className="text-[10px] text-slate-400">Published in Store</span>
             </div>
           </div>
 
@@ -343,7 +384,147 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 2. Orders & Verification Queue Tab */}
+      {/* 2. Direct Student Chats CRM Tab (New Feature) */}
+      {activeTab === 'CHATS' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Left: Students List */}
+          <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm text-white flex items-center gap-1.5">
+                <MessageCircle className="w-4 h-4 text-cyan-400" />
+                <span>Student Inquiries</span>
+              </h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
+                {studentUserIds.length} Student{studentUserIds.length > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto no-scrollbar">
+              {studentUserIds.map((sId) => {
+                const isSelected = selectedChatUserId === sId;
+                const studentMessages = directChatMessages.filter(m => m.userId === sId);
+                const lastMsg = studentMessages[studentMessages.length - 1];
+                const studentName = studentMessages.find(m => m.sender === 'user')?.userName || user.name;
+
+                return (
+                  <button
+                    key={sId}
+                    onClick={() => setSelectedChatUserId(sId)}
+                    className={`w-full p-3 rounded-2xl text-left border transition ${
+                      isSelected
+                        ? 'bg-purple-950/40 border-purple-500 text-white shadow-xs'
+                        : 'bg-dark-900 border-slate-800 text-slate-300 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-xs truncate text-white">{studentName}</span>
+                      <span className="text-[9px] text-slate-500 font-mono">{lastMsg?.timestamp || 'Active'}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 truncate">
+                      {lastMsg?.text || 'New chat session'}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: Active Chat Thread & Direct Reply Box */}
+          <div className="md:col-span-2 p-4 rounded-3xl bg-dark-850 border border-slate-800 flex flex-col justify-between h-[65vh]">
+            {/* Thread Header */}
+            <div className="p-3 bg-dark-900 rounded-2xl border border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center text-xs">
+                  {user.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-white">
+                    Direct Thread with Student ({user.name})
+                  </h4>
+                  <p className="text-[10px] text-slate-400">
+                    Phone: {user.phone || '+91 98765 43210'} • ID: {selectedChatUserId}
+                  </p>
+                </div>
+              </div>
+
+              <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                adminOnlineStatus ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'
+              }`}>
+                {adminOnlineStatus ? 'Online' : 'Offline'}
+              </span>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 no-scrollbar my-2">
+              {currentThreadMessages.map((m) => {
+                const isAdmin = m.sender === 'admin';
+                return (
+                  <div
+                    key={m.id}
+                    className={`flex gap-2 ${isAdmin ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl p-3 text-xs leading-relaxed ${
+                        isAdmin
+                          ? 'bg-purple-600 text-white font-medium rounded-tr-xs shadow-md'
+                          : 'bg-dark-900 border border-slate-700 text-slate-200 rounded-tl-xs'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-[10px] font-bold opacity-80 uppercase">
+                          {isAdmin ? 'You (Admin)' : m.userName}
+                        </span>
+                        <span className="text-[9px] opacity-70 font-mono">{m.timestamp}</span>
+                      </div>
+                      <p className="whitespace-pre-line">{m.text}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Quick Templates */}
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+              {[
+                'Payment verified! Course has been unlocked 🎉',
+                'Please provide your 12-digit UTR transaction number.',
+                'Looking into this for you right now.',
+                'All video lessons are available in 1080p HD.'
+              ].map((template, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setAdminReplyInput(template)}
+                  className="px-2.5 py-1 rounded-lg bg-dark-900 hover:bg-slate-800 border border-slate-700 text-[10px] text-slate-300 whitespace-nowrap transition"
+                >
+                  {template}
+                </button>
+              ))}
+            </div>
+
+            {/* Admin Direct Reply Form */}
+            <form onSubmit={handleAdminReplySubmit} className="mt-2 flex items-center gap-2">
+              <input
+                type="text"
+                value={adminReplyInput}
+                onChange={(e) => setAdminReplyInput(e.target.value)}
+                placeholder="Type real direct reply to student..."
+                className="flex-1 px-4 py-3 bg-dark-950 border border-slate-700 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"
+              />
+              <button
+                type="submit"
+                disabled={!adminReplyInput.trim()}
+                className="px-4 py-3 rounded-2xl bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow-md shrink-0"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>Send Reply</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Orders & Verification Queue Tab */}
       {activeTab === 'ORDERS' && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -477,7 +658,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 3. UPI & Bank Settings Tab */}
+      {/* 4. UPI & Bank Settings Tab */}
       {activeTab === 'SETTINGS' && (
         <div className="space-y-4 max-w-2xl">
           <div className="p-6 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">
@@ -502,7 +683,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   required
                   value={upiIdInput}
                   onChange={(e) => setUpiIdInput(e.target.value)}
-                  placeholder="e.g. 9876543210@paytm or yourname@okaxis"
+                  placeholder="e.g. satvikbhai@ybl"
                   className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white font-mono font-bold focus:outline-none focus:border-cyan-400"
                 />
                 <span className="text-[10px] text-slate-500 mt-1 block">
@@ -519,7 +700,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
                   required
                   value={payeeNameInput}
                   onChange={(e) => setPayeeNameInput(e.target.value)}
-                  placeholder="e.g. AI Opportunity Academy"
+                  placeholder="e.g. Opportunity AI"
                   className="w-full px-4 py-3 bg-dark-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-cyan-400"
                 />
               </div>
@@ -555,7 +736,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 4. Courses CMS Tab */}
+      {/* 5. Courses CMS Tab */}
       {activeTab === 'COURSES' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -616,7 +797,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 5. Broadcast Notifications Tab */}
+      {/* 6. Broadcast Notifications Tab */}
       {activeTab === 'NOTIFICATIONS' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -650,7 +831,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onNaviga
         </div>
       )}
 
-      {/* 6. 1-Click Database Backup & Restore Tab */}
+      {/* 7. 1-Click Database Backup & Restore Tab */}
       {activeTab === 'BACKUP' && (
         <div className="space-y-4">
           <div className="p-5 rounded-3xl bg-dark-850 border border-slate-800 space-y-4">
