@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Flame, ShieldAlert, Sparkles, Shield, User, Settings, Layers } from 'lucide-react';
+import { Bell, Flame, ShieldAlert, Sparkles, Shield, User, Settings, Layers, Sun, Moon } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { NotificationDrawer } from '../notifications/NotificationDrawer';
 import { AIAssistantModal } from '../ai/AIAssistantModal';
@@ -10,7 +10,7 @@ interface AppHeaderProps {
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate, currentPath }) => {
-  const { user, unreadNotifsCount, switchRole } = useApp();
+  const { user, unreadNotifsCount, switchRole, theme, toggleTheme } = useApp();
   const [isNotifsOpen, setIsNotifsOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
 
@@ -46,16 +46,30 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate, currentPath })
             </div>
           </div>
 
-          {/* Center / Right: Streak Badge, AI Button, Admin Mode & Bell */}
-          <div className="flex items-center gap-2">
+          {/* Center / Right: Streak Badge, Theme Switcher, AI Button, Admin Mode & Bell */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* 7-Day Streak Badge */}
             <div 
               title="7-Day Learning & Opportunity Streak!" 
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold cursor-default"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 text-xs font-bold cursor-default"
             >
-              <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400 animate-pulse" />
+              <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500 animate-pulse" />
               <span>{user.streakDays}d</span>
             </div>
+
+            {/* Dark / Light Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              className="min-w-[40px] min-h-[40px] w-9 h-9 rounded-full bg-dark-850 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-amber-400 transition"
+              aria-label="Toggle Dark / Light Theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300 hover:rotate-45" />
+              ) : (
+                <Moon className="w-4 h-4 text-cyan-600 transition-transform duration-300 hover:-rotate-12" />
+              )}
+            </button>
 
             {/* Quick Role Switcher Button (For Instant Admin Testing) */}
             <button
@@ -69,7 +83,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate, currentPath })
                 }
               }}
               title={user.role === 'SUPER_ADMIN' ? 'Switch to Student View' : 'Switch to Super Admin CMS'}
-              className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 transition ${
+              className={`px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1 transition ${
                 user.role === 'SUPER_ADMIN'
                   ? 'bg-purple-600/30 border border-purple-400/50 text-purple-200'
                   : 'bg-dark-850 hover:bg-slate-800 border border-slate-700 text-slate-300'
@@ -84,7 +98,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate, currentPath })
             {/* Notification Bell with Badge */}
             <button
               onClick={() => setIsNotifsOpen(true)}
-              className="relative w-9 h-9 rounded-full bg-dark-850 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition"
+              className="relative min-w-[40px] min-h-[40px] w-9 h-9 rounded-full bg-dark-850 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white transition"
+              aria-label="View notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadNotifsCount > 0 && (

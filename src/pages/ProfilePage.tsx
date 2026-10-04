@@ -7,7 +7,7 @@ interface ProfilePageProps {
 }
 
 export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
-  const { user, courses, switchRole } = useApp();
+  const { user, courses, switchRole, theme, setTheme } = useApp();
   const enrolledCourses = courses.filter((c) => user.enrolledCourseIds.includes(c.id));
 
   return (
@@ -124,6 +124,49 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
         )}
       </div>
 
+      {/* App Settings & Theme Toggle */}
+      <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-3">
+        <h3 className="text-xs font-bold text-white flex items-center gap-2">
+          <Settings className="w-4 h-4 text-cyan-400" />
+          <span>App Appearance & Theme</span>
+        </h3>
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            onClick={() => setTheme('dark')}
+            className={`p-3 rounded-2xl border flex items-center gap-2.5 transition ${
+              theme === 'dark'
+                ? 'bg-slate-900 border-cyan-400 shadow-md shadow-cyan-500/10 text-white'
+                : 'bg-dark-950/60 border-slate-800 text-slate-400 hover:text-white'
+            }`}
+          >
+            <div className="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-amber-400">
+              🌙
+            </div>
+            <div className="text-left">
+              <p className="text-xs font-bold">Dark Theme</p>
+              <p className="text-[9px] text-slate-400">Deep Pine Teal</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setTheme('light')}
+            className={`p-3 rounded-2xl border flex items-center gap-2.5 transition ${
+              theme === 'light'
+                ? 'bg-slate-100 border-cyan-600 shadow-md shadow-cyan-500/10 text-slate-900'
+                : 'bg-dark-950/60 border-slate-800 text-slate-400 hover:text-white'
+            }`}
+          >
+            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+              ☀️
+            </div>
+            <div className="text-left">
+              <p className="text-xs font-bold">Light Theme</p>
+              <p className="text-[9px] text-slate-500">Clean Crisp White</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
       {/* User Interests Tags */}
       <div className="p-4 rounded-3xl bg-dark-850 border border-slate-800 space-y-2">
         <h3 className="text-xs font-bold text-white">Your Selected Interests</h3>
@@ -141,3 +184,4 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
     </div>
   );
 };
+

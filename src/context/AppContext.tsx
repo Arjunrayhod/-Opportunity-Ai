@@ -38,6 +38,10 @@ interface AppContextType {
   unreadNotifsCount: number;
   activeChannel: string;
   setActiveChannel: (channel: string) => void;
+  // Theme state
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+  setTheme: (theme: 'dark' | 'light') => void;
   // User Actions
   switchRole: (role: UserRole) => void;
   enrollInCourse: (courseId: string) => void;
@@ -71,9 +75,34 @@ const STORAGE_KEYS = {
   OPPORTUNITIES: 'aiopp_opportunities_v2',
   NOTIFICATIONS: 'aiopp_notifs_v2',
   MESSAGES: 'aiopp_messages_v2',
+  THEME: 'aiopp_theme_v2',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Theme state: dark mode default, with localStorage persistence
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+      root.setAttribute('data-theme', 'light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+      root.setAttribute('data-theme', 'dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // Load from local storage or fallback to initial mocks
   const [user, setUser] = useState<User>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.USER);
@@ -443,6 +472,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         unreadNotifsCount,
         activeChannel,
         setActiveChannel,
+        theme,
+        toggleTheme,
+        setTheme,
         switchRole,
         enrollInCourse,
         purchaseCourseWithRazorpay,
