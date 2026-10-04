@@ -16,6 +16,7 @@ import {
 } from '../types';
 import {
   initialUser,
+  adminUser,
   initialMockUsers,
   initialOrders,
   marketIndices,
@@ -374,6 +375,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const loginWithCredentials = (emailOrPhone: string): boolean => {
     const clean = emailOrPhone.trim().toLowerCase();
+    if (!clean) return false;
+
+    // Check for admin keywords or admin email
+    if (clean === 'admin' || clean.includes('satvik') || clean === 'satvikbhai@ybl' || clean === 'satvikbhai@opportunity.ai') {
+      loginAsUser(adminUser);
+      return true;
+    }
+
     const matched = allUsers.find(
       u => u.email.toLowerCase() === clean || (u.phone && u.phone.replace(/[^0-9]/g, '').includes(clean.replace(/[^0-9]/g, '')))
     );
@@ -382,6 +391,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       loginAsUser(matched);
       return true;
     }
+
+    // Auto-create and log in for seamless user onboarding if valid phone or email provided
+    if (clean.includes('@') || clean.replace(/[^0-9]/g, '').length >= 8) {
+      const isEmail = clean.includes('@');
+      const cleanDigits = clean.replace(/[^0-9]/g, '');
+      const rawName = isEmail ? clean.split('@')[0] : 'Learner';
+      const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+      
+      registerNewUser({
+        name: formattedName,
+        email: isEmail ? clean : `user_${cleanDigits}@opportunity.ai`,
+        phone: !isEmail ? clean : '+91 98765 43210'
+      });
+      return true;
+    }
+
     return false;
   };
 

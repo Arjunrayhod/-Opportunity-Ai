@@ -62,14 +62,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onNavigate }) => {
               <span>{user.streakDays}d</span>
             </div>
 
-            {/* Login / Switch Account Button */}
+            {/* Login / Sign Up Button */}
             <button
               onClick={() => setIsAuthModalOpen(true)}
-              title="Log In / Switch Student or Admin Account"
+              title="Log In / Create Account"
               className="px-2.5 py-1.5 min-h-[36px] rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition active:scale-95"
             >
               <KeyRound className="w-3.5 h-3.5 text-teal-700" />
-              <span className="text-[10px] hidden sm:inline">Switch / Log In</span>
+              <span className="text-[10px] hidden sm:inline">Log In</span>
             </button>
 
             {/* Quick Super Admin CMS Button */}

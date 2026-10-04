@@ -156,14 +156,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Account Authentication & Switcher Actions */}
+      {/* Account Authentication & Logout Actions */}
       <div className="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-3">
         <h3 className="text-xs font-bold text-slate-900 flex items-center gap-2">
           <UserCheck className="w-4 h-4 text-teal-600" />
           Account & Authentication
         </h3>
         <p className="text-xs text-slate-500">
-          Switch between your Student account, VIP Learner, or Super Admin, or log in with WhatsApp / Email.
+          Manage your account access, sign in with your phone or email, or log out safely.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
@@ -172,7 +172,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 font-bold text-xs transition active:scale-98"
           >
             <KeyRound className="w-4 h-4 text-teal-600" />
-            Switch Account / Log In
+            Sign In / Register Account
           </button>
 
           <button
@@ -180,7 +180,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
             className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold text-xs transition active:scale-98"
           >
             <LogOut className="w-4 h-4 text-rose-600" />
-            Log Out
+            Log Out of Account
           </button>
         </div>
       </div>
