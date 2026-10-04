@@ -223,6 +223,18 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
 
             {isLessonUnlocked ? (
               <div className="flex items-center gap-2 shrink-0">
+                {activeLesson.videoUrl && (
+                  <a
+                    href={activeLesson.videoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50 text-teal-800 hover:bg-teal-100 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                    title="Open in Fullscreen HD Player"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-teal-800 text-teal-800" />
+                    <span>Popout Player</span>
+                  </a>
+                )}
                 <button
                   disabled={activeLessonIndex === 0}
                   onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
