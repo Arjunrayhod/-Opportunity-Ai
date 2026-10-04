@@ -171,8 +171,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                     src={embedUrl}
                     title={activeLesson.title}
                     className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; display-capture"
                     loading="eager"
                   />
                 ) : (
@@ -653,8 +652,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 src={embedUrl}
                 title={activeLesson.title}
                 className="w-full h-full border-0 absolute inset-0 z-10 pointer-events-auto"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; display-capture"
                 loading="eager"
               />
             ) : (
