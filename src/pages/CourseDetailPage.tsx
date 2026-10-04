@@ -74,19 +74,46 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               <span>Opportunity AI Secure • {user.id.toUpperCase()}</span>
             </div>
 
-            {/* Video Container */}
+            {/* Video Player Stage */}
             {activeLesson.type === 'video' ? (
-              <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
-                <video
-                  key={activeLesson.id}
-                  controls
-                  playsInline
-                  poster={course.thumbnail}
-                  className="w-full h-full object-contain bg-black"
-                  src={activeLesson.videoUrl?.startsWith('http') && !activeLesson.videoUrl.includes('youtube.com') && !activeLesson.videoUrl.includes('drive.google.com') ? activeLesson.videoUrl : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'}
-                >
-                  Your browser does not support HTML5 video streaming.
-                </video>
+              <div className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950 overflow-hidden">
+                <img
+                  src={course.thumbnail}
+                  alt={activeLesson.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-35 filter blur-xs group-hover:scale-105 transition duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/40" />
+
+                <div className="relative z-10 p-6 text-center flex flex-col items-center justify-center space-y-4 max-w-md">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Ultra HD 1080p Stream Ready
+                  </span>
+
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                      {activeLesson.title}
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-1 line-clamp-2">
+                      {course.subtitle}
+                    </p>
+                  </div>
+
+                  <a
+                    href={course.driveUrl || '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => handleLessonComplete(activeLesson.id)}
+                    className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 font-black text-xs sm:text-sm shadow-xl flex items-center gap-2.5 transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                  >
+                    <Play className="w-5 h-5 fill-slate-950" />
+                    <span>Watch HD Lecture Stream (Instant Play)</span>
+                  </a>
+
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    ⚡ Zero Buffering • High-Speed CDN • Full Course Folder
+                  </span>
+                </div>
               </div>
             ) : activeLesson.type === 'pdf' ? (
               <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
@@ -96,13 +123,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 <h3 className="font-bold text-slate-900 text-base">{activeLesson.title}</h3>
                 <p className="text-xs text-slate-600 max-w-sm">{activeLesson.textContent}</p>
                 <a
-                  href={activeLesson.pdfUrl || '#'}
-                  download
+                  href={course.driveUrl || '#'}
+                  target="_blank"
+                  rel="noreferrer"
                   onClick={() => handleLessonComplete(activeLesson.id)}
                   className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition shadow-xs"
                 >
                   <Download className="w-4 h-4 !text-white" />
-                  <span className="!text-white">Download In-App Blueprint PDF</span>
+                  <span className="!text-white">Download Practice Toolkit & Assets</span>
                 </a>
               </div>
             ) : activeLesson.type === 'quiz' && activeLesson.quiz ? (
@@ -198,6 +226,16 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
 
             {isLessonUnlocked ? (
               <div className="flex items-center gap-2 shrink-0">
+                <a
+                  href={course.driveUrl || '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => handleLessonComplete(activeLesson.id)}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 !text-white text-xs font-bold flex items-center gap-1.5 transition shadow-2xs"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white !text-white" />
+                  <span className="!text-white">Play Video</span>
+                </a>
                 <button
                   disabled={activeLessonIndex === 0}
                   onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
@@ -213,7 +251,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                   }}
                   className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-2xs"
                 >
-                  <span className="!text-white">Next Lesson</span>
+                  <span className="!text-white">Next</span>
                   <ArrowRight className="w-3.5 h-3.5 !text-white" />
                 </button>
               </div>
