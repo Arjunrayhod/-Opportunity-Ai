@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, Maximize2, Minimize2, Smartphone, Sparkles, X, ExternalLink } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowLeft, ArrowRight, Play, Pause, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, Maximize2, Minimize2, Smartphone, Sparkles, X, ExternalLink, RotateCcw } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RazorpayModal } from '../components/payment/RazorpayModal';
 import { CertificateModal } from '../components/growth/CertificateModal';
@@ -49,6 +49,9 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
   const [isRazorpayOpen, setIsRazorpayOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isTheaterOpen, setIsTheaterOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [gestureFeedback, setGestureFeedback] = useState<'play' | 'pause' | null>(null);
+  const lastTapRef = useRef<number>(0);
   const [completedLessonIds, setCompletedLessonIds] = useState<string[]>(['lsn_01', 'lsn_02']);
   const [quizSelectedOption, setQuizSelectedOption] = useState<number | null>(null);
   const [showQuizResult, setShowQuizResult] = useState(false);
@@ -56,6 +59,30 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
   const activeLesson: Lesson = course.lessons[activeLessonIndex] || course.lessons[0];
   const isLessonUnlocked = isEnrolled || activeLesson?.isFreePreview;
   const embedUrl = getVideoEmbedUrl(activeLesson, course);
+
+  // 2-clicks / Double Tap to Play and Pause (चालू / बंद)
+  const togglePlayPause = () => {
+    setIsPlaying(prev => {
+      const nextState = !prev;
+      setGestureFeedback(nextState ? 'play' : 'pause');
+      setTimeout(() => setGestureFeedback(null), 850);
+      return nextState;
+    });
+  };
+
+  const handleDoubleTapOrClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    togglePlayPause();
+  };
+
+  const handleTouchTap = () => {
+    const now = Date.now();
+    const DOUBLE_TAP_THRESHOLD = 320;
+    if (now - lastTapRef.current < DOUBLE_TAP_THRESHOLD) {
+      togglePlayPause();
+    }
+    lastTapRef.current = now;
+  };
 
   const handleLessonComplete = (lessonId: string) => {
     if (!completedLessonIds.includes(lessonId)) {
@@ -98,26 +125,66 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* 1. Main In-App Video Studio Player Screen */}
       <div className="rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-xl">
         {isLessonUnlocked ? (
-          <div className="relative aspect-video min-h-[240px] sm:min-h-[380px] md:min-h-[440px] w-full bg-black flex flex-col justify-between overflow-hidden group">
+          <div
+            onDoubleClick={handleDoubleTapOrClick}
+            onTouchEnd={handleTouchTap}
+            className="relative aspect-video min-h-[240px] sm:min-h-[380px] md:min-h-[440px] w-full bg-black flex flex-col justify-between overflow-hidden group cursor-pointer"
+            title="Double Click or 2x Tap anywhere to Play / Pause (चालू / बंद)"
+          >
             {/* DRM Anti-Piracy Floating Watermark (Mobile-safe placement) */}
             <div className="absolute top-2 right-2 sm:top-3 sm:right-3 pointer-events-none px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
               <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            {/* Video Player */}
-            {activeLesson.type === 'video' ? (
-              <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
-                <iframe
-                  key={`${course.id}_${activeLesson.id}`}
-                  src={embedUrl}
-                  title={activeLesson.title}
-                  className="w-full h-full border-0 relative z-10"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                  allowFullScreen
-                  loading="eager"
-                />
+            {/* Gesture Ripple Notification (2 Times Click Feedback) */}
+            {gestureFeedback && (
+              <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center animate-in fade-in zoom-in-75 duration-200">
+                <div className="flex flex-col items-center gap-2 p-5 rounded-3xl bg-black/85 backdrop-blur-md border border-teal-500/40 shadow-2xl scale-110">
+                  <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center ring-4 ring-teal-500/30">
+                    {gestureFeedback === 'play' ? (
+                      <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
+                    ) : (
+                      <Pause className="w-8 h-8 fill-teal-400 text-teal-400" />
+                    )}
+                  </div>
+                  <span className="text-xs font-black tracking-wider text-white uppercase">
+                    {gestureFeedback === 'play' ? '▶ Video Started (चालू)' : '⏸ Video Paused (बंद)'}
+                  </span>
+                  <span className="text-[10px] text-teal-300">2-Clicks Action Detected</span>
+                </div>
               </div>
+            )}
+
+            {/* Video Player or Paused Screen */}
+            {activeLesson.type === 'video' ? (
+              isPlaying ? (
+                <div className="relative w-full h-full flex items-center justify-center bg-slate-950">
+                  <iframe
+                    key={`${course.id}_${activeLesson.id}`}
+                    src={embedUrl}
+                    title={activeLesson.title}
+                    className="w-full h-full border-0 relative z-10"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                    allowFullScreen
+                    loading="eager"
+                  />
+                </div>
+              ) : (
+                /* Paused Overlay Screen */
+                <div
+                  onClick={togglePlayPause}
+                  className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
+                >
+                  <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 border border-teal-400/40 flex items-center justify-center shadow-lg hover:scale-110 transition active:scale-95">
+                    <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
+                  </div>
+                  <div className="text-center px-4">
+                    <p className="text-white font-black text-sm sm:text-base">Video Paused (बंद है)</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Click or 2-Times Tap on screen to Play (चालू करें)</p>
+                  </div>
+                </div>
+              )
             ) : activeLesson.type === 'pdf' ? (
               <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
                 <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
@@ -206,20 +273,43 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
 
         {/* In-App Player Navigation & Action Controls */}
         <div className="p-3.5 sm:p-4 bg-white border-t border-slate-200 space-y-3">
-          {/* Mobile Fast-Stream Action Helper */}
+          {/* Mobile Fast-Stream & 2-Clicks Action Helper */}
           {isLessonUnlocked && activeLesson.type === 'video' && (
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-teal-50/80 border border-teal-200 text-xs">
               <div className="flex items-center gap-2 text-teal-900 font-bold">
                 <Smartphone className="w-4 h-4 text-teal-700 shrink-0" />
-                <span className="text-[11px] sm:text-xs">Mobile Touch Optimized • 1080p Stream</span>
+                <span className="text-[11px] sm:text-xs">2x Click anywhere on video to Play / Pause (चालू / बंद)</span>
               </div>
-              <button
-                onClick={() => setIsTheaterOpen(true)}
-                className="px-3 py-1 rounded-lg bg-[#003539] hover:bg-[#004f55] !text-white text-[11px] font-extrabold flex items-center gap-1.5 transition active:scale-95 shadow-xs shrink-0"
-              >
-                <Maximize2 className="w-3 h-3 !text-white" />
-                <span className="!text-white">Fullscreen Theater</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={togglePlayPause}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold flex items-center gap-1 transition active:scale-95 shadow-2xs ${
+                    isPlaying
+                      ? 'bg-slate-200 text-slate-800 hover:bg-slate-300'
+                      : 'bg-emerald-600 !text-white hover:bg-emerald-500'
+                  }`}
+                  title="2 Clicks Shortcut to Play/Pause"
+                >
+                  {isPlaying ? (
+                    <>
+                      <Pause className="w-3 h-3 text-slate-700" />
+                      <span>Pause Video</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3 h-3 fill-white text-white" />
+                      <span className="!text-white">Play Video</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setIsTheaterOpen(true)}
+                  className="px-3 py-1 rounded-lg bg-[#003539] hover:bg-[#004f55] !text-white text-[11px] font-extrabold flex items-center gap-1.5 transition active:scale-95 shadow-xs shrink-0"
+                >
+                  <Maximize2 className="w-3 h-3 !text-white" />
+                  <span className="!text-white">Fullscreen Theater</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -526,57 +616,109 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
           </div>
 
           {/* Theater Viewport */}
-          <div className="relative flex-1 w-full max-h-[82vh] bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center">
+          <div
+            onDoubleClick={handleDoubleTapOrClick}
+            onTouchEnd={handleTouchTap}
+            className="relative flex-1 w-full max-h-[82vh] bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer"
+            title="Double Click or 2x Tap to Play / Pause (चालू / बंद)"
+          >
             {/* DRM Anti-Piracy Watermark */}
             <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-emerald-400 z-30 select-none border border-emerald-500/30 flex items-center gap-1.5 shadow-md">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Opportunity Stream • {user.id.toUpperCase()}</span>
             </div>
 
-            <iframe
-              key={`theater_${course.id}_${activeLesson.id}`}
-              src={embedUrl}
-              title={activeLesson.title}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-              allowFullScreen
-              loading="eager"
-            />
+            {/* Gesture Feedback Ripple in Theater */}
+            {gestureFeedback && (
+              <div className="absolute inset-0 pointer-events-none z-40 flex items-center justify-center animate-in fade-in zoom-in-75 duration-200">
+                <div className="flex flex-col items-center gap-2 p-5 rounded-3xl bg-black/90 backdrop-blur-md border border-teal-500/40 shadow-2xl scale-125">
+                  <div className="w-16 h-16 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center ring-4 ring-teal-500/30">
+                    {gestureFeedback === 'play' ? (
+                      <Play className="w-8 h-8 fill-teal-400 text-teal-400 ml-1" />
+                    ) : (
+                      <Pause className="w-8 h-8 fill-teal-400 text-teal-400" />
+                    )}
+                  </div>
+                  <span className="text-xs font-black tracking-wider text-white uppercase">
+                    {gestureFeedback === 'play' ? '▶ Video Started (चालू)' : '⏸ Video Paused (बंद)'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {isPlaying ? (
+              <iframe
+                key={`theater_${course.id}_${activeLesson.id}`}
+                src={embedUrl}
+                title={activeLesson.title}
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                allowFullScreen
+                loading="eager"
+              />
+            ) : (
+              <div
+                onClick={togglePlayPause}
+                className="relative w-full h-full flex flex-col items-center justify-center bg-slate-950/95 z-20 space-y-3 cursor-pointer select-none"
+              >
+                <div className="w-20 h-20 rounded-full bg-teal-500/20 text-teal-400 border border-teal-400/40 flex items-center justify-center shadow-2xl hover:scale-110 transition active:scale-95">
+                  <Play className="w-10 h-10 fill-teal-400 text-teal-400 ml-1" />
+                </div>
+                <div className="text-center px-4">
+                  <p className="text-white font-black text-base sm:text-lg">Video Paused (बंद है)</p>
+                  <p className="text-xs text-slate-400 mt-1">Double Click or Tap on screen to Play (चालू करें)</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Theater Bottom Bar Controls */}
           <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-slate-900/90 rounded-2xl border border-slate-800 mt-2">
-            <button
-              disabled={activeLessonIndex === 0}
-              onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
-              className="px-3 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
-            >
-              Previous
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={activeLessonIndex === 0}
+                onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
+                className="px-3 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition"
+              >
+                Previous
+              </button>
 
-            <button
-              onClick={() => handleLessonComplete(activeLesson.id)}
-              className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                completedLessonIds.includes(activeLesson.id)
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-teal-700 hover:bg-teal-600 text-white'
-              }`}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{completedLessonIds.includes(activeLesson.id) ? 'Completed' : 'Mark Done'}</span>
-            </button>
+              <button
+                onClick={togglePlayPause}
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  isPlaying ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-emerald-600 text-white hover:bg-emerald-500'
+                }`}
+              >
+                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+                <span>{isPlaying ? 'Pause' : 'Play'}</span>
+              </button>
+            </div>
 
-            <button
-              disabled={activeLessonIndex === course.lessons.length - 1}
-              onClick={() => {
-                handleLessonComplete(activeLesson.id);
-                setActiveLessonIndex(prev => Math.min(course.lessons.length - 1, prev + 1));
-              }}
-              className="px-3 sm:px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center gap-1.5"
-            >
-              <span>Next</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleLessonComplete(activeLesson.id)}
+                className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                  completedLessonIds.includes(activeLesson.id)
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-teal-700 hover:bg-teal-600 text-white'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{completedLessonIds.includes(activeLesson.id) ? 'Completed' : 'Mark Done'}</span>
+              </button>
+
+              <button
+                disabled={activeLessonIndex === course.lessons.length - 1}
+                onClick={() => {
+                  handleLessonComplete(activeLesson.id);
+                  setActiveLessonIndex(prev => Math.min(course.lessons.length - 1, prev + 1));
+                }}
+                className="px-3 sm:px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center gap-1.5"
+              >
+                <span>Next</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       )}
