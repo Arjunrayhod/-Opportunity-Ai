@@ -65,12 +65,12 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  USER: 'aiopp_user_v6',
-  COURSES: 'aiopp_courses_v6',
-  ORDERS: 'aiopp_orders_v6',
-  OPPORTUNITIES: 'aiopp_opportunities_v6',
-  NOTIFICATIONS: 'aiopp_notifs_v6',
-  MESSAGES: 'aiopp_messages_v6',
+  USER: 'aiopp_user_v7',
+  COURSES: 'aiopp_courses_v7',
+  ORDERS: 'aiopp_orders_v7',
+  OPPORTUNITIES: 'aiopp_opportunities_v7',
+  NOTIFICATIONS: 'aiopp_notifs_v7',
+  MESSAGES: 'aiopp_messages_v7',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -81,7 +81,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     root.setAttribute('data-theme', 'light');
 
     // Clean up older stale caches
-    ['v1', 'v2', 'v3', 'v4', 'v5'].forEach(v => {
+    ['v1', 'v2', 'v3', 'v4', 'v5', 'v6'].forEach(v => {
       localStorage.removeItem(`aiopp_courses_${v}`);
       localStorage.removeItem(`aiopp_user_${v}`);
       localStorage.removeItem(`aiopp_orders_${v}`);
