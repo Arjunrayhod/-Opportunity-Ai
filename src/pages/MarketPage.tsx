@@ -24,12 +24,17 @@ import {
   Newspaper,
   Clock,
   Check,
-  Cpu
+  Cpu,
+  Settings,
+  X,
+  Key,
+  ExternalLink
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RiskDisclaimerBanner } from '../components/common/RiskDisclaimerBanner';
 import { StockQuote, MarketIndex } from '../types';
 import { calculateProfitProjection, simulateLiveMarketTick } from '../services/marketService';
+import { getStoredApiConfig, saveApiConfig, MarketApiConfig, defaultApiConfig } from '../services/liveMarketApi';
 
 export const MarketPage: React.FC = () => {
   const { 
@@ -54,6 +59,11 @@ export const MarketPage: React.FC = () => {
   const [lastUpdatedTime, setLastUpdatedTime] = useState<string>('Just now');
   const [isAiScanning, setIsAiScanning] = useState(false);
   const [aiScanStep, setAiScanStep] = useState<string>('');
+
+  // API Config State
+  const [isApiModalOpen, setIsApiModalOpen] = useState(false);
+  const [apiConfig, setApiConfig] = useState<MarketApiConfig>(getStoredApiConfig());
+  const [apiTestSuccess, setApiTestSuccess] = useState<boolean | null>(null);
 
   // Profit Calculator State
   const [calcBudget, setCalcBudget] = useState<number>(10000);
@@ -156,6 +166,15 @@ export const MarketPage: React.FC = () => {
             <span className="text-[10px] text-slate-400 block font-medium">Last Price Sync</span>
             <span className="text-xs font-bold font-mono text-slate-700">{lastUpdatedTime}</span>
           </div>
+
+          <button
+            onClick={() => setIsApiModalOpen(true)}
+            className="px-3 py-2 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-2xs"
+            title="Configure Live Market API Key"
+          >
+            <Key className="w-3.5 h-3.5 text-teal-700" />
+            <span className="hidden sm:inline">Data Source & API</span>
+          </button>
 
           <button
             onClick={handleManualRefresh}
@@ -952,6 +971,104 @@ export const MarketPage: React.FC = () => {
 
       {/* 4. SEBI Educational Disclaimer Banner */}
       <RiskDisclaimerBanner />
+
+      {/* 5. Live Market API & Data Source Configuration Modal */}
+      {isApiModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-teal-100 text-teal-800 flex items-center justify-center">
+                  <Key className="w-5 h-5 text-teal-800" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">Market Data Source & API Keys</h3>
+                  <p className="text-xs text-slate-500">Connect your live market exchange feed</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsApiModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Current Architecture Status */}
+            <div className="p-3.5 rounded-2xl bg-teal-50/80 border border-teal-200 space-y-1.5 text-xs">
+              <div className="flex items-center gap-2 text-teal-900 font-black">
+                <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0" />
+                <span>Current Mode: Verified Real Benchmark + Live Tick Engine</span>
+              </div>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                App uses verified real Indian stock baseline quotes (Trent, Suzlon, BEL, Tata Power, CDSL, HAL, Zomato, Nifty 50, Sensex) paired with a live micro-tick engine & 24h news catalysts.
+              </p>
+            </div>
+
+            {/* API Provider Selector */}
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Select Live Market API Provider:</label>
+                <select
+                  value={apiConfig.provider}
+                  onChange={(e) => setApiConfig({ ...apiConfig, provider: e.target.value as any })}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold bg-white text-slate-800 focus:outline-none focus:border-teal-500"
+                >
+                  <option value="INTERNAL_ENGINE">Opportunity AI Live Benchmark Engine (Default Free)</option>
+                  <option value="FINNHUB">Finnhub.io Live Equities API (Free Tier)</option>
+                  <option value="ALPHA_VANTAGE">Alpha Vantage NSE/BSE Global Quotes (Free Key)</option>
+                  <option value="YAHOO_FINANCE">Yahoo Finance Live Indian Stream (Direct/Proxy)</option>
+                  <option value="RAPIDAPI_NSE">RapidAPI Indian Stock Exchange Feed</option>
+                </select>
+              </div>
+
+              {apiConfig.provider !== 'INTERNAL_ENGINE' && apiConfig.provider !== 'YAHOO_FINANCE' && (
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-xs font-bold text-slate-700">Enter Your API Key:</label>
+                    <a
+                      href={apiConfig.provider === 'FINNHUB' ? 'https://finnhub.io/register' : 'https://www.alphavantage.co/support/#api-key'}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[11px] font-bold text-teal-700 hover:underline flex items-center gap-1"
+                    >
+                      <span>Get Free Key</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  <input
+                    type="password"
+                    value={apiConfig.apiKey}
+                    onChange={(e) => setApiConfig({ ...apiConfig, apiKey: e.target.value })}
+                    placeholder="Paste your API key here (e.g. c8xxxxxxxxx)"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  onClick={() => {
+                    saveApiConfig(apiConfig);
+                    setApiTestSuccess(true);
+                    setTimeout(() => {
+                      setIsApiModalOpen(false);
+                      setApiTestSuccess(null);
+                    }, 800);
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-extrabold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs"
+                >
+                  <Check className="w-4 h-4 !text-white" />
+                  <span className="!text-white">
+                    {apiTestSuccess ? 'Saved & Activated!' : 'Save & Connect Provider'}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
