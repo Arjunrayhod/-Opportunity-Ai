@@ -36,8 +36,8 @@ Strictly adhere to mobile usability guidelines:
 ---
 
 ## 4. Verification Checklist
-- [x] Are all touch targets $\ge 48\text{px}$?
-- [x] Does the UI render cleanly on both 360px mobile viewports and desktop wide screens?
-- [x] Are numeric inputs configured with `type="tel"` / `inputmode="numeric"`?
-- [x] Are animations smooth (60fps) and non-distracting?
-- [x] Is contrast WCAG AA compliant across dark and light surfaces?
+- [ ] Are all touch targets $\ge 48\text{px}$?
+- [ ] Does the UI render cleanly on both 360px mobile viewports and desktop wide screens?
+- [ ] Are numeric inputs configured with `type="tel"` / `inputmode="numeric"`?
+- [ ] Are animations smooth (60fps) and non-distracting?
+- [ ] Is contrast WCAG AA compliant across dark and light surfaces?
