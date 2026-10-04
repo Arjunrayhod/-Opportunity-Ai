@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText, FolderGit2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Lock, CheckCircle2, Download, HelpCircle, Star, ShieldCheck, BookOpen, Award, FileText } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { RazorpayModal } from '../components/payment/RazorpayModal';
 import { CertificateModal } from '../components/growth/CertificateModal';
@@ -64,20 +64,26 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
       {/* Flash Sale Banner */}
       {!isEnrolled && <FlashSaleTimer />}
 
-      {/* 1. Main In-App Video & Content Player Screen */}
+      {/* 1. Main In-App Video & Content Studio Screen */}
       <div className="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-xs">
         {isLessonUnlocked ? (
-          <div className="aspect-video w-full bg-slate-950 relative flex items-center justify-center">
+          <div className="aspect-video w-full bg-slate-950 relative flex items-center justify-center group">
+            {/* DRM Anti-Piracy Watermark Floating Overlay */}
+            <div className="absolute top-3 right-3 pointer-events-none px-2.5 py-1 rounded-lg bg-black/40 backdrop-blur-sm text-[10px] font-mono text-white/60 z-20 select-none border border-white/10 flex items-center gap-1.5">
+              <ShieldCheck className="w-3 h-3 text-teal-400" />
+              <span>Opportunity Stream • {user.id.toUpperCase()}</span>
+            </div>
+
             {activeLesson.type === 'video' ? (
               <iframe
-                src={activeLesson.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}
+                src={`${activeLesson.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}?rel=0&modestbranding=1&iv_load_policy=3&showinfo=0`}
                 title={activeLesson.title}
-                className="w-full h-full border-0"
+                className="w-full h-full border-0 relative z-10"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
             ) : activeLesson.type === 'pdf' ? (
-              <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full">
+              <div className="p-8 text-center flex flex-col items-center justify-center space-y-3 bg-white w-full h-full z-10">
                 <div className="w-14 h-14 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center">
                   <Download className="w-7 h-7" />
                 </div>
@@ -91,11 +97,11 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                   className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center gap-2 transition"
                 >
                   <Download className="w-4 h-4 !text-white" />
-                  <span className="!text-white">Download Blueprint PDF</span>
+                  <span className="!text-white">Download In-App Blueprint PDF</span>
                 </a>
               </div>
             ) : activeLesson.type === 'quiz' && activeLesson.quiz ? (
-              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white">
+              <div className="p-6 w-full max-w-md mx-auto space-y-4 bg-white z-10">
                 <div className="flex items-center gap-2 text-teal-800 text-xs font-bold uppercase">
                   <HelpCircle className="w-4 h-4 text-teal-700" />
                   <span>Module Knowledge Check</span>
@@ -141,7 +147,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
                 )}
               </div>
             ) : (
-              <div className="p-6 text-slate-900 text-xs bg-white">{activeLesson.textContent}</div>
+              <div className="p-6 text-slate-900 text-xs bg-white z-10">{activeLesson.textContent}</div>
             )}
           </div>
         ) : (
@@ -153,7 +159,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
               This Premium Lesson is Locked
             </h3>
             <p className="text-xs text-slate-300 max-w-sm">
-              Unlock the complete course with all video modules, downloadable PDF checklists, and lifetime updates.
+              Unlock the complete course with all in-app video modules, downloadable PDF checklists, and lifetime updates.
             </p>
             <button
               onClick={() => setIsRazorpayOpen(true)}
@@ -165,69 +171,60 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
           </div>
         )}
 
-        {/* Lesson Title & Info Banner */}
-        <div className="p-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-teal-800">
-                Lesson {activeLessonIndex + 1} of {course.lessons.length}
-              </span>
-              {activeLesson.isFreePreview && !isEnrolled && (
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  FREE PREVIEW
+        {/* In-App Player Navigation & Action Controls */}
+        <div className="p-4 bg-white border-t border-slate-200 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-teal-800">
+                  Module {activeLessonIndex + 1} of {course.lessons.length}
                 </span>
-              )}
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                  1080p HD Studio
+                </span>
+                {activeLesson.isFreePreview && !isEnrolled && (
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    FREE PREVIEW
+                  </span>
+                )}
+              </div>
+              <h2 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">{activeLesson.title}</h2>
             </div>
-            <h2 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">{activeLesson.title}</h2>
-          </div>
 
-          {!isEnrolled && (
-            <button
-              onClick={() => setIsRazorpayOpen(true)}
-              className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs shrink-0"
-            >
-              <span className="!text-white">Enroll at ₹{course.price} (95% Off)</span>
-            </button>
-          )}
+            {isLessonUnlocked ? (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  disabled={activeLessonIndex === 0}
+                  onClick={() => setActiveLessonIndex(prev => Math.max(0, prev - 1))}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition"
+                >
+                  Previous
+                </button>
+                <button
+                  disabled={activeLessonIndex === course.lessons.length - 1}
+                  onClick={() => {
+                    handleLessonComplete(activeLesson.id);
+                    setActiveLessonIndex(prev => Math.min(course.lessons.length - 1, prev + 1));
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span className="!text-white">Next Lesson</span>
+                  <ArrowRight className="w-3.5 h-3.5 !text-white" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsRazorpayOpen(true)}
+                className="px-4 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs shrink-0"
+              >
+                <span className="!text-white">Enroll at ₹{course.price} (95% Off)</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 2. Google Drive Direct Folder Access Banner */}
-      {course.driveUrl && (
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <FolderGit2 className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider bg-teal-100/80 px-2 py-0.5 rounded-md border border-teal-200">
-                  Google Drive Cloud Vault
-                </span>
-                <span className="text-[11px] font-bold text-emerald-700">✓ Full Access Ready</span>
-              </div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5">
-                Complete Course Drive Folder & Resources
-              </h4>
-              <p className="text-[11px] text-slate-600">
-                Direct access to high-definition video files, downloadable toolkits, project assets, and lifetime updates.
-              </p>
-            </div>
-          </div>
-
-          <a
-            href={course.driveUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="px-5 py-2.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-black text-xs flex items-center justify-center gap-2 transition shrink-0 active:scale-95 shadow-xs"
-          >
-            <ExternalLink className="w-4 h-4 !text-white" />
-            <span className="!text-white">Open in Google Drive</span>
-          </a>
-        </div>
-      )}
-
-      {/* 3. Downloadable PDF Cheat Sheets Vault */}
+      {/* 2. Downloadable In-App Resource & Blueprint Vault */}
       {course.cheatSheetPdf && (
         <div className="p-4 rounded-3xl bg-teal-50/70 border border-teal-200 flex items-center justify-between gap-3 shadow-2xs">
           <div className="flex items-center gap-3">
@@ -236,7 +233,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             </div>
             <div>
               <span className="text-[10px] font-black text-teal-800 uppercase tracking-wider">
-                Downloadable Cheat Sheet & Templates
+                In-App Action Plan & Practical Cheat Sheet
               </span>
               <h4 className="text-xs font-bold text-slate-900">{course.cheatSheetPdf.title}</h4>
               <span className="text-[10px] text-slate-500">{course.cheatSheetPdf.fileSize} • High-Res PDF</span>
@@ -250,7 +247,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             className="px-3.5 py-2 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white font-extrabold text-xs flex items-center gap-1.5 transition shrink-0 active:scale-95 shadow-xs"
           >
             <Download className="w-3.5 h-3.5 !text-white" />
-            <span className="!text-white">Download</span>
+            <span className="!text-white">Download PDF</span>
           </a>
         </div>
       )}
