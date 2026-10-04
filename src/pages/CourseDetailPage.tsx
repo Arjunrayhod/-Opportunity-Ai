@@ -31,12 +31,7 @@ const getVideoEmbedUrl = (lesson: Lesson, course: { category: string; title: str
     return lesson.videoUrl;
   }
 
-  // 3. If lesson has a custom video URL
-  if (lesson.videoUrl && lesson.videoUrl.startsWith('http')) {
-    return lesson.videoUrl;
-  }
-
-  // 4. Fallback to Google Drive embedded folder
+  // 3. Fallback to Google Drive embedded folder view
   if (course.driveUrl) {
     const folderId = getDriveFolderId(course.driveUrl);
     return `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;

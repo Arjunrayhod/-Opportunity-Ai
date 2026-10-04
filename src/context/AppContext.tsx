@@ -65,12 +65,12 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  USER: 'aiopp_user_v5',
-  COURSES: 'aiopp_courses_v5',
-  ORDERS: 'aiopp_orders_v5',
-  OPPORTUNITIES: 'aiopp_opportunities_v5',
-  NOTIFICATIONS: 'aiopp_notifs_v5',
-  MESSAGES: 'aiopp_messages_v5',
+  USER: 'aiopp_user_v6',
+  COURSES: 'aiopp_courses_v6',
+  ORDERS: 'aiopp_orders_v6',
+  OPPORTUNITIES: 'aiopp_opportunities_v6',
+  NOTIFICATIONS: 'aiopp_notifs_v6',
+  MESSAGES: 'aiopp_messages_v6',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -79,6 +79,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     root.classList.remove('dark');
     root.classList.add('light');
     root.setAttribute('data-theme', 'light');
+
+    // Clean up older stale caches
+    ['v1', 'v2', 'v3', 'v4', 'v5'].forEach(v => {
+      localStorage.removeItem(`aiopp_courses_${v}`);
+      localStorage.removeItem(`aiopp_user_${v}`);
+      localStorage.removeItem(`aiopp_orders_${v}`);
+    });
   }, []);
 
   // Load from local storage or fallback to initial mocks
@@ -89,7 +96,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [courses, setCourses] = useState<Course[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.COURSES);
-    return saved ? JSON.parse(saved) : mockCourses;
+    if (saved) {
+      try {
+        const parsed: Course[] = JSON.parse(saved);
+        const hasStaleUrls = parsed.some(c => c.lessons?.some(l => l.videoUrl?.includes('gtv-videos-bucket') || l.videoUrl?.includes('commondatastorage')));
+        if (!hasStaleUrls && parsed.length >= mockCourses.length) {
+          return parsed;
+        }
+      } catch {
+        // fallback
+      }
+    }
+    return mockCourses;
   });
 
   const [orders, setOrders] = useState<OrderRecord[]>(() => {
