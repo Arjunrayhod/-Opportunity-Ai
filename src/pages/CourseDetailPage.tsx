@@ -346,16 +346,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             {isLessonUnlocked ? (
               <div className="flex items-center flex-wrap gap-2 shrink-0">
                 {activeLesson.videoUrl && (
-                  <a
-                    href={embedUrl}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    onClick={() => setIsTheaterOpen(true)}
                     className="px-3.5 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-black transition flex items-center gap-1.5 shadow-xs active:scale-95"
-                    title="100% Unblocked High Speed 1080p HD Player"
+                    title="Play 1080p Video Inside App"
                   >
-                    <Play className="w-3.5 h-3.5 fill-white !text-white" />
-                    <span className="!text-white">▶ Play in 1080p HD</span>
-                  </a>
+                    <Maximize2 className="w-3.5 h-3.5 !text-white" />
+                    <span className="!text-white">▶ In-App 1080p Studio</span>
+                  </button>
                 )}
                 <button
                   disabled={activeLessonIndex === 0}
@@ -617,20 +615,9 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ courseId, on
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <a
-                href={embedUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 rounded-xl bg-[#003539] hover:bg-[#004f55] !text-white text-xs font-black transition flex items-center gap-1.5 shadow-xs active:scale-95"
-                title="Open 100% Unblocked 1080p HD Player"
-              >
-                <Play className="w-3.5 h-3.5 fill-white !text-white" />
-                <span className="!text-white">▶ 1080p Stream</span>
-              </a>
-
               <button
                 onClick={() => setIsTheaterOpen(false)}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0 shadow-2xs"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition active:scale-95 flex items-center gap-1.5 text-xs font-bold shrink-0 shadow-2xs"
               >
                 <X className="w-4 h-4" />
                 <span>Exit Fullscreen</span>
